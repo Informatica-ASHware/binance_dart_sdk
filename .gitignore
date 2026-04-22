@@ -1,0 +1,20 @@
+# See https://dart.dev/guides/libraries/private-files
+
+# Files and directories created by pub
+.dart_tool/
+.packages
+build/
+pubspec.lock
+*.lock
+
+# Coverage report
+coverage/
+
+# IDE files
+.idea/
+*.iml
+*.iws
+.vscode/
+
+# OS generated files
+.DS_Store

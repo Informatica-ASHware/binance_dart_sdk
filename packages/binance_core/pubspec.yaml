@@ -2,9 +2,10 @@ name: binance_core
 description: Primitivas y transporte base para binance_dart_sdk.
 version: 0.1.0
 publish_to: none # Cambiar cuando esté listo para pub.dev
+resolution: workspace
 
 environment:
-  sdk: '>=3.0.0 <4.0.0'
+  sdk: '>=3.5.0 <4.0.0'
 
 dependencies:
   http: ^1.1.0

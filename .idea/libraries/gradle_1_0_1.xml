@@ -1,9 +1,0 @@
-<component name="libraryTable">
-  <library name="gradle-1.0.1">
-    <CLASSES>
-      <root url="jar://$PROJECT_DIR$/.fvm/flutter_sdk/packages/flutter_tools/gradle/build/libs/gradle-1.0.0.jar!/" />
-    </CLASSES>
-    <JAVADOC />
-    <SOURCES />
-  </library>
-</component>
