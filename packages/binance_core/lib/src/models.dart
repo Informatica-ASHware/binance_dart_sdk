@@ -12,7 +12,9 @@ final class Symbol {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is Symbol && runtimeType == other.runtimeType && value == other.value;
+      other is Symbol &&
+          runtimeType == other.runtimeType &&
+          value == other.value;
 
   @override
   int get hashCode => value.hashCode;
@@ -36,7 +38,9 @@ final class Price {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is Price && runtimeType == other.runtimeType && value == other.value;
+      other is Price &&
+          runtimeType == other.runtimeType &&
+          value == other.value;
 
   @override
   int get hashCode => value.hashCode;
@@ -114,8 +118,7 @@ final class Decimal {
     final absoluteUnits = units.abs();
     final s = absoluteUnits.toString().padLeft(precision + 1, '0');
     final splitIndex = s.length - precision;
-    final result =
-        '${s.substring(0, splitIndex)}.${s.substring(splitIndex)}';
+    final result = '${s.substring(0, splitIndex)}.${s.substring(splitIndex)}';
     return isNegative ? '-$result' : result;
   }
 }

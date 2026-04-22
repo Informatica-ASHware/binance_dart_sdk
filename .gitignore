@@ -5,6 +5,7 @@
 .packages
 build/
 pubspec.lock
+*.lock
 
 # Coverage report
 coverage/
