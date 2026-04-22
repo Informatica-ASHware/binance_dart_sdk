@@ -38,7 +38,7 @@ BODY_1=$(cat <<'EOF'
 **Objetivo principal y alcance.**
 Crear el monorepo gestionado con Melos y construir el paquete `binance_core` con los tipos primitivos inmutables que cualquier consumidor del SDK tocará: `Symbol`, `Asset`, `Price`, `Quantity`, `Percentage`, `Money`, `OrderId`, `ClientOrderId`, `Timestamp`, `Interval` (enums de timeframe alineados con Binance: 1s, 1m, 3m, 5m, 15m, 30m, 1h, 2h, 4h, 6h, 8h, 12h, 1d, 3d, 1w, 1M). Sealed `Result<T, BinanceError>` (patrón Either, sin agregar `either_dart` como dependencia — se implementa en casa para controlar la superficie). Convenciones de nomenclatura, lints estrictos (`package:very_good_analysis` o equivalente custom), formatter, CI inicial (build + test + analyze + pub score check), y plantillas de `pubspec.yaml` por paquete. Definición del `BinanceEnvironment` enum (`mainnet`, `spotTestnet`, `futuresTestnet`) con sus URLs base correspondientes.
 
-**NO incluye.** Clientes HTTP o WS (épicas 3 y 4), autenticación (US 2), endpoints específicos, ni el paquete adaptador Riverpod hipotético.
+**NO incluye.** Clientes HTTP o WS (US 3 y 4), autenticación (US 2), endpoints específicos, ni el paquete adaptador Riverpod hipotético.
 
 **Argumentación técnica y de negocio.**
 Sin primitivas tipadas, cada paquete posterior inventaría sus propios `String symbol`, `double price` — reproduciendo el antipatrón del SDK legacy donde todo era `String` o `double` plano. Tipos fuertes atrapan en compile-time errores como "pasé quantity donde iba price" o "mezclé USDT con BUSD en una suma". El monorepo con Melos permite publicar los cuatro paquetes con versionado coordinado o independiente según convenga, mantener un único `CHANGELOG` consolidado y un único CI que corra las pruebas cruzadas. Esta US es la inversión base: todo lo demás se apoya en ella.
@@ -88,7 +88,7 @@ Implementar en `binance_core` un cliente HTTP resiliente abstracto `BinanceHttpC
 
 Expone el cliente como `interface` para que consumers puedan inyectar mocks o decoradores. Base URLs se resuelven desde `BinanceEnvironment` (US 1).
 
-**NO incluye.** Endpoints concretos (épicas 6-8). WebSocket (US 4). Caché de respuestas (deliberadamente fuera — las respuestas trading no son cacheables y la caché de market data la decide el consumidor). Soporte proxy SOCKS5 (puede añadirse en US futura si se demanda).
+**NO incluye.** Endpoints concretos (US 6-8). WebSocket (US 4). Caché de respuestas (deliberadamente fuera — las respuestas trading no son cacheables y la caché de market data la decide el consumidor). Soporte proxy SOCKS5 (puede añadirse en US futura si se demanda).
 
 **Argumentación técnica y de negocio.**
 El Legacy auditado en el CryptBot **no tenía tracking de weight client-side**: llamaba REST libremente y confiaba en no recibir ban. Binance puede banear la IP por 2 minutos a 3 días según el patrón de abuso. Un SDK que no conoce su peso consumido es un SDK imposible de operar en alta frecuencia — el consumidor no tiene forma de saber cuánto margen le queda antes del ban. El circuit breaker + backoff preventivo convierten "error cascada que tumba la app" en "degradación controlada". Retry solo sobre transitorios es crítico: retriar un `-2010 NEW_ORDER_REJECTED` genera órdenes duplicadas — bug de seis dígitos.
@@ -116,7 +116,7 @@ Responsabilidades de esta US:
 - **Backpressure handling**: si el consumidor no drena el stream, el buffer interno se limita y se emite un evento `StreamLagWarning` estructurado (visible vía hooks de observabilidad, US 9).
 - **Stream lifecycle contracts** explícitos: `.listen()` devuelve `StreamSubscription` estándar, `.pause()` pausa el fanout pero no el socket, `.cancel()` libera recursos y cierra conexiones si fueron las últimas.
 
-**NO incluye.** User Data Stream como feature unificada (eso es US 5 — es una abstracción sobre esta base). Streams y métodos específicos por venue (épicas 6-8).
+**NO incluye.** User Data Stream como feature unificada (eso es US 5 — es una abstracción sobre esta base). Streams y métodos específicos por venue (US 6-8).
 
 **Argumentación técnica y de negocio.**
 El Legacy auditado abría una conexión WS por cada par-intervalo suscrito. Con 10 pares a 5 intervalos = 50 conexiones simultáneas, cada una con su propio overhead de handshake + mantenimiento. Binance permite combined streams precisamente para evitar esto. La reconexión con "resume" es lo que separa un SDK usable en producción de uno que pierde eventos cada vez que el WiFi pestañea. `session.logon` reduce overhead de firma en operaciones de alta frecuencia (un bot haciendo 100 cancels+news por minuto evita 100 firmas). El backpressure handling previene la fuga silenciosa de memoria que ocurre cuando el consumidor es más lento que el productor.
@@ -188,7 +188,7 @@ Soporte de los **schemas 2:0** (permissions en `permissionSets`) y posteriores p
 **NO incluye.** Margin-specific endpoints (`/sapi/v1/margin/*`, US 7). Futures (US 8). Herramientas de portfolio management. Staking, Savings, Pool endpoints del `/sapi/*` que no sean margin.
 
 **Argumentación técnica y de negocio.**
-Spot es la superficie base: Margin se apoya en sus primitivas de símbolos y orderbook, y cualquier consumidor del SDK probablemente empiece por Spot (es el caso de uso más simple: price discovery, klines históricos, trading básico). Cubrirlo completo y con tipado estricto antes de pasar a Margin o Futures garantiza que los consumidores pueden adoptar el SDK incluso si solo necesitan Spot, y maximiza el reuso de modelos cuando las otras épicas amplíen.
+Spot es la superficie base: Margin se apoya en sus primitivas de símbolos y orderbook, y cualquier consumidor del SDK probablemente empiece por Spot (es el caso de uso más simple: price discovery, klines históricos, trading básico). Cubrirlo completo y con tipado estricto antes de pasar a Margin o Futures garantiza que los consumidores pueden adoptar el SDK incluso si solo necesitan Spot, y maximiza el reuso de modelos cuando las otras US amplíen.
 
 **Dependencias.** US 1, 2, 3, 4, 5.
 EOF
