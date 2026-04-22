@@ -1,9 +1,0 @@
-<component name="libraryTable">
-  <library name="flutter10">
-    <CLASSES>
-      <root url="jar://$PROJECT_DIR$/.fvm/flutter_sdk/bin/cache/artifacts/engine/android-x86/flutter.jar!/" />
-    </CLASSES>
-    <JAVADOC />
-    <SOURCES />
-  </library>
-</component>

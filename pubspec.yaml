@@ -1,0 +1,25 @@
+name: binance_dart_sdk
+environment:
+  sdk: ">=3.11.0 <4.0.0"
+dev_dependencies:
+  melos: ^7.5.1
+workspace:
+  - packages/binance_core
+
+melos:
+  scripts:
+    analyze:
+      run: melos exec -- "dart analyze"
+      description: Run dart analyze for all packages.
+
+    test:
+      run: melos exec -- "dart test"
+      description: Run dart tests for all packages.
+
+    format:
+      run: melos exec -- "dart format ."
+      description: Run dart format for all packages.
+
+    format:check:
+      run: melos exec -- "dart format --output=none --set-exit-if-changed ."
+      description: Check dart format for all packages.
