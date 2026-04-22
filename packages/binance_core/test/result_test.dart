@@ -52,7 +52,8 @@ void main() {
 
     test('hashCode works', () {
       expect(const Success<int, String>(42).hashCode, equals(42.hashCode));
-      expect(const Failure<int, String>('err').hashCode, equals('err'.hashCode));
+      expect(
+          const Failure<int, String>('err').hashCode, equals('err'.hashCode));
     });
   });
 }
