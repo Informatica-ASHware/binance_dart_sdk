@@ -6,6 +6,7 @@ import 'package:meta/meta.dart';
 /// or a [Failure] containing an error of type [E].
 @immutable
 sealed class Result<S, E> {
+  /// Base constructor for [Result].
   const Result();
 
   /// Creates a [Success] result.
@@ -20,7 +21,8 @@ sealed class Result<S, E> {
   /// Returns true if the result is a [Failure].
   bool get isFailure => this is Failure<S, E>;
 
-  /// Transforms the success value using [onSuccess] or the failure error using [onFailure].
+  /// Transforms the success value using [onSuccess] or the failure error
+  /// using [onFailure].
   T fold<T>({
     required T Function(S value) onSuccess,
     required T Function(E error) onFailure,
@@ -34,11 +36,11 @@ sealed class Result<S, E> {
 
 /// A successful [Result] containing a [value].
 final class Success<S, E> extends Result<S, E> {
-  /// The success value.
-  final S value;
-
   /// Creates a [Success] result with the given [value].
   const Success(this.value);
+
+  /// The success value.
+  final S value;
 
   @override
   bool operator ==(Object other) =>
@@ -53,11 +55,11 @@ final class Success<S, E> extends Result<S, E> {
 
 /// A failed [Result] containing an [error].
 final class Failure<S, E> extends Result<S, E> {
-  /// The failure error.
-  final E error;
-
   /// Creates a [Failure] result with the given [error].
   const Failure(this.error);
+
+  /// The failure error.
+  final E error;
 
   @override
   bool operator ==(Object other) =>
