@@ -33,7 +33,7 @@ class WebSocketApiClient {
   final Duration pingInterval;
 
   BinanceWebSocketChannel? _channel;
-  StreamSubscription? _channelSubscription;
+  StreamSubscription<dynamic>? _channelSubscription;
   Timer? _heartbeatTimer;
   DateTime? _lastFrameTime;
 
@@ -87,8 +87,11 @@ class WebSocketApiClient {
         await _performLogon(_credentials!);
       }
     } catch (e, st) {
-      _logger.error('Failed to connect to WebSocket API',
-          error: e, stackTrace: st);
+      _logger.error(
+        'Failed to connect to WebSocket API',
+        error: e,
+        stackTrace: st,
+      );
       _scheduleReconnect();
       rethrow;
     }
@@ -145,8 +148,10 @@ class WebSocketApiClient {
   }
 
   /// Sends a request to the WebSocket API and waits for a response.
-  Future<dynamic> sendRequest(String method,
-      [Map<String, dynamic>? params]) async {
+  Future<dynamic> sendRequest(
+    String method, [
+    Map<String, dynamic>? params,
+  ]) async {
     if (_channel == null) {
       await connect();
     }
@@ -196,8 +201,11 @@ class WebSocketApiClient {
         _eventsController.add(data);
       }
     } catch (e, st) {
-      _logger.error('Error parsing WebSocket API message',
-          error: e, stackTrace: st);
+      _logger.error(
+        'Error parsing WebSocket API message',
+        error: e,
+        stackTrace: st,
+      );
     }
   }
 
@@ -242,10 +250,12 @@ class WebSocketApiClient {
         if (_isLoggedIn) {
           getSessionStatus().catchError((_) => null);
         } else {
-          _channel?.sink.add(jsonEncode({
-            'id': 'hb_${DateTime.now().millisecondsSinceEpoch}',
-            'method': 'ping',
-          }));
+          _channel?.sink.add(
+            jsonEncode({
+              'id': 'hb_${DateTime.now().millisecondsSinceEpoch}',
+              'method': 'ping',
+            }),
+          );
         }
       }
     });

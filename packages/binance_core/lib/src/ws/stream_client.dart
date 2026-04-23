@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:binance_core/src/auth.dart';
 import 'package:binance_core/src/observability.dart';
 import 'package:binance_core/src/ws/base.dart';
 
@@ -36,7 +35,7 @@ class WebSocketStreamClient {
   final int maxBufferSize;
 
   BinanceWebSocketChannel? _channel;
-  StreamSubscription? _channelSubscription;
+  StreamSubscription<dynamic>? _channelSubscription;
   Timer? _heartbeatTimer;
   DateTime? _lastFrameTime;
 
@@ -116,8 +115,11 @@ class WebSocketStreamClient {
 
       _connectionCompleter?.complete();
     } catch (e, st) {
-      _logger.error('Failed to connect to WebSocket Stream',
-          error: e, stackTrace: st);
+      _logger.error(
+        'Failed to connect to WebSocket Stream',
+        error: e,
+        stackTrace: st,
+      );
       _connectionCompleter?.completeError(e, st);
       _scheduleReconnect();
     } finally {
@@ -163,8 +165,11 @@ class WebSocketStreamClient {
         _logger.debug('Received unknown message format: $message');
       }
     } catch (e, st) {
-      _logger.error('Error parsing WebSocket message',
-          error: e, stackTrace: st);
+      _logger.error(
+        'Error parsing WebSocket message',
+        error: e,
+        stackTrace: st,
+      );
     }
   }
 
@@ -176,11 +181,13 @@ class WebSocketStreamClient {
         _bufferCounts[streamName] = count;
 
         if (count > maxBufferSize) {
-          _hooks.onStreamLag?.call(StreamLagWarning(
-            streamName: streamName,
-            bufferSize: count,
-            maxBufferSize: maxBufferSize,
-          ));
+          _hooks.onStreamLag?.call(
+            StreamLagWarning(
+              streamName: streamName,
+              bufferSize: count,
+              maxBufferSize: maxBufferSize,
+            ),
+          );
         }
 
         controller.add(data);
@@ -193,8 +200,11 @@ class WebSocketStreamClient {
   }
 
   void _onError(Object error, StackTrace stackTrace) {
-    _logger.error('WebSocket Stream error',
-        error: error, stackTrace: stackTrace);
+    _logger.error(
+      'WebSocket Stream error',
+      error: error,
+      stackTrace: stackTrace,
+    );
     _scheduleReconnect();
   }
 
@@ -229,10 +239,12 @@ class WebSocketStreamClient {
         _channel?.close();
         _scheduleReconnect();
       } else {
-        _channel?.sink.add(jsonEncode({
-          'method': 'ping',
-          'id': DateTime.now().millisecondsSinceEpoch,
-        }));
+        _channel?.sink.add(
+          jsonEncode({
+            'method': 'ping',
+            'id': DateTime.now().millisecondsSinceEpoch,
+          }),
+        );
       }
     });
   }

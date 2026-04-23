@@ -12,10 +12,10 @@ export 'src/http/request.dart';
 export 'src/http/retry.dart';
 export 'src/http/security.dart'
     hide
+        MarketDataSecurityType,
         PublicSecurityType,
         SignedSecurityType,
         UserDataSecurityType,
-        MarketDataSecurityType,
         UserStreamSecurityType;
 export 'src/models.dart';
 export 'src/observability.dart';

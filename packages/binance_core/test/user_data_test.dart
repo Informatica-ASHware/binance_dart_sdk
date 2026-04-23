@@ -13,14 +13,18 @@ class MockWebSocketStreamClient extends Mock implements WebSocketStreamClient {}
 
 void main() {
   setUpAll(() {
-    registerFallbackValue(HmacCredentials(
-      apiKey: 'test-api-key',
-      apiSecret: SecureByteBuffer(Uint8List.fromList([])),
-    ));
-    registerFallbackValue(const BinanceRequest(
-      method: HttpMethod.post,
-      path: '',
-    ));
+    registerFallbackValue(
+      HmacCredentials(
+        apiKey: 'test-api-key',
+        apiSecret: SecureByteBuffer(Uint8List.fromList([])),
+      ),
+    );
+    registerFallbackValue(
+      const BinanceRequest(
+        method: HttpMethod.post,
+        path: '',
+      ),
+    );
     registerFallbackValue(WebSocketApiClientStatus.connected);
   });
 
@@ -101,8 +105,8 @@ void main() {
         'e': 'outboundAccountPosition',
         'u': 123456789,
         'B': [
-          {'a': 'BTC', 'f': '1.0', 'l': '0.1'}
-        ]
+          {'a': 'BTC', 'f': '1.0', 'l': '0.1'},
+        ],
       });
 
       final event = await eventPromise;
@@ -167,9 +171,9 @@ void main() {
         'a': {
           'm': 'ORDER',
           'B': [
-            {'a': 'USDT', 'cw': '100.0', 'bc': '10.0'}
-          ]
-        }
+            {'a': 'USDT', 'cw': '100.0', 'bc': '10.0'},
+          ],
+        },
       });
 
       final event = await eventPromise;

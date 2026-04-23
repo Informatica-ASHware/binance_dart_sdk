@@ -11,6 +11,7 @@ import 'package:meta/meta.dart';
 /// Status of the [UserDataFeed].
 @immutable
 sealed class UserDataFeedStatus {
+  /// Base constructor for [UserDataFeedStatus].
   const UserDataFeedStatus();
 
   /// Connected to the stream and receiving events.
@@ -33,60 +34,86 @@ sealed class UserDataFeedStatus {
       UserDataFeedReconnectedAfterGap;
 }
 
+/// Feed is connected and active.
 final class UserDataFeedConnected extends UserDataFeedStatus {
+  /// Creates a [UserDataFeedConnected] status.
   const UserDataFeedConnected();
 }
 
+/// Feed is attempting to reconnect.
 final class UserDataFeedReconnecting extends UserDataFeedStatus {
+  /// Creates a [UserDataFeedReconnecting] status.
   const UserDataFeedReconnecting();
 }
 
+/// Authentication for the feed failed.
 final class UserDataFeedAuthFailed extends UserDataFeedStatus {
+  /// Creates a [UserDataFeedAuthFailed] status.
   const UserDataFeedAuthFailed([this.reason]);
+
+  /// The reason for the authentication failure.
   final String? reason;
 }
 
+/// The feed has expired.
 final class UserDataFeedExpired extends UserDataFeedStatus {
+  /// Creates a [UserDataFeedExpired] status.
   const UserDataFeedExpired();
 }
 
+/// Feed reconnected after a gap in events.
 final class UserDataFeedReconnectedAfterGap extends UserDataFeedStatus {
+  /// Creates a [UserDataFeedReconnectedAfterGap] status.
   const UserDataFeedReconnectedAfterGap(this.gap);
+
+  /// The duration of the gap.
   final Duration gap;
 }
 
 /// Unified event from the User Data Stream.
 @immutable
 sealed class UserDataEvent {
+  /// Base constructor for [UserDataEvent].
   const UserDataEvent();
 }
 
 /// Event triggered when account information is updated.
 final class AccountUpdate extends UserDataEvent {
+  /// Creates an [AccountUpdate] event.
   const AccountUpdate({
     required this.updateTime,
     required this.balances,
   });
 
+  /// The time the update occurred.
   final DateTime updateTime;
+
+  /// The updated balances.
   final List<AccountBalance> balances;
 }
 
 /// Simplified balance update event.
 final class BalanceUpdate extends UserDataEvent {
+  /// Creates a [BalanceUpdate] event.
   const BalanceUpdate({
     required this.asset,
     required this.balanceDelta,
     required this.clearTime,
   });
 
+  /// The asset that was updated.
   final Asset asset;
+
+  /// The change in balance.
   final Decimal balanceDelta;
+
+  /// The time the update was cleared.
   final DateTime clearTime;
 }
 
 /// Event triggered when an order status changes or a trade occurs.
 final class OrderTradeUpdate extends UserDataEvent {
+  /// Creates an [OrderTradeUpdate] event.
   const OrderTradeUpdate({
     required this.symbol,
     required this.orderId,
@@ -103,77 +130,119 @@ final class OrderTradeUpdate extends UserDataEvent {
     this.tradeId,
   });
 
+  /// The symbol associated with the order.
   final Symbol symbol;
+
+  /// The system-generated order ID.
   final OrderId orderId;
+
+  /// The client-defined order ID.
   final ClientOrderId clientOrderId;
+
+  /// The order side (e.g., BUY, SELL).
   final String side;
+
+  /// The order type (e.g., LIMIT, MARKET).
   final String orderType;
+
+  /// The current status of the order.
   final String status;
+
+  /// The price of the order.
   final Decimal price;
+
+  /// The original quantity of the order.
   final Decimal quantity;
+
+  /// The quantity of the last fill.
   final Decimal lastFilledQuantity;
+
+  /// The cumulative filled quantity.
   final Decimal cumulativeFilledQuantity;
+
+  /// The price of the last fill.
   final Decimal lastFilledPrice;
+
+  /// The time of the transaction.
   final DateTime transactionTime;
+
+  /// The ID of the trade, if applicable.
   final int? tradeId;
 }
 
 /// Event triggered when the listenKey expires.
 final class ListenKeyExpired extends UserDataEvent {
+  /// Creates a [ListenKeyExpired] event.
   const ListenKeyExpired();
 }
 
 /// Event triggered by a margin call (Futures only).
 final class MarginCall extends UserDataEvent {
+  /// Creates a [MarginCall] event.
   const MarginCall({
     required this.positions,
   });
 
+  /// The positions affected by the margin call.
   final List<MarginCallPosition> positions;
 }
 
 /// Event triggered when account configuration changes.
 final class AccountConfigUpdate extends UserDataEvent {
+  /// Creates an [AccountConfigUpdate] event.
   const AccountConfigUpdate({
     required this.eventTime,
   });
 
+  /// The time the event occurred.
   final DateTime eventTime;
 }
 
 /// Event triggered when leverage changes.
 final class LeverageUpdate extends UserDataEvent {
+  /// Creates a [LeverageUpdate] event.
   const LeverageUpdate({
     required this.symbol,
     required this.leverage,
   });
 
+  /// The symbol whose leverage was updated.
   final Symbol symbol;
+
+  /// The new leverage value.
   final int leverage;
 }
 
 /// Event triggered when isolated position status changes.
 final class IsolatedPositionUpdate extends UserDataEvent {
+  /// Creates an [IsolatedPositionUpdate] event.
   const IsolatedPositionUpdate();
 }
 
 /// Represents a balance in an account.
 @immutable
 final class AccountBalance {
+  /// Creates an [AccountBalance].
   const AccountBalance({
     required this.asset,
     required this.free,
     required this.locked,
   });
 
+  /// The asset associated with this balance.
   final Asset asset;
+
+  /// The amount of free (available) asset.
   final Decimal free;
+
+  /// The amount of locked asset.
   final Decimal locked;
 }
 
 /// Represents a position in a margin call.
 @immutable
 final class MarginCallPosition {
+  /// Creates a [MarginCallPosition].
   const MarginCallPosition({
     required this.symbol,
     required this.positionSide,
@@ -181,9 +250,16 @@ final class MarginCallPosition {
     required this.isolatedWallet,
   });
 
+  /// The symbol of the position.
   final Symbol symbol;
+
+  /// The side of the position (e.g., LONG, SHORT).
   final String positionSide;
+
+  /// The current mark price.
   final Decimal markPrice;
+
+  /// The amount in the isolated wallet.
   final Decimal isolatedWallet;
 }
 
@@ -232,6 +308,7 @@ abstract interface class UserDataFeed {
 
 /// Base class for UserDataFeed implementations.
 abstract class BaseUserDataFeed implements UserDataFeed {
+  /// Base constructor for [BaseUserDataFeed].
   BaseUserDataFeed() {
     _statusController = StreamController<UserDataFeedStatus>.broadcast();
     _eventsController = StreamController<UserDataEvent>.broadcast();
@@ -315,9 +392,10 @@ class SpotUserDataFeed extends BaseUserDataFeed {
         throw ArgumentError('Unsupported venue for SpotUserDataFeed: $_venue'),
     };
 
-    final response = await _apiClient.sendRequest(method);
+    final response =
+        await _apiClient.sendRequest(method) as Map<String, dynamic>;
     if (response['status'] == 200) {
-      _apiEventsSubscription?.cancel();
+      await _apiEventsSubscription?.cancel();
       _apiEventsSubscription = _apiClient.events.listen(_handleApiEvent);
       emitStatus(const UserDataFeedStatus.connected());
 
@@ -382,11 +460,13 @@ class SpotUserDataFeed extends BaseUserDataFeed {
       'outboundAccountPosition' => AccountUpdate(
           updateTime: DateTime.fromMillisecondsSinceEpoch(data['u'] as int),
           balances: (data['B'] as List)
-              .map((b) => AccountBalance(
-                    asset: Asset(b['a'] as String),
-                    free: Decimal.parse(b['f'] as String),
-                    locked: Decimal.parse(b['l'] as String),
-                  ))
+              .map(
+                (b) => AccountBalance(
+                  asset: Asset((b as Map)['a'] as String),
+                  free: Decimal.parse(b['f'] as String),
+                  locked: Decimal.parse(b['l'] as String),
+                ),
+              )
               .toList(),
         ),
       'balanceUpdate' => BalanceUpdate(
@@ -420,7 +500,8 @@ class SpotUserDataFeed extends BaseUserDataFeed {
   }
 }
 
-/// Implementation of [UserDataFeed] for Futures using the classic listenKey mechanism.
+/// Implementation of [UserDataFeed] for Futures using the classic listenKey
+/// mechanism.
 class FuturesUserDataFeed extends BaseUserDataFeed {
   /// Creates a [FuturesUserDataFeed].
   FuturesUserDataFeed({
@@ -435,6 +516,8 @@ class FuturesUserDataFeed extends BaseUserDataFeed {
   final BinanceHttpClient _httpClient;
   final WebSocketStreamClient _streamClient;
   final BinanceVenue _venue;
+
+  /// Interval for keeping the listenKey alive.
   final Duration keepAliveInterval;
 
   String? _listenKey;
@@ -462,14 +545,17 @@ class FuturesUserDataFeed extends BaseUserDataFeed {
       BinanceVenue.usdMFutures => '/fapi/v1/listenKey',
       BinanceVenue.coinMFutures => '/dapi/v1/listenKey',
       _ => throw ArgumentError(
-          'Unsupported venue for FuturesUserDataFeed: $_venue'),
+          'Unsupported venue for FuturesUserDataFeed: $_venue',
+        ),
     };
 
-    final result = await _httpClient.send(BinanceRequest(
-      method: HttpMethod.post,
-      path: path,
-      securityType: BinanceSecurityType.userData,
-    ));
+    final result = await _httpClient.send(
+      BinanceRequest(
+        method: HttpMethod.post,
+        path: path,
+        securityType: BinanceSecurityType.userData,
+      ),
+    );
 
     return result.fold(
       onSuccess: (data) => data['listenKey'] as String,
@@ -489,12 +575,14 @@ class FuturesUserDataFeed extends BaseUserDataFeed {
         _ => throw ArgumentError('Unsupported venue for keep-alive: $_venue'),
       };
 
-      await _httpClient.send(BinanceRequest(
-        method: HttpMethod.put,
-        path: path,
-        queryParams: {'listenKey': _listenKey!},
-        securityType: BinanceSecurityType.userData,
-      ));
+      await _httpClient.send(
+        BinanceRequest(
+          method: HttpMethod.put,
+          path: path,
+          queryParams: {'listenKey': _listenKey!},
+          securityType: BinanceSecurityType.userData,
+        ),
+      );
     });
   }
 
@@ -562,11 +650,13 @@ class FuturesUserDataFeed extends BaseUserDataFeed {
       'ACCOUNT_UPDATE' => AccountUpdate(
           updateTime: DateTime.fromMillisecondsSinceEpoch(data['E'] as int),
           balances: ((data['a'] as Map)['B'] as List)
-              .map((b) => AccountBalance(
-                    asset: Asset(b['a'] as String),
-                    free: Decimal.parse(b['cw'] as String),
-                    locked: Decimal.parse(b['bc'] as String),
-                  ))
+              .map(
+                (b) => AccountBalance(
+                  asset: Asset((b as Map)['a'] as String),
+                  free: Decimal.parse(b['cw'] as String),
+                  locked: Decimal.parse(b['bc'] as String),
+                ),
+              )
               .toList(),
         ),
       'ORDER_TRADE_UPDATE' => OrderTradeUpdate(
@@ -587,22 +677,24 @@ class FuturesUserDataFeed extends BaseUserDataFeed {
           tradeId: (data['o'] as Map)['t'] as int?,
         ),
       'listenKeyExpired' => const ListenKeyExpired(),
+      'LEVERAGE_UPDATE' => LeverageUpdate(
+          symbol: Symbol((data['ac'] as Map<dynamic, dynamic>)['s'] as String),
+          leverage: (data['ac'] as Map<dynamic, dynamic>)['l'] as int,
+        ),
       'MARGIN_CALL' => MarginCall(
           positions: (data['p'] as List)
-              .map((p) => MarginCallPosition(
-                    symbol: Symbol(p['s'] as String),
-                    positionSide: p['ps'] as String,
-                    markPrice: Decimal.parse(p['mp'] as String),
-                    isolatedWallet: Decimal.parse(p['iw'] as String),
-                  ))
+              .map(
+                (p) => MarginCallPosition(
+                  symbol: Symbol((p as Map)['s'] as String),
+                  positionSide: p['ps'] as String,
+                  markPrice: Decimal.parse(p['mp'] as String),
+                  isolatedWallet: Decimal.parse(p['iw'] as String),
+                ),
+              )
               .toList(),
         ),
       'ACCOUNT_CONFIG_UPDATE' => AccountConfigUpdate(
           eventTime: DateTime.fromMillisecondsSinceEpoch(data['E'] as int),
-        ),
-      'LEVERAGE_UPDATE' => LeverageUpdate(
-          symbol: Symbol((data['ac'] as Map)['s'] as String),
-          leverage: (data['ac'] as Map)['l'] as int,
         ),
       'CONDITIONAL_ORDER_TRIGGER_REJECT' => const IsolatedPositionUpdate(),
       _ => null,
@@ -622,12 +714,16 @@ class FuturesUserDataFeed extends BaseUserDataFeed {
       };
 
       if (path != null) {
-        unawaited(_httpClient.send(BinanceRequest(
-          method: HttpMethod.delete,
-          path: path,
-          queryParams: {'listenKey': _listenKey!},
-          securityType: BinanceSecurityType.userData,
-        )));
+        unawaited(
+          _httpClient.send(
+            BinanceRequest(
+              method: HttpMethod.delete,
+              path: path,
+              queryParams: {'listenKey': _listenKey!},
+              securityType: BinanceSecurityType.userData,
+            ),
+          ),
+        );
       }
       _listenKey = null;
     }

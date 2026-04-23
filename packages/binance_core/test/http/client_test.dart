@@ -37,9 +37,13 @@ void main() {
 
     test('handles 429 Too Many Requests', () async {
       final mockClient = MockClient((request) async {
-        return http.Response('Rate limit exceeded', 429, headers: {
-          'retry-after': '1',
-        });
+        return http.Response(
+          'Rate limit exceeded',
+          429,
+          headers: {
+            'retry-after': '1',
+          },
+        );
       });
 
       final client = DefaultBinanceHttpClient(
@@ -64,9 +68,13 @@ void main() {
       var callCount = 0;
       final mockClient = MockClient((request) async {
         callCount++;
-        return http.Response('Banned', 418, headers: {
-          'retry-after': '1',
-        });
+        return http.Response(
+          'Banned',
+          418,
+          headers: {
+            'retry-after': '1',
+          },
+        );
       });
 
       final client = DefaultBinanceHttpClient(
@@ -142,7 +150,9 @@ void main() {
       );
 
       expect(
-          log, ['onRequest A', 'onRequest B', 'onResponse B', 'onResponse A']);
+        log,
+        ['onRequest A', 'onRequest B', 'onResponse B', 'onResponse A'],
+      );
     });
 
     test('signed request includes timestamp and signature', () async {
@@ -219,8 +229,10 @@ void main() {
       );
 
       expect(result.isFailure, isTrue);
-      expect(result.fold(onSuccess: (_) => null, onFailure: (e) => e),
-          isA<BinanceNetworkError>());
+      expect(
+        result.fold(onSuccess: (_) => null, onFailure: (e) => e),
+        isA<BinanceNetworkError>(),
+      );
     });
 
     test('BinanceRequestBuilder builds request correctly', () {

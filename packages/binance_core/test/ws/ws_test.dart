@@ -36,8 +36,12 @@ class MockWebSocketChannel implements BinanceWebSocketChannel {
 
 class PrintLogger implements BinanceLogger {
   @override
-  void log(BinanceLogLevel level, String message,
-          {Object? error, StackTrace? stackTrace}) =>
+  void log(
+    BinanceLogLevel level,
+    String message, {
+    Object? error,
+    StackTrace? stackTrace,
+  }) =>
       print('$level: $message');
 
   @override
@@ -77,9 +81,7 @@ void main() {
   group('ReconnectionStrategy', () {
     test('calculates delay with exponential backoff', () {
       const strategy = ReconnectionStrategy(
-        initialDelay: Duration(seconds: 1),
-        multiplier: 2.0,
-        jitter: 0.0,
+        jitter: 0,
       );
 
       expect(strategy.getDelay(0).inSeconds, 1);
@@ -89,10 +91,8 @@ void main() {
 
     test('respects maxDelay', () {
       const strategy = ReconnectionStrategy(
-        initialDelay: Duration(seconds: 1),
         maxDelay: Duration(seconds: 10),
-        multiplier: 2.0,
-        jitter: 0.0,
+        jitter: 0,
       );
 
       expect(strategy.getDelay(0).inSeconds, 1);
@@ -130,15 +130,17 @@ void main() {
       // Wait for connection
       for (var i = 0; i < 20; i++) {
         if (provider.lastChannel != null) break;
-        await Future.delayed(Duration(milliseconds: 50));
+        await Future<void>.delayed(const Duration(milliseconds: 50));
       }
 
       final channel = provider.lastChannel;
       expect(channel, isNotNull, reason: 'Channel should be connected');
-      channel!.addFromServer(jsonEncode({
-        'stream': 'btcusdt@aggTrade',
-        'data': {'p': '50000', 'q': '1.0'}
-      }));
+      channel!.addFromServer(
+        jsonEncode({
+          'stream': 'btcusdt@aggTrade',
+          'data': {'p': '50000', 'q': '1.0'},
+        }),
+      );
 
       final event = await future;
       expect((event as Map<String, dynamic>)['p'], '50000');
@@ -153,9 +155,11 @@ void main() {
             provider.lastUrl!.queryParameters.containsKey('streams')) {
           final streams = provider.lastUrl!.queryParameters['streams']!;
           if (streams.contains('btcusdt@aggTrade') &&
-              streams.contains('ethusdt@aggTrade')) break;
+              streams.contains('ethusdt@aggTrade')) {
+            break;
+          }
         }
-        await Future.delayed(Duration(milliseconds: 50));
+        await Future<void>.delayed(const Duration(milliseconds: 50));
       }
 
       final url = provider.lastUrl.toString();
@@ -171,7 +175,7 @@ void main() {
 
       for (var i = 0; i < 20; i++) {
         if (provider.lastChannel != null) break;
-        await Future.delayed(Duration(milliseconds: 50));
+        await Future<void>.delayed(const Duration(milliseconds: 50));
       }
 
       final firstChannel = provider.lastChannel!;
@@ -181,7 +185,7 @@ void main() {
 
       for (var i = 0; i < 20; i++) {
         if (provider.connectCount > 1) break;
-        await Future.delayed(Duration(milliseconds: 50));
+        await Future<void>.delayed(const Duration(milliseconds: 50));
       }
 
       expect(provider.connectCount, greaterThanOrEqualTo(2));
@@ -206,21 +210,23 @@ void main() {
 
       for (var i = 0; i < 20; i++) {
         if (provider.lastChannel != null) break;
-        await Future.delayed(Duration(milliseconds: 50));
+        await Future<void>.delayed(const Duration(milliseconds: 50));
       }
 
       final channel = provider.lastChannel!;
 
       for (var i = 0; i < 100; i++) {
-        channel.addFromServer(jsonEncode({
-          'stream': 'btcusdt@aggTrade',
-          'data': {'i': i}
-        }));
+        channel.addFromServer(
+          jsonEncode({
+            'stream': 'btcusdt@aggTrade',
+            'data': {'i': i},
+          }),
+        );
       }
 
       for (var i = 0; i < 20; i++) {
         if (receivedWarning != null) break;
-        await Future.delayed(Duration(milliseconds: 50));
+        await Future<void>.delayed(const Duration(milliseconds: 50));
       }
 
       expect(receivedWarning, isNotNull);
@@ -253,17 +259,18 @@ void main() {
 
       for (var i = 0; i < 20; i++) {
         if (provider.lastChannel != null) break;
-        await Future.delayed(Duration(milliseconds: 50));
+        await Future<void>.delayed(const Duration(milliseconds: 50));
       }
 
       final channel = provider.lastChannel!;
 
-      final sentMessage = await channel.sentMessages.first;
-      final requestData = jsonDecode(sentMessage);
+      final sentMessage = await channel.sentMessages.first as String;
+      final requestData = jsonDecode(sentMessage) as Map<String, dynamic>;
       final id = requestData['id'];
 
-      channel
-          .addFromServer(jsonEncode({'id': id, 'status': 200, 'result': {}}));
+      channel.addFromServer(
+        jsonEncode(<String, dynamic>{'id': id, 'status': 200, 'result': {}}),
+      );
 
       final response = await requestFuture;
       expect((response as Map<String, dynamic>)['status'], 200);
@@ -278,20 +285,22 @@ void main() {
       provider.onConnect = (uri) async {
         final channel = MockWebSocketChannel();
         channel.sentMessages.listen((msg) {
-          final data = jsonDecode(msg);
+          final data = jsonDecode(msg as String) as Map<String, dynamic>;
           if (data['method'] == 'session.logon') {
-            channel.addFromServer(jsonEncode({
-              'id': data['id'],
-              'status': 200,
-              'result': {'apiKey': 'key'}
-            }));
+            channel.addFromServer(
+              jsonEncode({
+                'id': data['id'],
+                'status': 200,
+                'result': {'apiKey': 'key'},
+              }),
+            );
           }
         });
         return channel;
       };
 
       await client.logon(credentials);
-      expect(client.IsLoggedIn, isTrue);
+      expect(client.isLoggedIn, isTrue);
       expect(provider.connectCount, 1);
 
       // Simulate connection loss
@@ -300,12 +309,12 @@ void main() {
 
       // Client should auto-reconnect and re-logon
       for (var i = 0; i < 20; i++) {
-        if (provider.connectCount > 1 && client.IsLoggedIn) break;
-        await Future.delayed(Duration(milliseconds: 50));
+        if (provider.connectCount > 1 && client.isLoggedIn) break;
+        await Future<void>.delayed(const Duration(milliseconds: 50));
       }
 
       expect(provider.connectCount, greaterThanOrEqualTo(2));
-      expect(client.IsLoggedIn, isTrue);
+      expect(client.isLoggedIn, isTrue);
     });
   });
 }
