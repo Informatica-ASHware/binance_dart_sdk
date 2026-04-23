@@ -758,9 +758,8 @@ class FuturesUserDataFeed extends BaseUserDataFeed {
                   asset: Asset((b as Map)['a'] as String),
                   free: Decimal.parse(b['wb'] as String),
                   locked: Decimal.zero,
-                  crossWalletBalance: b['cw'] != null
-                      ? Decimal.parse(b['cw'] as String)
-                      : null,
+                  crossWalletBalance:
+                      b['cw'] != null ? Decimal.parse(b['cw'] as String) : null,
                 ),
               )
               .toList(),
