@@ -17,7 +17,8 @@ final class ExchangeInfo {
   factory ExchangeInfo.fromJson(Map<String, dynamic> json) {
     return ExchangeInfo(
       timezone: json['timezone'] as String,
-      serverTime: DateTime.fromMillisecondsSinceEpoch(json['serverTime'] as int),
+      serverTime:
+          DateTime.fromMillisecondsSinceEpoch(json['serverTime'] as int),
       rateLimits: json['rateLimits'] as List<dynamic>,
       exchangeFilters: json['exchangeFilters'] as List<dynamic>,
       symbols: (json['symbols'] as List<dynamic>)

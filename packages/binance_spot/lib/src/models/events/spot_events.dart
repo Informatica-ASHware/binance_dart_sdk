@@ -594,8 +594,8 @@ final class ExecutionReportEvent extends SpotEvent {
       lastQuoteAssetTransactedQuantity:
           Quantity.fromString(json['Y'] as String),
       quoteOrderQuantity: Quantity.fromString(json['Q'] as String),
-      selfTradePreventionMode:
-          SelfTradePreventionMode.values.firstWhere((e) => e.value == json['V']),
+      selfTradePreventionMode: SelfTradePreventionMode.values
+          .firstWhere((e) => e.value == json['V']),
     );
   }
 

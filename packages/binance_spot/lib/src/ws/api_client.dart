@@ -101,7 +101,8 @@ class BinanceSpotWsApiClient {
       params['selfTradePreventionMode'] = selfTradePreventionMode.value;
     }
 
-    final dynamic response = await _apiClient.sendRequest('order.place', params);
+    final dynamic response =
+        await _apiClient.sendRequest('order.place', params);
     return _handleResponse(
       response,
       (dynamic data) => NewOrderResponse.fromJson(data as Map<String, dynamic>),
