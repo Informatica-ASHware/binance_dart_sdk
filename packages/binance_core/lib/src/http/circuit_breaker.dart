@@ -66,6 +66,6 @@ class CircuitBreakerRegistry {
 
   /// Gets the circuit breaker for a specific [endpoint].
   CircuitBreaker getBreaker(String endpoint) {
-    return _breakers.putIfAbsent(endpoint, () => CircuitBreaker());
+    return _breakers.putIfAbsent(endpoint, CircuitBreaker.new);
   }
 }

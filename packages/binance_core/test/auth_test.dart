@@ -28,7 +28,7 @@ void main() {
         'quantity': 1,
         'price': '0.1',
       };
-      final expected =
+      const expected =
           'price=0.1&quantity=1&side=BUY&symbol=LTCBTC&timeInForce=GTC&type=LIMIT';
       expect(BinanceUtils.buildCanonicalPayload(params), expected);
     });
@@ -48,7 +48,7 @@ void main() {
       );
       final signer = HmacRequestSigner(credentials);
 
-      final payload =
+      const payload =
           'symbol=LTCBTC&side=BUY&type=LIMIT&timeInForce=GTC&quantity=1&price=0.1&recvWindow=5000&timestamp=1499827319559';
       final signature = await signer.sign(payload);
 
@@ -65,7 +65,7 @@ void main() {
       );
       final signer = Ed25519RequestSigner(credentials);
 
-      final payload = 'symbol=LTCBTC&timestamp=1499827319559';
+      const payload = 'symbol=LTCBTC&timestamp=1499827319559';
       final signature = await signer.sign(payload);
 
       expect(signature.value, isNotEmpty);

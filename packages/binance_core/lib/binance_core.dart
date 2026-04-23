@@ -10,12 +10,19 @@ export 'src/http/interceptor.dart';
 export 'src/http/rate_limit.dart';
 export 'src/http/request.dart';
 export 'src/http/retry.dart';
-export 'src/http/security.dart' hide PublicSecurityType, SignedSecurityType, UserDataSecurityType, MarketDataSecurityType, UserStreamSecurityType;
+export 'src/http/security.dart'
+    hide
+        MarketDataSecurityType,
+        PublicSecurityType,
+        SignedSecurityType,
+        UserDataSecurityType,
+        UserStreamSecurityType;
 export 'src/models.dart';
 export 'src/observability.dart';
 export 'src/result.dart';
 export 'src/security.dart';
 export 'src/time.dart';
+export 'src/user_data.dart';
 export 'src/utils.dart';
 export 'src/ws/api_client.dart';
 export 'src/ws/base.dart';

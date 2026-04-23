@@ -40,7 +40,7 @@ class DefaultBinanceHttpClient implements BinanceHttpClient {
   })  : _httpClient = httpClient ?? http.Client(),
         _rateLimitTracker = rateLimitTracker ?? RateLimitTracker(),
         _circuitBreakers = circuitBreakers ?? CircuitBreakerRegistry(),
-        _retryPolicy = retryPolicy ?? ExponentialBackoffRetryPolicy();
+        _retryPolicy = retryPolicy ?? const ExponentialBackoffRetryPolicy();
 
   /// The Binance environment.
   final BinanceEnvironment environment;
@@ -72,8 +72,9 @@ class DefaultBinanceHttpClient implements BinanceHttpClient {
   Future<Result<Map<String, dynamic>, BinanceError>> send(
     BinanceRequest request,
   ) async {
-    if (_isIpBanned && _ipBanEndTime != null) {
-      if (DateTime.now().isBefore(_ipBanEndTime!)) {
+    if (_isIpBanned) {
+      final banEndTime = _ipBanEndTime;
+      if (banEndTime != null && DateTime.now().isBefore(banEndTime)) {
         return const Result.failure(
           BinanceNetworkError(message: 'IP is currently banned by Binance'),
         );
@@ -84,7 +85,7 @@ class DefaultBinanceHttpClient implements BinanceHttpClient {
     }
 
     final chain = InterceptorChain(_interceptors);
-    var currentRequest = await chain.interceptRequest(request);
+    final currentRequest = await chain.interceptRequest(request);
 
     final breaker = _circuitBreakers.getBreaker(currentRequest.path);
     if (breaker.isOpen) {
@@ -99,8 +100,8 @@ class DefaultBinanceHttpClient implements BinanceHttpClient {
 
     var attempt = 0;
     while (true) {
-      Result<Map<String, dynamic>, BinanceError>? result;
       http.Response? response;
+      Result<Map<String, dynamic>, BinanceError> result;
 
       try {
         response = await _sendInternal(currentRequest);
@@ -115,7 +116,6 @@ class DefaultBinanceHttpClient implements BinanceHttpClient {
           return Result.success(data);
         }
 
-        // Handle errors
         result = await _handleError(interceptedResponse);
       } catch (e, st) {
         await chain.interceptError(e, st);
@@ -124,44 +124,47 @@ class DefaultBinanceHttpClient implements BinanceHttpClient {
         );
       }
 
-      if (result != null && result is Failure<Map<String, dynamic>, BinanceError>) {
-        final error = result.error;
-
-        // Check if we should retry
-        if (_retryPolicy.shouldRetry(
-          response: response,
-          error: error,
-          attempt: attempt,
-        )) {
-          attempt++;
-          final delay = _retryPolicy.getDelay(attempt);
-          await Future<void>.delayed(delay);
-          continue;
+      final r = result;
+      final error = r.fold(onSuccess: (_) => null, onFailure: (e) => e);
+      if (error != null) {
+        if (response?.statusCode == 418 ||
+            !_retryPolicy.shouldRetry(
+              attempt: attempt,
+              response: response,
+              error: error,
+            )) {
+          breaker.recordFailure();
+          return r;
         }
 
-        // Handle terminal errors
-        breaker.recordFailure();
-        return result;
+        attempt++;
+        final delay = _retryPolicy.getDelay(attempt);
+        await Future<void>.delayed(delay);
+        continue;
       }
 
-      if (result != null) return result;
-
-      // Should not reach here
-      return const Result.failure(
-        BinanceNetworkError(message: 'Unknown error occurred'),
-      );
+      return r;
     }
   }
 
   Future<http.Response> _sendInternal(BinanceRequest request) async {
-    final baseUrl = environment.spotBaseUrl; // Assuming spot for now
+    // More robust venue detection
+    final String baseUrl;
+    if (request.path.startsWith('/fapi') || request.path.startsWith('/dapi')) {
+      baseUrl = environment.futuresBaseUrl;
+    } else {
+      baseUrl = environment.spotBaseUrl;
+    }
+
     var uri = Uri.parse('$baseUrl${request.path}');
 
     final queryParams = Map<String, String>.from(request.queryParams);
 
     if (request.securityType is SignedSecurityType) {
       if (signer == null) {
-        throw const BinanceAuthError('RequestSigner is required for signed requests');
+        throw const BinanceAuthError(
+          'RequestSigner is required for signed requests',
+        );
       }
 
       final timestamp = DateTime.now().millisecondsSinceEpoch.toString();
@@ -172,7 +175,9 @@ class DefaultBinanceHttpClient implements BinanceHttpClient {
       queryParams['signature'] = signature.value;
     }
 
-    uri = uri.replace(queryParameters: queryParams.isNotEmpty ? queryParams : null);
+    uri = uri.replace(
+      queryParameters: queryParams.isNotEmpty ? queryParams : null,
+    );
 
     final headers = <String, String>{
       'Accept': 'application/json',
@@ -195,7 +200,10 @@ class DefaultBinanceHttpClient implements BinanceHttpClient {
 
   String _buildQueryString(Map<String, String> params) {
     return params.entries
-        .map((e) => '${Uri.encodeComponent(e.key)}=${Uri.encodeComponent(e.value)}')
+        .map(
+          (e) =>
+              '${Uri.encodeComponent(e.key)}=${Uri.encodeComponent(e.value)}',
+        )
         .join('&');
   }
 

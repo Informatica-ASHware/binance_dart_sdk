@@ -58,7 +58,7 @@ final class BinanceRequest {
 class BinanceRequestBuilder {
   HttpMethod _method = HttpMethod.get;
   String _path = '';
-  Map<String, String> _queryParams = {};
+  final Map<String, String> _queryParams = {};
   dynamic _body;
   BinanceSecurityType _securityType = BinanceSecurityType.public;
   int _weight = 1;

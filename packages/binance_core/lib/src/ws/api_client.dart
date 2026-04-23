@@ -33,11 +33,22 @@ class WebSocketApiClient {
   final Duration pingInterval;
 
   BinanceWebSocketChannel? _channel;
-  StreamSubscription? _channelSubscription;
+  StreamSubscription<dynamic>? _channelSubscription;
   Timer? _heartbeatTimer;
   DateTime? _lastFrameTime;
 
   final Map<String, Completer<dynamic>> _pendingRequests = {};
+  final StreamController<dynamic> _eventsController =
+      StreamController<dynamic>.broadcast();
+  final StreamController<WebSocketApiClientStatus> _statusController =
+      StreamController<WebSocketApiClientStatus>.broadcast();
+
+  /// Stream of unsolicited events from the server.
+  Stream<dynamic> get events => _eventsController.stream;
+
+  /// Stream of status changes for the client.
+  Stream<WebSocketApiClientStatus> get status => _statusController.stream;
+
   int _requestIdCounter = 0;
   int _reconnectAttempts = 0;
   bool _isClosing = false;
@@ -46,10 +57,10 @@ class WebSocketApiClient {
   bool _isLoggedIn = false;
 
   /// Whether the client is currently connected.
-  bool get IsConnected => _channel != null;
+  bool get isConnected => _channel != null;
 
   /// Whether the session is currently authenticated.
-  bool get IsLoggedIn => _isLoggedIn;
+  bool get isLoggedIn => _isLoggedIn;
 
   /// Connects to the WebSocket API.
   Future<void> connect() async {
@@ -57,6 +68,7 @@ class WebSocketApiClient {
 
     try {
       _logger.info('Connecting to WebSocket API: $_baseUrl');
+      _statusController.add(WebSocketApiClientStatus.connecting);
       _channel = await _provider.connect(_baseUrl);
       _reconnectAttempts = 0;
       _lastFrameTime = DateTime.now();
@@ -68,13 +80,18 @@ class WebSocketApiClient {
         onDone: _onDone,
       );
 
-      if (_credentials != null && _isLoggedIn) {
-        // Resume session if it was active
+      _statusController.add(WebSocketApiClientStatus.connected);
+
+      if (_credentials != null) {
+        // Resume session if it was active or if we have credentials
         await _performLogon(_credentials!);
       }
     } catch (e, st) {
-      _logger.error('Failed to connect to WebSocket API',
-          error: e, stackTrace: st);
+      _logger.error(
+        'Failed to connect to WebSocket API',
+        error: e,
+        stackTrace: st,
+      );
       _scheduleReconnect();
       rethrow;
     }
@@ -105,10 +122,12 @@ class WebSocketApiClient {
     final signature = await signer.sign(canonicalPayload);
     params['signature'] = signature.value;
 
-    final response = await sendRequest('session.logon', params);
+    final response =
+        await sendRequest('session.logon', params) as Map<String, dynamic>;
     if (response['status'] == 200) {
       _isLoggedIn = true;
       _logger.info('WebSocket session logon successful');
+      _statusController.add(WebSocketApiClientStatus.authenticated);
     } else {
       _isLoggedIn = false;
       _logger.error('WebSocket session logon failed: ${response['error']}');
@@ -130,8 +149,10 @@ class WebSocketApiClient {
   }
 
   /// Sends a request to the WebSocket API and waits for a response.
-  Future<dynamic> sendRequest(String method,
-      [Map<String, dynamic>? params]) async {
+  Future<dynamic> sendRequest(
+    String method, [
+    Map<String, dynamic>? params,
+  ]) async {
     if (_channel == null) {
       await connect();
     }
@@ -170,23 +191,37 @@ class WebSocketApiClient {
         final completer = _pendingRequests.remove(id);
         if (completer != null) {
           completer.complete(data);
+          return;
         }
-      } else if (data is Map && data['method'] == 'ping') {
+      }
+
+      if (data is Map && data['method'] == 'ping') {
         _channel?.sink.add(jsonEncode({'method': 'pong'}));
+      } else {
+        // Handle unsolicited events
+        _eventsController.add(data);
       }
     } catch (e, st) {
-      _logger.error('Error parsing WebSocket API message',
-          error: e, stackTrace: st);
+      _logger.error(
+        'Error parsing WebSocket API message',
+        error: e,
+        stackTrace: st,
+      );
     }
   }
 
   void _onError(Object error, StackTrace stackTrace) {
-    _logger.error('WebSocket API error', error: error, stackTrace: stackTrace);
+    _logger.error(
+      'WebSocket API error',
+      error: error,
+      stackTrace: stackTrace,
+    );
     _scheduleReconnect();
   }
 
   void _onDone() {
     _logger.info('WebSocket API connection closed');
+    _statusController.add(WebSocketApiClientStatus.disconnected);
     if (!_isClosing) {
       _scheduleReconnect();
     }
@@ -196,12 +231,14 @@ class WebSocketApiClient {
     _stopHeartbeat();
     _channelSubscription?.cancel();
     _channel = null;
+    _isLoggedIn = false; // Reset session status on disconnect
 
     if (_isClosing) return;
 
     final delay = _reconnectionStrategy.getDelay(_reconnectAttempts++);
     _logger.info('Reconnecting to WebSocket API in ${delay.inSeconds}s...');
-    Timer(delay, connect);
+    _statusController.add(WebSocketApiClientStatus.reconnecting);
+    Timer(delay, () => unawaited(connect()));
   }
 
   void _startHeartbeat() {
@@ -210,7 +247,9 @@ class WebSocketApiClient {
       final now = DateTime.now();
       if (_lastFrameTime != null &&
           now.difference(_lastFrameTime!) > pingInterval * 3) {
-        _logger.warning('WebSocket API heartbeat timeout, forcing reconnection');
+        _logger.warning(
+          'WebSocket API heartbeat timeout, forcing reconnection',
+        );
         _channel?.close();
         _scheduleReconnect();
       } else {
@@ -218,10 +257,12 @@ class WebSocketApiClient {
         if (_isLoggedIn) {
           getSessionStatus().catchError((_) => null);
         } else {
-          _channel?.sink.add(jsonEncode({
-            'id': 'hb_${DateTime.now().millisecondsSinceEpoch}',
-            'method': 'ping',
-          }));
+          _channel?.sink.add(
+            jsonEncode({
+              'id': 'hb_${DateTime.now().millisecondsSinceEpoch}',
+              'method': 'ping',
+            }),
+          );
         }
       }
     });
@@ -247,6 +288,8 @@ class WebSocketApiClient {
   /// Closes the client.
   Future<void> close() async {
     _isClosing = true;
+    await _eventsController.close();
+    await _statusController.close();
     _stopHeartbeat();
     await _channelSubscription?.cancel();
     await _channel?.close();
@@ -258,4 +301,22 @@ class WebSocketApiClient {
     _pendingRequests.clear();
     _isClosing = false;
   }
+}
+
+/// Status of the [WebSocketApiClient].
+enum WebSocketApiClientStatus {
+  /// Connecting to the server.
+  connecting,
+
+  /// Connected to the server.
+  connected,
+
+  /// Disconnected from the server.
+  disconnected,
+
+  /// Reconnecting after a loss of connection.
+  reconnecting,
+
+  /// Authenticated session.
+  authenticated,
 }

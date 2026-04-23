@@ -6,6 +6,7 @@ import 'package:binance_core/src/error.dart';
 import 'package:binance_core/src/http/client.dart';
 import 'package:binance_core/src/http/interceptor.dart';
 import 'package:binance_core/src/http/request.dart';
+import 'package:binance_core/src/http/retry.dart';
 import 'package:binance_core/src/http/security.dart';
 import 'package:binance_core/src/security.dart';
 import 'package:http/http.dart' as http;
@@ -37,9 +38,13 @@ void main() {
 
     test('handles 429 Too Many Requests', () async {
       final mockClient = MockClient((request) async {
-        return http.Response('Rate limit exceeded', 429, headers: {
-          'retry-after': '1',
-        });
+        return http.Response(
+          'Rate limit exceeded',
+          429,
+          headers: {
+            'retry-after': '1',
+          },
+        );
       });
 
       final client = DefaultBinanceHttpClient(
@@ -64,9 +69,13 @@ void main() {
       var callCount = 0;
       final mockClient = MockClient((request) async {
         callCount++;
-        return http.Response('Banned', 418, headers: {
-          'retry-after': '1',
-        });
+        return http.Response(
+          'Banned',
+          418,
+          headers: {
+            'retry-after': '1',
+          },
+        );
       });
 
       final client = DefaultBinanceHttpClient(
@@ -94,34 +103,40 @@ void main() {
       );
     });
 
-    test('circuit breaker blocks requests after failures', () async {
-      final mockClient400 = MockClient((request) async {
-        return http.Response('Error', 400);
-      });
+    test(
+      'circuit breaker blocks requests after failures',
+      () async {
+        final mockClient400 = MockClient((request) async {
+          return http.Response('Error', 400);
+        });
 
-      final client = DefaultBinanceHttpClient(
-        environment: BinanceEnvironment.mainnet,
-        httpClient: mockClient400,
-      );
+        final client = DefaultBinanceHttpClient(
+          environment: BinanceEnvironment.mainnet,
+          httpClient: mockClient400,
+          retryPolicy: const ExponentialBackoffRetryPolicy(maxAttempts: 0),
+        );
 
-      for (var i = 0; i < 5; i++) {
-        await client.send(
+        for (var i = 0; i < 5; i++) {
+          await Future<void>.delayed(const Duration(milliseconds: 10));
+          await client.send(
+            const BinanceRequest(method: HttpMethod.get, path: '/api/v3/ping'),
+          );
+        }
+
+        final result = await client.send(
           const BinanceRequest(method: HttpMethod.get, path: '/api/v3/ping'),
         );
-      }
 
-      final result = await client.send(
-        const BinanceRequest(method: HttpMethod.get, path: '/api/v3/ping'),
-      );
-
-      expect(result.isFailure, isTrue);
-      result.fold(
-        onSuccess: (_) => fail('Should fail'),
-        onFailure: (error) {
-          expect(error.message, contains('Circuit breaker open'));
-        },
-      );
-    });
+        expect(result.isFailure, isTrue);
+        result.fold(
+          onSuccess: (_) => fail('Should fail'),
+          onFailure: (error) {
+            expect(error.message, contains('Circuit breaker open'));
+          },
+        );
+      },
+      timeout: const Timeout(Duration(seconds: 10)),
+    );
 
     test('interceptors are called in order', () async {
       final mockClient = MockClient((request) async {
@@ -141,7 +156,10 @@ void main() {
         const BinanceRequest(method: HttpMethod.get, path: '/api/v3/ping'),
       );
 
-      expect(log, ['onRequest A', 'onRequest B', 'onResponse B', 'onResponse A']);
+      expect(
+        log,
+        ['onRequest A', 'onRequest B', 'onResponse B', 'onResponse A'],
+      );
     });
 
     test('signed request includes timestamp and signature', () async {
@@ -154,7 +172,8 @@ void main() {
 
       final credentials = HmacCredentials(
         apiKey: 'test-api-key',
-        apiSecret: SecureByteBuffer(Uint8List.fromList(utf8.encode('test-secret'))),
+        apiSecret:
+            SecureByteBuffer(Uint8List.fromList(utf8.encode('test-secret'))),
       );
 
       final client = DefaultBinanceHttpClient(
@@ -217,7 +236,10 @@ void main() {
       );
 
       expect(result.isFailure, isTrue);
-      expect(result.fold(onSuccess: (_) => null, onFailure: (e) => e), isA<BinanceNetworkError>());
+      expect(
+        result.fold(onSuccess: (_) => null, onFailure: (e) => e),
+        isA<BinanceNetworkError>(),
+      );
     });
 
     test('BinanceRequestBuilder builds request correctly', () {

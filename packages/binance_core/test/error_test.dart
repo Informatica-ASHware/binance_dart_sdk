@@ -11,7 +11,7 @@ void main() {
     });
 
     test('BinanceNetworkError', () {
-      final error = BinanceNetworkError(
+      const error = BinanceNetworkError(
         message: 'Timeout',
         cause: 'SocketException',
       );

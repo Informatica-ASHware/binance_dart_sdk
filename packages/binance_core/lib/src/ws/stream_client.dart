@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:binance_core/src/auth.dart';
 import 'package:binance_core/src/observability.dart';
 import 'package:binance_core/src/ws/base.dart';
 
@@ -36,7 +35,7 @@ class WebSocketStreamClient {
   final int maxBufferSize;
 
   BinanceWebSocketChannel? _channel;
-  StreamSubscription? _channelSubscription;
+  StreamSubscription<dynamic>? _channelSubscription;
   Timer? _heartbeatTimer;
   DateTime? _lastFrameTime;
 
@@ -45,6 +44,21 @@ class WebSocketStreamClient {
   final Set<String> _activeStreams = {};
   int _reconnectAttempts = 0;
   bool _isClosing = false;
+
+  Future<void>? _syncTask;
+  Future<void> _synchronized(Future<void> Function() action) async {
+    final previous = _syncTask;
+    final completer = Completer<void>();
+    _syncTask = completer.future;
+    if (previous != null) {
+      await previous.catchError((_) {});
+    }
+    try {
+      await action();
+    } finally {
+      completer.complete();
+    }
+  }
 
   /// Returns a stream for the given [streamName].
   ///
@@ -61,28 +75,32 @@ class WebSocketStreamClient {
   }
 
   Future<void> _handleSubscribe(String streamName) async {
-    if (_activeStreams.contains(streamName)) return;
-    _activeStreams.add(streamName);
+    await _synchronized(() async {
+      if (_activeStreams.contains(streamName)) return;
+      _activeStreams.add(streamName);
 
-    if (_channel == null) {
-      await _connect();
-    } else {
-      // Reconnect to update combined streams URL
-      await _disconnect();
-      await _connect();
-    }
+      if (_channel == null) {
+        await _connect();
+      } else {
+        // Reconnect to update combined streams URL
+        await _disconnect();
+        await _connect();
+      }
+    });
   }
 
   Future<void> _handleUnsubscribe(String streamName) async {
-    if (!_activeStreams.contains(streamName)) return;
-    _activeStreams.remove(streamName);
+    await _synchronized(() async {
+      if (!_activeStreams.contains(streamName)) return;
+      _activeStreams.remove(streamName);
 
-    if (_activeStreams.isEmpty) {
-      await _disconnect();
-    } else if (_channel != null) {
-      await _disconnect();
-      await _connect();
-    }
+      if (_activeStreams.isEmpty) {
+        await _disconnect();
+      } else if (_channel != null) {
+        await _disconnect();
+        await _connect();
+      }
+    });
   }
 
   Completer<void>? _connectionCompleter;
@@ -116,8 +134,11 @@ class WebSocketStreamClient {
 
       _connectionCompleter?.complete();
     } catch (e, st) {
-      _logger.error('Failed to connect to WebSocket Stream',
-          error: e, stackTrace: st);
+      _logger.error(
+        'Failed to connect to WebSocket Stream',
+        error: e,
+        stackTrace: st,
+      );
       _connectionCompleter?.completeError(e, st);
       _scheduleReconnect();
     } finally {
@@ -149,17 +170,25 @@ class WebSocketStreamClient {
       }
 
       // Handle combined stream data: {"stream":"<streamName>","data":<data>}
-      if (data is Map && data.containsKey('stream') && data.containsKey('data')) {
+      if (data is Map &&
+          data.containsKey('stream') &&
+          data.containsKey('data')) {
         final streamName = data['stream'] as String;
         final streamData = data['data'];
         _emitToController(streamName, streamData);
-      } else if (data is Map && data.containsKey('result') && data['id'] != null) {
+      } else if (data is Map &&
+          data.containsKey('result') &&
+          data['id'] != null) {
         // Subscription result, ignore
       } else {
         _logger.debug('Received unknown message format: $message');
       }
     } catch (e, st) {
-      _logger.error('Error parsing WebSocket message', error: e, stackTrace: st);
+      _logger.error(
+        'Error parsing WebSocket message',
+        error: e,
+        stackTrace: st,
+      );
     }
   }
 
@@ -171,11 +200,13 @@ class WebSocketStreamClient {
         _bufferCounts[streamName] = count;
 
         if (count > maxBufferSize) {
-          _hooks.onStreamLag?.call(StreamLagWarning(
-            streamName: streamName,
-            bufferSize: count,
-            maxBufferSize: maxBufferSize,
-          ));
+          _hooks.onStreamLag?.call(
+            StreamLagWarning(
+              streamName: streamName,
+              bufferSize: count,
+              maxBufferSize: maxBufferSize,
+            ),
+          );
         }
 
         controller.add(data);
@@ -188,7 +219,11 @@ class WebSocketStreamClient {
   }
 
   void _onError(Object error, StackTrace stackTrace) {
-    _logger.error('WebSocket Stream error', error: error, stackTrace: stackTrace);
+    _logger.error(
+      'WebSocket Stream error',
+      error: error,
+      stackTrace: stackTrace,
+    );
     _scheduleReconnect();
   }
 
@@ -210,7 +245,7 @@ class WebSocketStreamClient {
 
     final delay = _reconnectionStrategy.getDelay(_reconnectAttempts++);
     _logger.info('Reconnecting in ${delay.inSeconds}s...');
-    Timer(delay, _connect);
+    Timer(delay, () => unawaited(_connect()));
   }
 
   void _startHeartbeat() {
@@ -223,10 +258,12 @@ class WebSocketStreamClient {
         _channel?.close();
         _scheduleReconnect();
       } else {
-        _channel?.sink.add(jsonEncode({
-          'method': 'ping',
-          'id': DateTime.now().millisecondsSinceEpoch,
-        }));
+        _channel?.sink.add(
+          jsonEncode({
+            'method': 'ping',
+            'id': DateTime.now().millisecondsSinceEpoch,
+          }),
+        );
       }
     });
   }

@@ -281,6 +281,9 @@ final class Decimal implements Comparable<Decimal> {
     return Decimal._(units, precision);
   }
 
+  /// Decimal representing zero.
+  static final Decimal zero = Decimal.parse('0');
+
   /// The raw units of the decimal.
   final BigInt units;
 
