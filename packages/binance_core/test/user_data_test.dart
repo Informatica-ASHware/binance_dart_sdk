@@ -76,7 +76,8 @@ void main() {
       // Simulate disconnect
       statusController.add(WebSocketApiClientStatus.disconnected);
 
-      // Expected statuses: reconnecting, then connected (from re-subscribe), then reconnectedAfterGap
+      // Expected statuses: reconnecting, then connected (from re-subscribe),
+      // then reconnectedAfterGap
       final statusFuture = feed.status.take(3).toList();
 
       // Simulate reconnect and authenticate
@@ -171,7 +172,7 @@ void main() {
         'a': {
           'm': 'ORDER',
           'B': [
-            {'a': 'USDT', 'cw': '100.0', 'bc': '10.0'},
+            {'a': 'USDT', 'wb': '100.0'},
           ],
         },
       });

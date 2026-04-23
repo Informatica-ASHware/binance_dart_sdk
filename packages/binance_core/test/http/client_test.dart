@@ -6,6 +6,7 @@ import 'package:binance_core/src/error.dart';
 import 'package:binance_core/src/http/client.dart';
 import 'package:binance_core/src/http/interceptor.dart';
 import 'package:binance_core/src/http/request.dart';
+import 'package:binance_core/src/http/retry.dart';
 import 'package:binance_core/src/http/security.dart';
 import 'package:binance_core/src/security.dart';
 import 'package:http/http.dart' as http;
@@ -112,6 +113,7 @@ void main() {
         final client = DefaultBinanceHttpClient(
           environment: BinanceEnvironment.mainnet,
           httpClient: mockClient400,
+          retryPolicy: const ExponentialBackoffRetryPolicy(maxAttempts: 0),
         );
 
         for (var i = 0; i < 5; i++) {

@@ -304,6 +304,29 @@ abstract interface class UserDataFeed {
 
   /// Stops the feed and releases resources.
   Future<void> stop();
+
+  /// Factory method to create the appropriate [UserDataFeed] for the venue.
+  factory UserDataFeed.create({
+    required BinanceVenue venue,
+    required BinanceHttpClient httpClient,
+    required WebSocketApiClient apiClient,
+    required WebSocketStreamClient streamClient,
+    required BinanceCredentials credentials,
+  }) {
+    if (venue.usesWsApi) {
+      return SpotUserDataFeed(
+        apiClient: apiClient,
+        credentials: credentials,
+        venue: venue,
+      );
+    } else {
+      return FuturesUserDataFeed(
+        httpClient: httpClient,
+        streamClient: streamClient,
+        venue: venue,
+      );
+    }
+  }
 }
 
 /// Base class for UserDataFeed implementations.
@@ -414,11 +437,14 @@ class SpotUserDataFeed extends BaseUserDataFeed {
       case WebSocketApiClientStatus.connecting:
       case WebSocketApiClientStatus.reconnecting:
         emitStatus(const UserDataFeedStatus.reconnecting());
+        break;
       case WebSocketApiClientStatus.disconnected:
         _lastDisconnectTime ??= DateTime.now();
         emitStatus(const UserDataFeedStatus.reconnecting());
+        break;
       case WebSocketApiClientStatus.authenticated:
         unawaited(_subscribe());
+        break;
       case WebSocketApiClientStatus.connected:
         // Wait for authentication
         break;
@@ -653,8 +679,8 @@ class FuturesUserDataFeed extends BaseUserDataFeed {
               .map(
                 (b) => AccountBalance(
                   asset: Asset((b as Map)['a'] as String),
-                  free: Decimal.parse(b['cw'] as String),
-                  locked: Decimal.parse(b['bc'] as String),
+                  free: Decimal.parse(b['wb'] as String),
+                  locked: Decimal.zero, // Futures doesn't have locked per se here
                 ),
               )
               .toList(),

@@ -82,8 +82,8 @@ class WebSocketApiClient {
 
       _statusController.add(WebSocketApiClientStatus.connected);
 
-      if (_credentials != null && _isLoggedIn) {
-        // Resume session if it was active
+      if (_credentials != null) {
+        // Resume session if it was active or if we have credentials
         await _performLogon(_credentials!);
       }
     } catch (e, st) {
@@ -231,6 +231,7 @@ class WebSocketApiClient {
     _stopHeartbeat();
     _channelSubscription?.cancel();
     _channel = null;
+    _isLoggedIn = false; // Reset session status on disconnect
 
     if (_isClosing) return;
 
