@@ -38,6 +38,17 @@ class WebSocketApiClient {
   DateTime? _lastFrameTime;
 
   final Map<String, Completer<dynamic>> _pendingRequests = {};
+  final StreamController<dynamic> _eventsController =
+      StreamController<dynamic>.broadcast();
+  final StreamController<WebSocketApiClientStatus> _statusController =
+      StreamController<WebSocketApiClientStatus>.broadcast();
+
+  /// Stream of unsolicited events from the server.
+  Stream<dynamic> get events => _eventsController.stream;
+
+  /// Stream of status changes for the client.
+  Stream<WebSocketApiClientStatus> get status => _statusController.stream;
+
   int _requestIdCounter = 0;
   int _reconnectAttempts = 0;
   bool _isClosing = false;
@@ -57,6 +68,7 @@ class WebSocketApiClient {
 
     try {
       _logger.info('Connecting to WebSocket API: $_baseUrl');
+      _statusController.add(WebSocketApiClientStatus.connecting);
       _channel = await _provider.connect(_baseUrl);
       _reconnectAttempts = 0;
       _lastFrameTime = DateTime.now();
@@ -68,10 +80,11 @@ class WebSocketApiClient {
         onDone: _onDone,
       );
 
-      final credentials = _credentials;
-      if (credentials != null && _isLoggedIn) {
-        // Resume session if it was active
-        await _performLogon(credentials);
+      _statusController.add(WebSocketApiClientStatus.connected);
+
+      if (_credentials != null) {
+        // Resume session if it was active or if we have credentials
+        await _performLogon(_credentials!);
       }
     } catch (e, st) {
       _logger.error(
@@ -111,6 +124,7 @@ class WebSocketApiClient {
     if (response is Map && response['status'] == 200) {
       _isLoggedIn = true;
       _logger.info('WebSocket session logon successful');
+      _statusController.add(WebSocketApiClientStatus.authenticated);
     } else {
       _isLoggedIn = false;
       final error = response is Map ? response['error'] : 'Unknown error';
@@ -175,9 +189,15 @@ class WebSocketApiClient {
         final completer = _pendingRequests.remove(id);
         if (completer != null) {
           completer.complete(data);
+          return;
         }
-      } else if (data is Map && data['method'] == 'ping') {
+      }
+
+      if (data is Map && data['method'] == 'ping') {
         _channel?.sink.add(jsonEncode({'method': 'pong'}));
+      } else {
+        // Handle unsolicited events
+        _eventsController.add(data);
       }
     } catch (e, st) {
       _logger.error(
@@ -189,12 +209,17 @@ class WebSocketApiClient {
   }
 
   void _onError(Object error, StackTrace stackTrace) {
-    _logger.error('WebSocket API error', error: error, stackTrace: stackTrace);
+    _logger.error(
+      'WebSocket API error',
+      error: error,
+      stackTrace: stackTrace,
+    );
     _scheduleReconnect();
   }
 
   void _onDone() {
     _logger.info('WebSocket API connection closed');
+    _statusController.add(WebSocketApiClientStatus.disconnected);
     if (!_isClosing) {
       _scheduleReconnect();
     }
@@ -205,11 +230,13 @@ class WebSocketApiClient {
     _channelSubscription?.cancel();
     _channelSubscription = null;
     _channel = null;
+    _isLoggedIn = false; // Reset session status on disconnect
 
     if (_isClosing) return;
 
     final delay = _reconnectionStrategy.getDelay(_reconnectAttempts++);
     _logger.info('Reconnecting to WebSocket API in ${delay.inSeconds}s...');
+    _statusController.add(WebSocketApiClientStatus.reconnecting);
     Timer(delay, () => unawaited(connect()));
   }
 
@@ -260,6 +287,8 @@ class WebSocketApiClient {
   /// Closes the client.
   Future<void> close() async {
     _isClosing = true;
+    await _eventsController.close();
+    await _statusController.close();
     _stopHeartbeat();
     await _channelSubscription?.cancel();
     _channelSubscription = null;
@@ -272,4 +301,22 @@ class WebSocketApiClient {
     _pendingRequests.clear();
     _isClosing = false;
   }
+}
+
+/// Status of the [WebSocketApiClient].
+enum WebSocketApiClientStatus {
+  /// Connecting to the server.
+  connecting,
+
+  /// Connected to the server.
+  connected,
+
+  /// Disconnected from the server.
+  disconnected,
+
+  /// Reconnecting after a loss of connection.
+  reconnecting,
+
+  /// Authenticated session.
+  authenticated,
 }

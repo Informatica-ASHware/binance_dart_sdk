@@ -41,6 +41,7 @@ abstract interface class BinanceLogger {
 
 /// Simple logger that does nothing.
 final class NoOpBinanceLogger implements BinanceLogger {
+  /// Creates a [NoOpBinanceLogger].
   const NoOpBinanceLogger();
 
   @override
