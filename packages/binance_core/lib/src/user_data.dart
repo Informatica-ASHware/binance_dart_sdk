@@ -80,13 +80,20 @@ sealed class UserDataEvent {
 /// Event triggered when account information is updated.
 final class AccountUpdate extends UserDataEvent {
   /// Creates an [AccountUpdate] event.
-  const AccountUpdate({required this.updateTime, required this.balances});
+  const AccountUpdate({
+    required this.updateTime,
+    required this.balances,
+    this.positions = const [],
+  });
 
   /// The time the update occurred.
   final DateTime updateTime;
 
   /// The updated balances.
   final List<AccountBalance> balances;
+
+  /// The updated positions (Futures only).
+  final List<AccountPosition> positions;
 }
 
 /// Simplified balance update event.
@@ -225,6 +232,7 @@ final class AccountBalance {
     required this.asset,
     required this.free,
     required this.locked,
+    this.crossWalletBalance,
   });
 
   /// The asset associated with this balance.
@@ -235,6 +243,45 @@ final class AccountBalance {
 
   /// The amount of locked asset.
   final Decimal locked;
+
+  /// Cross wallet balance (Futures only).
+  final Decimal? crossWalletBalance;
+}
+
+/// Represents a position in an account update.
+@immutable
+final class AccountPosition {
+  /// Creates an [AccountPosition].
+  const AccountPosition({
+    required this.symbol,
+    required this.amount,
+    required this.entryPrice,
+    required this.unrealizedProfit,
+    required this.marginType,
+    required this.isolatedWallet,
+    required this.positionSide,
+  });
+
+  /// The symbol of the position.
+  final Symbol symbol;
+
+  /// The position amount.
+  final Decimal amount;
+
+  /// The average entry price.
+  final Decimal entryPrice;
+
+  /// The unrealized profit.
+  final Decimal unrealizedProfit;
+
+  /// The margin type (e.g., ISOLATED, CROSSED).
+  final String marginType;
+
+  /// The amount in the isolated wallet.
+  final Decimal isolatedWallet;
+
+  /// The position side (e.g., BOTH, LONG, SHORT).
+  final String positionSide;
 }
 
 /// Represents a position in a margin call.
@@ -684,8 +731,21 @@ class FuturesUserDataFeed extends BaseUserDataFeed {
                 (b) => AccountBalance(
                   asset: Asset((b as Map)['a'] as String),
                   free: Decimal.parse(b['wb'] as String),
-                  locked:
-                      Decimal.zero, // Futures doesn't have locked per se here
+                  locked: Decimal.zero,
+                  crossWalletBalance: Decimal.parse(b['cw'] as String),
+                ),
+              )
+              .toList(),
+          positions: ((data['a'] as Map)['P'] as List)
+              .map(
+                (p) => AccountPosition(
+                  symbol: Symbol((p as Map)['s'] as String),
+                  amount: Decimal.parse(p['pa'] as String),
+                  entryPrice: Decimal.parse(p['ep'] as String),
+                  unrealizedProfit: Decimal.parse(p['up'] as String),
+                  marginType: p['mt'] as String,
+                  isolatedWallet: Decimal.parse(p['iw'] as String),
+                  positionSide: p['ps'] as String,
                 ),
               )
               .toList(),
