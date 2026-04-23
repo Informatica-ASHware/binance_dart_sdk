@@ -98,7 +98,7 @@ class DefaultBinanceHttpClient implements BinanceHttpClient {
 
     await _rateLimitTracker.waitIfNecessary(currentRequest.weight);
 
-    const attempt = 0;
+    var attempt = 0;
     while (true) {
       Result<Map<String, dynamic>, BinanceError>? result;
       http.Response? response;
@@ -125,7 +125,26 @@ class DefaultBinanceHttpClient implements BinanceHttpClient {
         );
       }
 
-      return result;
+      final r = result;
+      if (r is Failure<Map<String, dynamic>, BinanceError>) {
+        final error = r.error;
+
+        // Check if we should retry
+        if (_retryPolicy.shouldRetry(
+          response: response,
+          error: error,
+          attempt: attempt,
+        )) {
+          attempt++;
+          final delay = _retryPolicy.getDelay(attempt);
+          await Future<void>.delayed(delay);
+          continue;
+        }
+
+        // Handle terminal errors
+        breaker.recordFailure();
+        return result;
+      }
 
       // Should not reach here
       return const Result.failure(

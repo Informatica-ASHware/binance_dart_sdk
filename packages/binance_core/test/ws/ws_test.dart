@@ -269,7 +269,11 @@ void main() {
       final id = requestData['id'];
 
       channel.addFromServer(
-        jsonEncode(<String, dynamic>{'id': id, 'status': 200, 'result': {}}),
+        jsonEncode(<String, dynamic>{
+          'id': id,
+          'status': 200,
+          'result': <String, dynamic>{},
+        }),
       );
 
       final response = await requestFuture;
