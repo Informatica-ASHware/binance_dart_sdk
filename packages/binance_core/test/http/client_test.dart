@@ -141,7 +141,8 @@ void main() {
         const BinanceRequest(method: HttpMethod.get, path: '/api/v3/ping'),
       );
 
-      expect(log, ['onRequest A', 'onRequest B', 'onResponse B', 'onResponse A']);
+      expect(
+          log, ['onRequest A', 'onRequest B', 'onResponse B', 'onResponse A']);
     });
 
     test('signed request includes timestamp and signature', () async {
@@ -154,7 +155,8 @@ void main() {
 
       final credentials = HmacCredentials(
         apiKey: 'test-api-key',
-        apiSecret: SecureByteBuffer(Uint8List.fromList(utf8.encode('test-secret'))),
+        apiSecret:
+            SecureByteBuffer(Uint8List.fromList(utf8.encode('test-secret'))),
       );
 
       final client = DefaultBinanceHttpClient(
@@ -217,7 +219,8 @@ void main() {
       );
 
       expect(result.isFailure, isTrue);
-      expect(result.fold(onSuccess: (_) => null, onFailure: (e) => e), isA<BinanceNetworkError>());
+      expect(result.fold(onSuccess: (_) => null, onFailure: (e) => e),
+          isA<BinanceNetworkError>());
     });
 
     test('BinanceRequestBuilder builds request correctly', () {

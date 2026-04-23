@@ -149,17 +149,22 @@ class WebSocketStreamClient {
       }
 
       // Handle combined stream data: {"stream":"<streamName>","data":<data>}
-      if (data is Map && data.containsKey('stream') && data.containsKey('data')) {
+      if (data is Map &&
+          data.containsKey('stream') &&
+          data.containsKey('data')) {
         final streamName = data['stream'] as String;
         final streamData = data['data'];
         _emitToController(streamName, streamData);
-      } else if (data is Map && data.containsKey('result') && data['id'] != null) {
+      } else if (data is Map &&
+          data.containsKey('result') &&
+          data['id'] != null) {
         // Subscription result, ignore
       } else {
         _logger.debug('Received unknown message format: $message');
       }
     } catch (e, st) {
-      _logger.error('Error parsing WebSocket message', error: e, stackTrace: st);
+      _logger.error('Error parsing WebSocket message',
+          error: e, stackTrace: st);
     }
   }
 
@@ -188,7 +193,8 @@ class WebSocketStreamClient {
   }
 
   void _onError(Object error, StackTrace stackTrace) {
-    _logger.error('WebSocket Stream error', error: error, stackTrace: stackTrace);
+    _logger.error('WebSocket Stream error',
+        error: error, stackTrace: stackTrace);
     _scheduleReconnect();
   }
 

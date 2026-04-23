@@ -233,7 +233,8 @@ class WebSocketApiClient {
       final now = DateTime.now();
       if (_lastFrameTime != null &&
           now.difference(_lastFrameTime!) > pingInterval * 3) {
-        _logger.warning('WebSocket API heartbeat timeout, forcing reconnection');
+        _logger
+            .warning('WebSocket API heartbeat timeout, forcing reconnection');
         _channel?.close();
         _scheduleReconnect();
       } else {

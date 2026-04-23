@@ -15,8 +15,10 @@ void main() {
         'X-MBX-LIMIT-1M': '1000',
       });
 
-      expect(tracker.shouldThrottle(100), isFalse); // (500+100)/1000 = 0.6 <= 0.8
-      expect(tracker.shouldThrottle(301), isTrue);  // (500+301)/1000 = 0.801 > 0.8
+      expect(
+          tracker.shouldThrottle(100), isFalse); // (500+100)/1000 = 0.6 <= 0.8
+      expect(
+          tracker.shouldThrottle(301), isTrue); // (500+301)/1000 = 0.801 > 0.8
     });
 
     test('waitIfNecessary delays when throttling is needed', () async {

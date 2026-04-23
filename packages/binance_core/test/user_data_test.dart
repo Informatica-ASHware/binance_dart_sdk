@@ -1,21 +1,23 @@
 import 'dart:async';
-import 'dart:convert';
-import 'dart:typed_list';
+import 'dart:typed_data';
+
 import 'package:binance_core/binance_core.dart';
-import 'package:test/test.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:test/test.dart';
 
 class MockWebSocketApiClient extends Mock implements WebSocketApiClient {}
+
 class MockBinanceHttpClient extends Mock implements BinanceHttpClient {}
+
 class MockWebSocketStreamClient extends Mock implements WebSocketStreamClient {}
 
 void main() {
   setUpAll(() {
     registerFallbackValue(HmacCredentials(
       apiKey: 'test-api-key',
-      apiSecret: SecureByteBuffer(Uint8List(0)),
+      apiSecret: SecureByteBuffer(Uint8List.fromList([])),
     ));
-    registerFallbackValue(BinanceRequest(
+    registerFallbackValue(const BinanceRequest(
       method: HttpMethod.post,
       path: '',
     ));
@@ -31,11 +33,12 @@ void main() {
     setUp(() {
       hmacCredentials = HmacCredentials(
         apiKey: 'test-api-key',
-        apiSecret: SecureByteBuffer(Uint8List(0)),
+        apiSecret: SecureByteBuffer(Uint8List.fromList([])),
       );
       apiClient = MockWebSocketApiClient();
       statusController = StreamController<WebSocketApiClientStatus>.broadcast();
-      feed = SpotUserDataFeed(apiClient: apiClient, credentials: hmacCredentials);
+      feed =
+          SpotUserDataFeed(apiClient: apiClient, credentials: hmacCredentials);
 
       when(() => apiClient.connect()).thenAnswer((_) async {});
       when(() => apiClient.logon(any())).thenAnswer((_) async {});
@@ -61,7 +64,7 @@ void main() {
     });
 
     test('re-subscribes on reconnection', () async {
-       when(() => apiClient.sendRequest('userDataStream.subscribe'))
+      when(() => apiClient.sendRequest('userDataStream.subscribe'))
           .thenAnswer((_) async => {'status': 200});
 
       await feed.start();
@@ -123,26 +126,36 @@ void main() {
     });
 
     test('start() obtains listenKey and subscribes', () async {
-      when(() => httpClient.send(any())).thenAnswer((_) async => const Result.success({
-            'listenKey': 'test-listen-key',
-          }));
+      when(() => httpClient.send(any())).thenAnswer(
+        (_) async => const Result.success({
+          'listenKey': 'test-listen-key',
+        }),
+      );
       when(() => streamClient.subscribe('test-listen-key'))
           .thenAnswer((_) => const Stream.empty());
 
       await feed.start();
 
-      verify(() => httpClient.send(any(
-            that: isA<BinanceRequest>().having((r) => r.method, 'method', HttpMethod.post),
-          ))).called(1);
+      verify(
+        () => httpClient.send(
+          any(
+            that: isA<BinanceRequest>()
+                .having((r) => r.method, 'method', HttpMethod.post),
+          ),
+        ),
+      ).called(1);
       verify(() => streamClient.subscribe('test-listen-key')).called(1);
     });
 
     test('parses Futures ACCOUNT_UPDATE correctly', () async {
-       when(() => httpClient.send(any())).thenAnswer((_) async => const Result.success({
-            'listenKey': 'test-key',
-          }));
+      when(() => httpClient.send(any())).thenAnswer(
+        (_) async => const Result.success({
+          'listenKey': 'test-key',
+        }),
+      );
       final controller = StreamController<dynamic>.broadcast();
-      when(() => streamClient.subscribe('test-key')).thenAnswer((_) => controller.stream);
+      when(() => streamClient.subscribe('test-key'))
+          .thenAnswer((_) => controller.stream);
 
       await feed.start();
 

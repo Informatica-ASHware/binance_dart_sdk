@@ -36,7 +36,8 @@ class MockWebSocketChannel implements BinanceWebSocketChannel {
 
 class PrintLogger implements BinanceLogger {
   @override
-  void log(BinanceLogLevel level, String message, {Object? error, StackTrace? stackTrace}) =>
+  void log(BinanceLogLevel level, String message,
+          {Object? error, StackTrace? stackTrace}) =>
       print('$level: $message');
 
   @override
@@ -148,9 +149,11 @@ void main() {
       final s2 = client.subscribe('ethusdt@aggTrade').listen((_) {});
 
       for (var i = 0; i < 20; i++) {
-        if (provider.lastUrl != null && provider.lastUrl!.queryParameters.containsKey('streams')) {
-             final streams = provider.lastUrl!.queryParameters['streams']!;
-             if (streams.contains('btcusdt@aggTrade') && streams.contains('ethusdt@aggTrade')) break;
+        if (provider.lastUrl != null &&
+            provider.lastUrl!.queryParameters.containsKey('streams')) {
+          final streams = provider.lastUrl!.queryParameters['streams']!;
+          if (streams.contains('btcusdt@aggTrade') &&
+              streams.contains('ethusdt@aggTrade')) break;
         }
         await Future.delayed(Duration(milliseconds: 50));
       }
@@ -259,11 +262,8 @@ void main() {
       final requestData = jsonDecode(sentMessage);
       final id = requestData['id'];
 
-      channel.addFromServer(jsonEncode({
-        'id': id,
-        'status': 200,
-        'result': {}
-      }));
+      channel
+          .addFromServer(jsonEncode({'id': id, 'status': 200, 'result': {}}));
 
       final response = await requestFuture;
       expect(response['status'], 200);

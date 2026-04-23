@@ -407,7 +407,8 @@ class SpotUserDataFeed extends BaseUserDataFeed {
           lastFilledQuantity: Decimal.parse(data['l'] as String),
           cumulativeFilledQuantity: Decimal.parse(data['z'] as String),
           lastFilledPrice: Decimal.parse(data['L'] as String),
-          transactionTime: DateTime.fromMillisecondsSinceEpoch(data['T'] as int),
+          transactionTime:
+              DateTime.fromMillisecondsSinceEpoch(data['T'] as int),
           tradeId: data['t'] as int?,
         ),
       'listenKeyExpired' => const ListenKeyExpired(),
@@ -461,7 +462,8 @@ class FuturesUserDataFeed extends BaseUserDataFeed {
     final path = switch (_venue) {
       BinanceVenue.usdMFutures => '/fapi/v1/listenKey',
       BinanceVenue.coinMFutures => '/dapi/v1/listenKey',
-      _ => throw ArgumentError('Unsupported venue for FuturesUserDataFeed: $_venue'),
+      _ => throw ArgumentError(
+          'Unsupported venue for FuturesUserDataFeed: $_venue'),
     };
 
     final result = await _httpClient.send(BinanceRequest(
@@ -472,7 +474,8 @@ class FuturesUserDataFeed extends BaseUserDataFeed {
 
     return result.fold(
       onSuccess: (data) => data['listenKey'] as String,
-      onFailure: (error) => throw Exception('Failed to obtain listenKey: $error'),
+      onFailure: (error) =>
+          throw Exception('Failed to obtain listenKey: $error'),
     );
   }
 
@@ -499,10 +502,10 @@ class FuturesUserDataFeed extends BaseUserDataFeed {
   void _connectToStream() {
     _streamSubscription?.cancel();
     _streamSubscription = _streamClient.subscribe(_listenKey!).listen(
-      _handleStreamData,
-      onError: _handleStreamError,
-      onDone: _handleStreamDone,
-    );
+          _handleStreamData,
+          onError: _handleStreamError,
+          onDone: _handleStreamDone,
+        );
     emitStatus(const UserDataFeedStatus.connected());
 
     if (_lastDisconnectTime != null) {
@@ -580,7 +583,8 @@ class FuturesUserDataFeed extends BaseUserDataFeed {
           cumulativeFilledQuantity:
               Decimal.parse((data['o'] as Map)['z'] as String),
           lastFilledPrice: Decimal.parse((data['o'] as Map)['L'] as String),
-          transactionTime: DateTime.fromMillisecondsSinceEpoch(data['T'] as int),
+          transactionTime:
+              DateTime.fromMillisecondsSinceEpoch(data['T'] as int),
           tradeId: (data['o'] as Map)['t'] as int?,
         ),
       'listenKeyExpired' => const ListenKeyExpired(),

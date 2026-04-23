@@ -124,7 +124,8 @@ class DefaultBinanceHttpClient implements BinanceHttpClient {
         );
       }
 
-      if (result != null && result is Failure<Map<String, dynamic>, BinanceError>) {
+      if (result != null &&
+          result is Failure<Map<String, dynamic>, BinanceError>) {
         final error = result.error;
 
         // Check if we should retry
@@ -168,7 +169,8 @@ class DefaultBinanceHttpClient implements BinanceHttpClient {
 
     if (request.securityType is SignedSecurityType) {
       if (signer == null) {
-        throw const BinanceAuthError('RequestSigner is required for signed requests');
+        throw const BinanceAuthError(
+            'RequestSigner is required for signed requests');
       }
 
       final timestamp = DateTime.now().millisecondsSinceEpoch.toString();
@@ -179,7 +181,8 @@ class DefaultBinanceHttpClient implements BinanceHttpClient {
       queryParams['signature'] = signature.value;
     }
 
-    uri = uri.replace(queryParameters: queryParams.isNotEmpty ? queryParams : null);
+    uri = uri.replace(
+        queryParameters: queryParams.isNotEmpty ? queryParams : null);
 
     final headers = <String, String>{
       'Accept': 'application/json',
@@ -202,7 +205,8 @@ class DefaultBinanceHttpClient implements BinanceHttpClient {
 
   String _buildQueryString(Map<String, String> params) {
     return params.entries
-        .map((e) => '${Uri.encodeComponent(e.key)}=${Uri.encodeComponent(e.value)}')
+        .map((e) =>
+            '${Uri.encodeComponent(e.key)}=${Uri.encodeComponent(e.value)}')
         .join('&');
   }
 
