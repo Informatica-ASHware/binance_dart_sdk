@@ -167,7 +167,9 @@ void main() {
       final log = DustLog.fromJson(json);
       expect(log.totalCount, 1);
       expect(log.userAssetDribblets.first.transId, 12345);
-      expect(log.userAssetDribblets.first.userAssetDribbletDetails.first.fromAsset, Asset("USDT"));
+      expect(
+          log.userAssetDribblets.first.userAssetDribbletDetails.first.fromAsset,
+          Asset("USDT"));
     });
   });
 }

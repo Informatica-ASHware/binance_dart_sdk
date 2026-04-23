@@ -178,8 +178,8 @@ class BinanceMarginClient {
     );
 
     final result = await _httpClient.send(request);
-    return result
-        .map<Decimal>((dynamic data) => Decimal.parse(data['amount'] as String));
+    return result.map<Decimal>(
+        (dynamic data) => Decimal.parse(data['amount'] as String));
   }
 
   /// Query max transferable-out amount.
@@ -203,8 +203,8 @@ class BinanceMarginClient {
     );
 
     final result = await _httpClient.send(request);
-    return result
-        .map<Decimal>((dynamic data) => Decimal.parse(data['amount'] as String));
+    return result.map<Decimal>(
+        (dynamic data) => Decimal.parse(data['amount'] as String));
   }
 
   // --- Transfers ---
@@ -613,7 +613,8 @@ class BinanceMarginClient {
 
     final result = await _httpClient.send(request);
     return result.map<List<Map<String, dynamic>>>(
-      (dynamic data) => ((data as Map)['rows'] as List).cast<Map<String, dynamic>>(),
+      (dynamic data) =>
+          ((data as Map)['rows'] as List).cast<Map<String, dynamic>>(),
     );
   }
 
