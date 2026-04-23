@@ -40,7 +40,7 @@ class DefaultBinanceHttpClient implements BinanceHttpClient {
   })  : _httpClient = httpClient ?? http.Client(),
         _rateLimitTracker = rateLimitTracker ?? RateLimitTracker(),
         _circuitBreakers = circuitBreakers ?? CircuitBreakerRegistry(),
-        _retryPolicy = retryPolicy ?? ExponentialBackoffRetryPolicy();
+        _retryPolicy = retryPolicy ?? const ExponentialBackoffRetryPolicy();
 
   /// The Binance environment.
   final BinanceEnvironment environment;
@@ -100,8 +100,8 @@ class DefaultBinanceHttpClient implements BinanceHttpClient {
 
     var attempt = 0;
     while (true) {
-      Result<Map<String, dynamic>, BinanceError>? result;
       http.Response? response;
+      Result<Map<String, dynamic>, BinanceError> result;
 
       try {
         response = await _sendInternal(currentRequest);
@@ -116,7 +116,6 @@ class DefaultBinanceHttpClient implements BinanceHttpClient {
           return Result.success(data);
         }
 
-        // Handle errors
         result = await _handleError(interceptedResponse);
       } catch (e, st) {
         await chain.interceptError(e, st);
@@ -126,30 +125,25 @@ class DefaultBinanceHttpClient implements BinanceHttpClient {
       }
 
       final r = result;
-      if (r is Failure<Map<String, dynamic>, BinanceError>) {
-        final error = r.error;
-
-        // Check if we should retry
-        if (_retryPolicy.shouldRetry(
-          response: response,
-          error: error,
-          attempt: attempt,
-        )) {
-          attempt++;
-          final delay = _retryPolicy.getDelay(attempt);
-          await Future<void>.delayed(delay);
-          continue;
+      final error = r.fold(onSuccess: (_) => null, onFailure: (e) => e);
+      if (error != null) {
+        if (response?.statusCode == 418 ||
+            !_retryPolicy.shouldRetry(
+              attempt: attempt,
+              response: response,
+              error: error,
+            )) {
+          breaker.recordFailure();
+          return r;
         }
 
-        // Handle terminal errors
-        breaker.recordFailure();
-        return result;
+        attempt++;
+        final delay = _retryPolicy.getDelay(attempt);
+        await Future<void>.delayed(delay);
+        continue;
       }
 
-      // Should not reach here
-      return const Result.failure(
-        BinanceNetworkError(message: 'Unknown error occurred'),
-      );
+      return r;
     }
   }
 

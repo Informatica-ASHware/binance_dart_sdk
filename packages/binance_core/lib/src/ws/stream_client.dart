@@ -45,6 +45,21 @@ class WebSocketStreamClient {
   int _reconnectAttempts = 0;
   bool _isClosing = false;
 
+  Future<void>? _syncTask;
+  Future<void> _synchronized(Future<void> Function() action) async {
+    final previous = _syncTask;
+    final completer = Completer<void>();
+    _syncTask = completer.future;
+    if (previous != null) {
+      await previous.catchError((_) {});
+    }
+    try {
+      await action();
+    } finally {
+      completer.complete();
+    }
+  }
+
   /// Returns a stream for the given [streamName].
   ///
   /// The stream will automatically subscribe when the first listener is added
@@ -60,28 +75,32 @@ class WebSocketStreamClient {
   }
 
   Future<void> _handleSubscribe(String streamName) async {
-    if (_activeStreams.contains(streamName)) return;
-    _activeStreams.add(streamName);
+    await _synchronized(() async {
+      if (_activeStreams.contains(streamName)) return;
+      _activeStreams.add(streamName);
 
-    if (_channel == null) {
-      await _connect();
-    } else {
-      // Reconnect to update combined streams URL
-      await _disconnect();
-      await _connect();
-    }
+      if (_channel == null) {
+        await _connect();
+      } else {
+        // Reconnect to update combined streams URL
+        await _disconnect();
+        await _connect();
+      }
+    });
   }
 
   Future<void> _handleUnsubscribe(String streamName) async {
-    if (!_activeStreams.contains(streamName)) return;
-    _activeStreams.remove(streamName);
+    await _synchronized(() async {
+      if (!_activeStreams.contains(streamName)) return;
+      _activeStreams.remove(streamName);
 
-    if (_activeStreams.isEmpty) {
-      await _disconnect();
-    } else if (_channel != null) {
-      await _disconnect();
-      await _connect();
-    }
+      if (_activeStreams.isEmpty) {
+        await _disconnect();
+      } else if (_channel != null) {
+        await _disconnect();
+        await _connect();
+      }
+    });
   }
 
   Completer<void>? _connectionCompleter;
@@ -226,7 +245,7 @@ class WebSocketStreamClient {
 
     final delay = _reconnectionStrategy.getDelay(_reconnectAttempts++);
     _logger.info('Reconnecting in ${delay.inSeconds}s...');
-    Timer(delay, _connect);
+    Timer(delay, () => unawaited(_connect()));
   }
 
   void _startHeartbeat() {

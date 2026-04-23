@@ -122,7 +122,8 @@ class WebSocketApiClient {
     final signature = await signer.sign(canonicalPayload);
     params['signature'] = signature.value;
 
-    final response = await sendRequest('session.logon', params);
+    final response =
+        await sendRequest('session.logon', params) as Map<String, dynamic>;
     if (response['status'] == 200) {
       _isLoggedIn = true;
       _logger.info('WebSocket session logon successful');
@@ -210,7 +211,11 @@ class WebSocketApiClient {
   }
 
   void _onError(Object error, StackTrace stackTrace) {
-    _logger.error('WebSocket API error', error: error, stackTrace: stackTrace);
+    _logger.error(
+      'WebSocket API error',
+      error: error,
+      stackTrace: stackTrace,
+    );
     _scheduleReconnect();
   }
 
@@ -232,7 +237,7 @@ class WebSocketApiClient {
     final delay = _reconnectionStrategy.getDelay(_reconnectAttempts++);
     _logger.info('Reconnecting to WebSocket API in ${delay.inSeconds}s...');
     _statusController.add(WebSocketApiClientStatus.reconnecting);
-    Timer(delay, connect);
+    Timer(delay, () => unawaited(connect()));
   }
 
   void _startHeartbeat() {
@@ -241,8 +246,9 @@ class WebSocketApiClient {
       final now = DateTime.now();
       if (_lastFrameTime != null &&
           now.difference(_lastFrameTime!) > pingInterval * 3) {
-        _logger
-            .warning('WebSocket API heartbeat timeout, forcing reconnection');
+        _logger.warning(
+          'WebSocket API heartbeat timeout, forcing reconnection',
+        );
         _channel?.close();
         _scheduleReconnect();
       } else {

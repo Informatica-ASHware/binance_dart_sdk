@@ -102,34 +102,39 @@ void main() {
       );
     });
 
-    test('circuit breaker blocks requests after failures', () async {
-      final mockClient400 = MockClient((request) async {
-        return http.Response('Error', 400);
-      });
+    test(
+      'circuit breaker blocks requests after failures',
+      () async {
+        final mockClient400 = MockClient((request) async {
+          return http.Response('Error', 400);
+        });
 
-      final client = DefaultBinanceHttpClient(
-        environment: BinanceEnvironment.mainnet,
-        httpClient: mockClient400,
-      );
+        final client = DefaultBinanceHttpClient(
+          environment: BinanceEnvironment.mainnet,
+          httpClient: mockClient400,
+        );
 
-      for (var i = 0; i < 5; i++) {
-        await client.send(
+        for (var i = 0; i < 5; i++) {
+          await Future<void>.delayed(const Duration(milliseconds: 10));
+          await client.send(
+            const BinanceRequest(method: HttpMethod.get, path: '/api/v3/ping'),
+          );
+        }
+
+        final result = await client.send(
           const BinanceRequest(method: HttpMethod.get, path: '/api/v3/ping'),
         );
-      }
 
-      final result = await client.send(
-        const BinanceRequest(method: HttpMethod.get, path: '/api/v3/ping'),
-      );
-
-      expect(result.isFailure, isTrue);
-      result.fold(
-        onSuccess: (_) => fail('Should fail'),
-        onFailure: (error) {
-          expect(error.message, contains('Circuit breaker open'));
-        },
-      );
-    });
+        expect(result.isFailure, isTrue);
+        result.fold(
+          onSuccess: (_) => fail('Should fail'),
+          onFailure: (error) {
+            expect(error.message, contains('Circuit breaker open'));
+          },
+        );
+      },
+      timeout: const Timeout(Duration(seconds: 10)),
+    );
 
     test('interceptors are called in order', () async {
       final mockClient = MockClient((request) async {
