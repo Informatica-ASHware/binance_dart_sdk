@@ -25,6 +25,31 @@ final class AccountInfo {
     required this.uid,
   });
 
+  /// Creates an [AccountInfo] from a JSON map.
+  factory AccountInfo.fromJson(Map<String, dynamic> json) {
+    return AccountInfo(
+      makerCommission: json['makerCommission'] as int,
+      takerCommission: json['takerCommission'] as int,
+      buyerCommission: json['buyerCommission'] as int,
+      sellerCommission: json['sellerCommission'] as int,
+      commissionRates: json['commissionRates'] as Map<String, dynamic>,
+      canTrade: json['canTrade'] as bool,
+      canWithdraw: json['canWithdraw'] as bool,
+      canDeposit: json['canDeposit'] as bool,
+      brokered: json['brokered'] as bool,
+      requireSelfTradePrevention: json['requireSelfTradePrevention'] as bool,
+      preventSor: json['preventSor'] as bool,
+      updateTime:
+          DateTime.fromMillisecondsSinceEpoch(json['updateTime'] as int),
+      accountType: json['accountType'] as String,
+      balances: (json['balances'] as List<dynamic>)
+          .map((b) => AssetBalance.fromJson(b as Map<String, dynamic>))
+          .toList(),
+      permissions: (json['permissions'] as List<dynamic>).cast<String>(),
+      uid: json['uid'] as int,
+    );
+  }
+
   /// Maker commission.
   final int makerCommission;
 
@@ -72,32 +97,6 @@ final class AccountInfo {
 
   /// Unique user ID.
   final int uid;
-
-  /// Creates an [AccountInfo] from a JSON map.
-  factory AccountInfo.fromJson(Map<String, dynamic> json) {
-    return AccountInfo(
-      makerCommission: json['makerCommission'] as int,
-      takerCommission: json['takerCommission'] as int,
-      buyerCommission: json['buyerCommission'] as int,
-      sellerCommission: json['sellerCommission'] as int,
-      commissionRates: json['commissionRates'] as Map<String, dynamic>,
-      canTrade: json['canTrade'] as bool,
-      canWithdraw: json['canWithdraw'] as bool,
-      canDeposit: json['canDeposit'] as bool,
-      brokered: json['brokered'] as bool,
-      requireSelfTradePrevention: json['requireSelfTradePrevention'] as bool,
-      preventSor: json['preventSor'] as bool,
-      updateTime: DateTime.fromMillisecondsSinceEpoch(
-        json['updateTime'] as int,
-      ),
-      accountType: json['accountType'] as String,
-      balances: (json['balances'] as List<dynamic>)
-          .map((b) => AssetBalance.fromJson(b as Map<String, dynamic>))
-          .toList(),
-      permissions: (json['permissions'] as List<dynamic>).cast<String>(),
-      uid: json['uid'] as int,
-    );
-  }
 }
 
 /// Represents an asset balance.
@@ -110,15 +109,6 @@ final class AssetBalance {
     required this.locked,
   });
 
-  /// Asset.
-  final Asset asset;
-
-  /// Free balance.
-  final Quantity free;
-
-  /// Locked balance.
-  final Quantity locked;
-
   /// Creates an [AssetBalance] from a JSON map.
   factory AssetBalance.fromJson(Map<String, dynamic> json) {
     return AssetBalance(
@@ -127,6 +117,15 @@ final class AssetBalance {
       locked: Quantity.fromString(json['locked'] as String),
     );
   }
+
+  /// Asset.
+  final Asset asset;
+
+  /// Free balance.
+  final Quantity free;
+
+  /// Locked balance.
+  final Quantity locked;
 }
 
 /// Represents a newly created order.
@@ -151,6 +150,54 @@ final class NewOrderResponse {
     this.selfTradePreventionMode,
     this.fills,
   });
+
+  /// Creates a [NewOrderResponse] from a JSON map.
+  factory NewOrderResponse.fromJson(Map<String, dynamic> json) {
+    return NewOrderResponse(
+      symbol: Symbol(json['symbol'] as String),
+      orderId: json['orderId'] as int,
+      orderListId: json['orderListId'] as int,
+      clientOrderId: json['clientOrderId'] as String,
+      transactTime:
+          DateTime.fromMillisecondsSinceEpoch(json['transactTime'] as int),
+      price: json.containsKey('price')
+          ? Price.fromString(json['price'] as String)
+          : null,
+      origQty: json.containsKey('origQty')
+          ? Quantity.fromString(json['origQty'] as String)
+          : null,
+      executedQty: json.containsKey('executedQty')
+          ? Quantity.fromString(json['executedQty'] as String)
+          : null,
+      cummulativeQuoteQty: json.containsKey('cummulativeQuoteQty')
+          ? Quantity.fromString(json['cummulativeQuoteQty'] as String)
+          : null,
+      status: json.containsKey('status')
+          ? OrderStatus.values.firstWhere((e) => e.value == json['status'])
+          : null,
+      timeInForce: json.containsKey('timeInForce')
+          ? TimeInForce.values.firstWhere((e) => e.value == json['timeInForce'])
+          : null,
+      type: json.containsKey('type')
+          ? OrderType.values.firstWhere((e) => e.value == json['type'])
+          : null,
+      side: json.containsKey('side')
+          ? Side.values.firstWhere((e) => e.value == json['side'])
+          : null,
+      workingTime: json.containsKey('workingTime')
+          ? DateTime.fromMillisecondsSinceEpoch(json['workingTime'] as int)
+          : null,
+      selfTradePreventionMode: json.containsKey('selfTradePreventionMode')
+          ? SelfTradePreventionMode.values
+              .firstWhere((e) => e.value == json['selfTradePreventionMode'])
+          : null,
+      fills: json.containsKey('fills')
+          ? (json['fills'] as List<dynamic>)
+              .map((f) => OrderFill.fromJson(f as Map<String, dynamic>))
+              .toList()
+          : null,
+    );
+  }
 
   /// Symbol.
   final Symbol symbol;
@@ -199,56 +246,6 @@ final class NewOrderResponse {
 
   /// Fills.
   final List<OrderFill>? fills;
-
-  /// Creates a [NewOrderResponse] from a JSON map.
-  factory NewOrderResponse.fromJson(Map<String, dynamic> json) {
-    return NewOrderResponse(
-      symbol: Symbol(json['symbol'] as String),
-      orderId: json['orderId'] as int,
-      orderListId: json['orderListId'] as int,
-      clientOrderId: json['clientOrderId'] as String,
-      transactTime: DateTime.fromMillisecondsSinceEpoch(
-        json['transactTime'] as int,
-      ),
-      price: json.containsKey('price')
-          ? Price.fromString(json['price'] as String)
-          : null,
-      origQty: json.containsKey('origQty')
-          ? Quantity.fromString(json['origQty'] as String)
-          : null,
-      executedQty: json.containsKey('executedQty')
-          ? Quantity.fromString(json['executedQty'] as String)
-          : null,
-      cummulativeQuoteQty: json.containsKey('cummulativeQuoteQty')
-          ? Quantity.fromString(json['cummulativeQuoteQty'] as String)
-          : null,
-      status: json.containsKey('status')
-          ? OrderStatus.values.firstWhere((e) => e.value == json['status'])
-          : null,
-      timeInForce: json.containsKey('timeInForce')
-          ? TimeInForce.values.firstWhere((e) => e.value == json['timeInForce'])
-          : null,
-      type: json.containsKey('type')
-          ? OrderType.values.firstWhere((e) => e.value == json['type'])
-          : null,
-      side: json.containsKey('side')
-          ? Side.values.firstWhere((e) => e.value == json['side'])
-          : null,
-      workingTime: json.containsKey('workingTime')
-          ? DateTime.fromMillisecondsSinceEpoch(json['workingTime'] as int)
-          : null,
-      selfTradePreventionMode: json.containsKey('selfTradePreventionMode')
-          ? SelfTradePreventionMode.values.firstWhere(
-              (e) => e.value == json['selfTradePreventionMode'],
-            )
-          : null,
-      fills: json.containsKey('fills')
-          ? (json['fills'] as List<dynamic>)
-              .map((f) => OrderFill.fromJson(f as Map<String, dynamic>))
-              .toList()
-          : null,
-    );
-  }
 }
 
 /// Represents an order fill.
@@ -262,6 +259,17 @@ final class OrderFill {
     required this.commissionAsset,
     this.tradeId,
   });
+
+  /// Creates an [OrderFill] from a JSON map.
+  factory OrderFill.fromJson(Map<String, dynamic> json) {
+    return OrderFill(
+      price: Price.fromString(json['price'] as String),
+      qty: Quantity.fromString(json['qty'] as String),
+      commission: Quantity.fromString(json['commission'] as String),
+      commissionAsset: Asset(json['commissionAsset'] as String),
+      tradeId: json['tradeId'] as int?,
+    );
+  }
 
   /// Price.
   final Price price;
@@ -277,17 +285,6 @@ final class OrderFill {
 
   /// Trade ID.
   final int? tradeId;
-
-  /// Creates an [OrderFill] from a JSON map.
-  factory OrderFill.fromJson(Map<String, dynamic> json) {
-    return OrderFill(
-      price: Price.fromString(json['price'] as String),
-      qty: Quantity.fromString(json['qty'] as String),
-      commission: Quantity.fromString(json['commission'] as String),
-      commissionAsset: Asset(json['commissionAsset'] as String),
-      tradeId: json['tradeId'] as int?,
-    );
-  }
 }
 
 /// Represents an order.
@@ -316,6 +313,38 @@ final class Order {
     required this.origQuoteOrderQty,
     required this.selfTradePreventionMode,
   });
+
+  /// Creates an [Order] from a JSON map.
+  factory Order.fromJson(Map<String, dynamic> json) {
+    return Order(
+      symbol: Symbol(json['symbol'] as String),
+      orderId: json['orderId'] as int,
+      orderListId: json['orderListId'] as int,
+      clientOrderId: json['clientOrderId'] as String,
+      price: Price.fromString(json['price'] as String),
+      origQty: Quantity.fromString(json['origQty'] as String),
+      executedQty: Quantity.fromString(json['executedQty'] as String),
+      cummulativeQuoteQty:
+          Quantity.fromString(json['cummulativeQuoteQty'] as String),
+      status: OrderStatus.values.firstWhere((e) => e.value == json['status']),
+      timeInForce:
+          TimeInForce.values.firstWhere((e) => e.value == json['timeInForce']),
+      type: OrderType.values.firstWhere((e) => e.value == json['type']),
+      side: Side.values.firstWhere((e) => e.value == json['side']),
+      stopPrice: Price.fromString(json['stopPrice'] as String),
+      icebergQty: Quantity.fromString(json['icebergQty'] as String),
+      time: DateTime.fromMillisecondsSinceEpoch(json['time'] as int),
+      updateTime:
+          DateTime.fromMillisecondsSinceEpoch(json['updateTime'] as int),
+      isWorking: json['isWorking'] as bool,
+      workingTime:
+          DateTime.fromMillisecondsSinceEpoch(json['workingTime'] as int),
+      origQuoteOrderQty:
+          Quantity.fromString(json['origQuoteOrderQty'] as String),
+      selfTradePreventionMode: SelfTradePreventionMode.values
+          .firstWhere((e) => e.value == json['selfTradePreventionMode']),
+    );
+  }
 
   /// Symbol.
   final Symbol symbol;
@@ -376,44 +405,6 @@ final class Order {
 
   /// STP mode.
   final SelfTradePreventionMode selfTradePreventionMode;
-
-  /// Creates an [Order] from a JSON map.
-  factory Order.fromJson(Map<String, dynamic> json) {
-    return Order(
-      symbol: Symbol(json['symbol'] as String),
-      orderId: json['orderId'] as int,
-      orderListId: json['orderListId'] as int,
-      clientOrderId: json['clientOrderId'] as String,
-      price: Price.fromString(json['price'] as String),
-      origQty: Quantity.fromString(json['origQty'] as String),
-      executedQty: Quantity.fromString(json['executedQty'] as String),
-      cummulativeQuoteQty: Quantity.fromString(
-        json['cummulativeQuoteQty'] as String,
-      ),
-      status: OrderStatus.values.firstWhere((e) => e.value == json['status']),
-      timeInForce: TimeInForce.values.firstWhere(
-        (e) => e.value == json['timeInForce'],
-      ),
-      type: OrderType.values.firstWhere((e) => e.value == json['type']),
-      side: Side.values.firstWhere((e) => e.value == json['side']),
-      stopPrice: Price.fromString(json['stopPrice'] as String),
-      icebergQty: Quantity.fromString(json['icebergQty'] as String),
-      time: DateTime.fromMillisecondsSinceEpoch(json['time'] as int),
-      updateTime: DateTime.fromMillisecondsSinceEpoch(
-        json['updateTime'] as int,
-      ),
-      isWorking: json['isWorking'] as bool,
-      workingTime: DateTime.fromMillisecondsSinceEpoch(
-        json['workingTime'] as int,
-      ),
-      origQuoteOrderQty: Quantity.fromString(
-        json['origQuoteOrderQty'] as String,
-      ),
-      selfTradePreventionMode: SelfTradePreventionMode.values.firstWhere(
-        (e) => e.value == json['selfTradePreventionMode'],
-      ),
-    );
-  }
 }
 
 /// Represents a trade by the current user.
@@ -435,6 +426,25 @@ final class MyTrade {
     required this.isMaker,
     required this.isBestMatch,
   });
+
+  /// Creates a [MyTrade] from a JSON map.
+  factory MyTrade.fromJson(Map<String, dynamic> json) {
+    return MyTrade(
+      symbol: Symbol(json['symbol'] as String),
+      id: json['id'] as int,
+      orderId: json['orderId'] as int,
+      orderListId: json['orderListId'] as int,
+      price: Price.fromString(json['price'] as String),
+      qty: Quantity.fromString(json['qty'] as String),
+      quoteQty: Quantity.fromString(json['quoteQty'] as String),
+      commission: Quantity.fromString(json['commission'] as String),
+      commissionAsset: Asset(json['commissionAsset'] as String),
+      time: DateTime.fromMillisecondsSinceEpoch(json['time'] as int),
+      isBuyer: json['isBuyer'] as bool,
+      isMaker: json['isMaker'] as bool,
+      isBestMatch: json['isBestMatch'] as bool,
+    );
+  }
 
   /// Symbol.
   final Symbol symbol;
@@ -474,23 +484,4 @@ final class MyTrade {
 
   /// Whether it's the best match.
   final bool isBestMatch;
-
-  /// Creates a [MyTrade] from a JSON map.
-  factory MyTrade.fromJson(Map<String, dynamic> json) {
-    return MyTrade(
-      symbol: Symbol(json['symbol'] as String),
-      id: json['id'] as int,
-      orderId: json['orderId'] as int,
-      orderListId: json['orderListId'] as int,
-      price: Price.fromString(json['price'] as String),
-      qty: Quantity.fromString(json['qty'] as String),
-      quoteQty: Quantity.fromString(json['quoteQty'] as String),
-      commission: Quantity.fromString(json['commission'] as String),
-      commissionAsset: Asset(json['commissionAsset'] as String),
-      time: DateTime.fromMillisecondsSinceEpoch(json['time'] as int),
-      isBuyer: json['isBuyer'] as bool,
-      isMaker: json['isMaker'] as bool,
-      isBestMatch: json['isBestMatch'] as bool,
-    );
-  }
 }

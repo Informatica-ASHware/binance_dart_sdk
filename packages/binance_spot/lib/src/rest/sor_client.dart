@@ -59,8 +59,8 @@ class BinanceSpotSorClient {
     );
 
     final result = await _httpClient.send(request);
-    return result.map(
-      (data) => NewOrderResponse.fromJson(data as Map<String, dynamic>),
+    return result.map<NewOrderResponse>(
+      (dynamic data) => NewOrderResponse.fromJson(data as Map<String, dynamic>),
     );
   }
 
@@ -114,6 +114,6 @@ class BinanceSpotSorClient {
     );
 
     final result = await _httpClient.send(request);
-    return result.map((_) => null);
+    return result.map<void>((dynamic _) {});
   }
 }

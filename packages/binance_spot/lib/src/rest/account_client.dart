@@ -59,8 +59,8 @@ class BinanceSpotAccountClient {
     );
 
     final result = await _httpClient.send(request);
-    return result.map(
-      (data) => NewOrderResponse.fromJson(data as Map<String, dynamic>),
+    return result.map<NewOrderResponse>(
+      (dynamic data) => NewOrderResponse.fromJson(data as Map<String, dynamic>),
     );
   }
 
@@ -114,7 +114,7 @@ class BinanceSpotAccountClient {
     );
 
     final result = await _httpClient.send(request);
-    return result.map((_) => null);
+    return result.map<void>((dynamic _) {});
   }
 
   /// Check an order's status.
@@ -142,7 +142,9 @@ class BinanceSpotAccountClient {
     );
 
     final result = await _httpClient.send(request);
-    return result.map((data) => Order.fromJson(data as Map<String, dynamic>));
+    return result.map<Order>(
+      (dynamic data) => Order.fromJson(data as Map<String, dynamic>),
+    );
   }
 
   /// Cancel an active order.
@@ -172,7 +174,9 @@ class BinanceSpotAccountClient {
     );
 
     final result = await _httpClient.send(request);
-    return result.map((data) => Order.fromJson(data as Map<String, dynamic>));
+    return result.map<Order>(
+      (dynamic data) => Order.fromJson(data as Map<String, dynamic>),
+    );
   }
 
   /// Get current account information.
@@ -197,8 +201,8 @@ class BinanceSpotAccountClient {
     );
 
     final result = await _httpClient.send(request);
-    return result.map(
-      (data) => AccountInfo.fromJson(data as Map<String, dynamic>),
+    return result.map<AccountInfo>(
+      (dynamic data) => AccountInfo.fromJson(data as Map<String, dynamic>),
     );
   }
 
@@ -222,8 +226,8 @@ class BinanceSpotAccountClient {
     );
 
     final result = await _httpClient.send(request);
-    return result.map(
-      (data) => (data as List<dynamic>)
+    return result.map<List<Order>>(
+      (dynamic data) => (data as List<dynamic>)
           .map((o) => Order.fromJson(o as Map<String, dynamic>))
           .toList(),
     );
@@ -240,7 +244,10 @@ class BinanceSpotAccountClient {
     int limit = 500,
     int? recvWindow,
   }) async {
-    final params = {'symbol': symbol.value, 'limit': limit.toString()};
+    final params = {
+      'symbol': symbol.value,
+      'limit': limit.toString(),
+    };
     if (orderId != null) params['orderId'] = orderId.toString();
     if (startTime != null) {
       params['startTime'] = startTime.millisecondsSinceEpoch.toString();
@@ -259,8 +266,8 @@ class BinanceSpotAccountClient {
     );
 
     final result = await _httpClient.send(request);
-    return result.map(
-      (data) => (data as List<dynamic>)
+    return result.map<List<Order>>(
+      (dynamic data) => (data as List<dynamic>)
           .map((o) => Order.fromJson(o as Map<String, dynamic>))
           .toList(),
     );
@@ -278,7 +285,10 @@ class BinanceSpotAccountClient {
     int limit = 500,
     int? recvWindow,
   }) async {
-    final params = {'symbol': symbol.value, 'limit': limit.toString()};
+    final params = {
+      'symbol': symbol.value,
+      'limit': limit.toString(),
+    };
     if (orderId != null) params['orderId'] = orderId.toString();
     if (startTime != null) {
       params['startTime'] = startTime.millisecondsSinceEpoch.toString();
@@ -298,8 +308,8 @@ class BinanceSpotAccountClient {
     );
 
     final result = await _httpClient.send(request);
-    return result.map(
-      (data) => (data as List<dynamic>)
+    return result.map<List<MyTrade>>(
+      (dynamic data) => (data as List<dynamic>)
           .map((t) => MyTrade.fromJson(t as Map<String, dynamic>))
           .toList(),
     );

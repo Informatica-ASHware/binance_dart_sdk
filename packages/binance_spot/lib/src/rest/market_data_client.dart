@@ -12,19 +12,19 @@ class BinanceSpotMarketDataClient {
   ///
   /// Weight: 1
   Future<Result<void, BinanceError>> ping() async {
-    final request = const BinanceRequest(
+    const request = BinanceRequest(
       method: HttpMethod.get,
       path: '/api/v3/ping',
     );
     final result = await _httpClient.send(request);
-    return result.map((_) => null);
+    return result.map((_) {});
   }
 
   /// Check server time.
   ///
   /// Weight: 1
   Future<Result<DateTime, BinanceError>> time() async {
-    final request = const BinanceRequest(
+    const request = BinanceRequest(
       method: HttpMethod.get,
       path: '/api/v3/time',
     );
@@ -62,9 +62,8 @@ class BinanceSpotMarketDataClient {
     }
 
     final result = await _httpClient.send(builder.build());
-    return result.map(
-      (data) => ExchangeInfo.fromJson(data as Map<String, dynamic>),
-    );
+    return result
+        .map((data) => ExchangeInfo.fromJson(data as Map<String, dynamic>));
   }
 
   /// Order book.
@@ -78,13 +77,15 @@ class BinanceSpotMarketDataClient {
     final request = BinanceRequest(
       method: HttpMethod.get,
       path: '/api/v3/depth',
-      queryParams: {'symbol': symbol.value, 'limit': limit.toString()},
+      queryParams: {
+        'symbol': symbol.value,
+        'limit': limit.toString(),
+      },
       weight: weight,
     );
     final result = await _httpClient.send(request);
-    return result.map(
-      (data) => OrderBook.fromJson(data as Map<String, dynamic>),
-    );
+    return result
+        .map((data) => OrderBook.fromJson(data as Map<String, dynamic>));
   }
 
   int _getDepthWeight(int limit) {
@@ -105,7 +106,10 @@ class BinanceSpotMarketDataClient {
     final request = BinanceRequest(
       method: HttpMethod.get,
       path: '/api/v3/trades',
-      queryParams: {'symbol': symbol.value, 'limit': limit.toString()},
+      queryParams: {
+        'symbol': symbol.value,
+        'limit': limit.toString(),
+      },
       weight: 10,
     );
     final result = await _httpClient.send(request);
@@ -124,7 +128,10 @@ class BinanceSpotMarketDataClient {
     int limit = 500,
     int? fromId,
   }) async {
-    final params = {'symbol': symbol.value, 'limit': limit.toString()};
+    final params = {
+      'symbol': symbol.value,
+      'limit': limit.toString(),
+    };
     if (fromId != null) params['fromId'] = fromId.toString();
 
     final request = BinanceRequest(
@@ -152,7 +159,10 @@ class BinanceSpotMarketDataClient {
     DateTime? endTime,
     int limit = 500,
   }) async {
-    final params = {'symbol': symbol.value, 'limit': limit.toString()};
+    final params = {
+      'symbol': symbol.value,
+      'limit': limit.toString(),
+    };
     if (fromId != null) params['fromId'] = fromId.toString();
     if (startTime != null) {
       params['startTime'] = startTime.millisecondsSinceEpoch.toString();
