@@ -477,7 +477,9 @@ class OcoOrderBuilder {
       quantity: q,
     );
 
-    return limitValidation.flatMap((_) => Result.success(OcoOrderRequest(
+    return limitValidation.flatMap(
+      (_) => Result.success(
+        OcoOrderRequest(
           symbol: _symbol,
           side: _side,
           quantity: q,
@@ -492,6 +494,8 @@ class OcoOrderBuilder {
           stopLimitTimeInForce: _stopLimitTimeInForce,
           newOrderRespType: _newOrderRespType,
           recvWindow: _recvWindow,
-        )));
+        ),
+      ),
+    );
   }
 }
