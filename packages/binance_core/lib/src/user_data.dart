@@ -125,6 +125,8 @@ final class OrderTradeUpdate extends UserDataEvent {
     required this.lastFilledPrice,
     required this.transactionTime,
     this.tradeId,
+    this.isMargin = false,
+    this.isolatedSymbol,
   });
 
   /// The symbol associated with the order.
@@ -165,6 +167,12 @@ final class OrderTradeUpdate extends UserDataEvent {
 
   /// The ID of the trade, if applicable.
   final int? tradeId;
+
+  /// Whether this is a margin order.
+  final bool isMargin;
+
+  /// The isolated symbol if applicable.
+  final Symbol? isolatedSymbol;
 }
 
 /// Event triggered when the listenKey expires.
@@ -506,6 +514,10 @@ class SpotUserDataFeed extends BaseUserDataFeed {
           transactionTime:
               DateTime.fromMillisecondsSinceEpoch(data['T'] as int),
           tradeId: data['t'] as int?,
+          isMargin: data['X'] == 'MARGIN_BUY' ||
+              data['X'] == 'MARGIN_SELL' ||
+              _venue == BinanceVenue.margin ||
+              _venue == BinanceVenue.isolatedMargin,
         ),
       'listenKeyExpired' => const ListenKeyExpired(),
       _ => null,

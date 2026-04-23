@@ -1,5 +1,5 @@
-name: binance_spot
-description: Cobertura completa del API de Binance Spot (REST y WebSockets).
+name: binance_margin
+description: Cobertura de Binance Margin Trading (Cross e Isolated).
 version: 0.1.0
 publish_to: none
 resolution: workspace
@@ -9,7 +9,6 @@ environment:
 
 dependencies:
   binance_core: any
-  http: ^1.2.0
   meta: ^1.10.0
 
 dev_dependencies:

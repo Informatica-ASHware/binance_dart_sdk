@@ -5,3 +5,5 @@ dev_dependencies:
   melos: ^6.0.0
 workspace:
   - packages/binance_core
+  - packages/binance_margin
+  - packages/binance_spot
