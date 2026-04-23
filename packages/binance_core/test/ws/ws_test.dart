@@ -172,8 +172,7 @@ void main() {
 
       for (var i = 0; i < 40; i++) {
         final lastUrl = provider.lastUrl;
-        if (lastUrl != null &&
-            lastUrl.queryParameters.containsKey('streams')) {
+        if (lastUrl != null && lastUrl.queryParameters.containsKey('streams')) {
           final streams = lastUrl.queryParameters['streams']!;
           if (streams.contains('btcusdt@aggTrade') &&
               streams.contains('ethusdt@aggTrade')) break;

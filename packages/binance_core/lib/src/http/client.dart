@@ -128,8 +128,7 @@ class DefaultBinanceHttpClient implements BinanceHttpClient {
       final error = result.fold(onSuccess: (_) => null, onFailure: (e) => e);
 
       // Check if we should retry
-      if (error != null &&
-          _shouldRetry(response, error, attempt)) {
+      if (error != null && _shouldRetry(response, error, attempt)) {
         attempt++;
         final delay = _retryPolicy.getDelay(attempt);
         await Future<void>.delayed(delay);
