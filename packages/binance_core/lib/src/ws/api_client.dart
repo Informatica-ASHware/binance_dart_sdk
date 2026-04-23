@@ -117,6 +117,14 @@ class WebSocketApiClient {
 
     final signer = _createSigner(credentials);
     final canonicalPayload = _buildCanonicalPayload(params);
+
+    _hooks.telemetry.report(
+      SignatureComputed(
+        timestamp: DateTime.now(),
+        payload: canonicalPayload,
+      ),
+    );
+
     final signature = await signer.sign(canonicalPayload);
     params['signature'] = signature.value;
 
@@ -230,6 +238,15 @@ class WebSocketApiClient {
     final delay = _reconnectionStrategy.getDelay(_reconnectAttempts++);
     _logger.info('Reconnecting to WebSocket API in ${delay.inSeconds}s...');
     _statusController.add(WebSocketApiClientStatus.reconnecting);
+
+    _hooks.telemetry.report(
+      WebSocketReconnecting(
+        timestamp: DateTime.now(),
+        url: _baseUrl,
+        attempt: _reconnectAttempts,
+      ),
+    );
+
     Timer(delay, () => unawaited(connect()));
   }
 

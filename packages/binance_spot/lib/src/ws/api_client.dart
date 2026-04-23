@@ -127,7 +127,7 @@ class BinanceSpotWsApiClient {
     final error = response['error'] as Map?;
     if (error != null) {
       return Result.failure(
-        BinanceApiError(
+        BinanceApiError.fromCode(
           code: error['code'] as int? ?? -1,
           message: error['msg'] as String? ?? 'Unknown WS error',
         ),

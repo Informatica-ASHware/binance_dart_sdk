@@ -364,18 +364,6 @@ enum BinanceVenue {
 
 /// Unified API for User Data Streams.
 abstract interface class UserDataFeed {
-  /// Stream of unified typed events.
-  Stream<UserDataEvent> get events;
-
-  /// Current status of the feed.
-  Stream<UserDataFeedStatus> get status;
-
-  /// Starts the feed, choosing the correct mechanism for the venue.
-  Future<void> start();
-
-  /// Stops the feed and releases resources.
-  Future<void> stop();
-
   /// Factory method to create the appropriate [UserDataFeed] for the venue.
   factory UserDataFeed.create({
     required BinanceVenue venue,
@@ -398,6 +386,18 @@ abstract interface class UserDataFeed {
       );
     }
   }
+
+  /// Stream of unified typed events.
+  Stream<UserDataEvent> get events;
+
+  /// Current status of the feed.
+  Stream<UserDataFeedStatus> get status;
+
+  /// Starts the feed, choosing the correct mechanism for the venue.
+  Future<void> start();
+
+  /// Stops the feed and releases resources.
+  Future<void> stop();
 }
 
 /// Base class for UserDataFeed implementations.
@@ -841,7 +841,7 @@ class FuturesUserDataFeed extends BaseUserDataFeed {
         unawaited(
           _httpClient.send(
             BinanceRequest(
-              method: HttpMethod.delete,
+              method: HttpMethod.post,
               path: path,
               queryParams: {'listenKey': _listenKey!},
               securityType: BinanceSecurityType.userData,

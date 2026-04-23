@@ -185,7 +185,7 @@ void main() {
               'up': '0',
               'mt': 'crossed',
               'iw': '0',
-              'ps': 'BOTH'
+              'ps': 'BOTH',
             },
           ],
         },
