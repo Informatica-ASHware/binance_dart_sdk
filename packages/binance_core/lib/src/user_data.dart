@@ -80,13 +80,20 @@ sealed class UserDataEvent {
 /// Event triggered when account information is updated.
 final class AccountUpdate extends UserDataEvent {
   /// Creates an [AccountUpdate] event.
-  const AccountUpdate({required this.updateTime, required this.balances});
+  const AccountUpdate({
+    required this.updateTime,
+    required this.balances,
+    this.positions = const [],
+  });
 
   /// The time the update occurred.
   final DateTime updateTime;
 
   /// The updated balances.
   final List<AccountBalance> balances;
+
+  /// The updated positions (Futures only).
+  final List<AccountPosition> positions;
 }
 
 /// Simplified balance update event.
@@ -127,6 +134,9 @@ final class OrderTradeUpdate extends UserDataEvent {
     this.tradeId,
     this.isMargin = false,
     this.isolatedSymbol,
+    this.averagePrice,
+    this.realizedProfit,
+    this.positionSide,
   });
 
   /// The symbol associated with the order.
@@ -173,6 +183,15 @@ final class OrderTradeUpdate extends UserDataEvent {
 
   /// The isolated symbol if applicable.
   final Symbol? isolatedSymbol;
+
+  /// Average price (Futures only).
+  final Decimal? averagePrice;
+
+  /// Realized profit (Futures only).
+  final Decimal? realizedProfit;
+
+  /// Position side (Futures only).
+  final String? positionSide;
 }
 
 /// Event triggered when the listenKey expires.
@@ -193,10 +212,24 @@ final class MarginCall extends UserDataEvent {
 /// Event triggered when account configuration changes.
 final class AccountConfigUpdate extends UserDataEvent {
   /// Creates an [AccountConfigUpdate] event.
-  const AccountConfigUpdate({required this.eventTime});
+  const AccountConfigUpdate({
+    required this.eventTime,
+    this.symbol,
+    this.leverage,
+    this.multiAssetsMargin,
+  });
 
   /// The time the event occurred.
   final DateTime eventTime;
+
+  /// The symbol whose configuration was updated.
+  final Symbol? symbol;
+
+  /// The new leverage.
+  final int? leverage;
+
+  /// The new multi-assets margin status.
+  final bool? multiAssetsMargin;
 }
 
 /// Event triggered when leverage changes.
@@ -225,6 +258,7 @@ final class AccountBalance {
     required this.asset,
     required this.free,
     required this.locked,
+    this.crossWalletBalance,
   });
 
   /// The asset associated with this balance.
@@ -235,6 +269,45 @@ final class AccountBalance {
 
   /// The amount of locked asset.
   final Decimal locked;
+
+  /// Cross wallet balance (Futures only).
+  final Decimal? crossWalletBalance;
+}
+
+/// Represents a position in an account update.
+@immutable
+final class AccountPosition {
+  /// Creates an [AccountPosition].
+  const AccountPosition({
+    required this.symbol,
+    required this.amount,
+    required this.entryPrice,
+    required this.unrealizedProfit,
+    required this.marginType,
+    required this.isolatedWallet,
+    required this.positionSide,
+  });
+
+  /// The symbol of the position.
+  final Symbol symbol;
+
+  /// The position amount.
+  final Decimal amount;
+
+  /// The average entry price.
+  final Decimal entryPrice;
+
+  /// The unrealized profit.
+  final Decimal unrealizedProfit;
+
+  /// The margin type (e.g., ISOLATED, CROSSED).
+  final String marginType;
+
+  /// The amount in the isolated wallet.
+  final Decimal isolatedWallet;
+
+  /// The position side (e.g., BOTH, LONG, SHORT).
+  final String positionSide;
 }
 
 /// Represents a position in a margin call.
@@ -679,13 +752,27 @@ class FuturesUserDataFeed extends BaseUserDataFeed {
     return switch (eventType) {
       'ACCOUNT_UPDATE' => AccountUpdate(
           updateTime: DateTime.fromMillisecondsSinceEpoch(data['E'] as int),
-          balances: ((data['a'] as Map)['B'] as List)
+          balances: (((data['a'] as Map)['B'] as List?) ?? [])
               .map(
                 (b) => AccountBalance(
                   asset: Asset((b as Map)['a'] as String),
                   free: Decimal.parse(b['wb'] as String),
-                  locked:
-                      Decimal.zero, // Futures doesn't have locked per se here
+                  locked: Decimal.zero,
+                  crossWalletBalance:
+                      b['cw'] != null ? Decimal.parse(b['cw'] as String) : null,
+                ),
+              )
+              .toList(),
+          positions: (((data['a'] as Map)['P'] as List?) ?? [])
+              .map(
+                (p) => AccountPosition(
+                  symbol: Symbol((p as Map)['s'] as String),
+                  amount: Decimal.parse(p['pa'] as String),
+                  entryPrice: Decimal.parse(p['ep'] as String),
+                  unrealizedProfit: Decimal.parse(p['up'] as String),
+                  marginType: p['mt'] as String,
+                  isolatedWallet: Decimal.parse(p['iw'] as String),
+                  positionSide: p['ps'] as String,
                 ),
               )
               .toList(),
@@ -707,12 +794,11 @@ class FuturesUserDataFeed extends BaseUserDataFeed {
           transactionTime:
               DateTime.fromMillisecondsSinceEpoch(data['T'] as int),
           tradeId: (data['o'] as Map)['t'] as int?,
+          averagePrice: Decimal.parse((data['o'] as Map)['ap'] as String),
+          realizedProfit: Decimal.parse((data['o'] as Map)['rp'] as String),
+          positionSide: (data['o'] as Map)['ps'] as String,
         ),
       'listenKeyExpired' => const ListenKeyExpired(),
-      'LEVERAGE_UPDATE' => LeverageUpdate(
-          symbol: Symbol((data['ac'] as Map<dynamic, dynamic>)['s'] as String),
-          leverage: (data['ac'] as Map<dynamic, dynamic>)['l'] as int,
-        ),
       'MARGIN_CALL' => MarginCall(
           positions: (data['p'] as List)
               .map(
@@ -727,6 +813,12 @@ class FuturesUserDataFeed extends BaseUserDataFeed {
         ),
       'ACCOUNT_CONFIG_UPDATE' => AccountConfigUpdate(
           eventTime: DateTime.fromMillisecondsSinceEpoch(data['E'] as int),
+          symbol: data['ac'] != null
+              ? Symbol((data['ac'] as Map)['s'] as String)
+              : null,
+          leverage: data['ac'] != null ? (data['ac'] as Map)['l'] as int : null,
+          multiAssetsMargin:
+              data['ai'] != null ? (data['ai'] as Map)['j'] as bool : null,
         ),
       'CONDITIONAL_ORDER_TRIGGER_REJECT' => const IsolatedPositionUpdate(),
       _ => null,
