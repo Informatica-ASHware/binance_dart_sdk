@@ -158,7 +158,7 @@ final class SymbolInfo {
       orderTypes: (json['orderTypes'] as List<dynamic>).cast<String>(),
       icebergAllowed: json['icebergAllowed'] as bool,
       ocoAllowed: json['ocoAllowed'] as bool,
-      otoAllowed: json['otoAllowed'] ?? false,
+      otoAllowed: (json['otoAllowed'] as bool?) ?? false,
       quoteOrderQtyMarketAllowed: json['quoteOrderQtyMarketAllowed'] as bool,
       allowTrailingStop: json['allowTrailingStop'] as bool,
       cancelReplaceAllowed: json['cancelReplaceAllowed'] as bool,

@@ -32,6 +32,30 @@ sealed class Result<S, E> {
       Failure(error: final e) => onFailure(e),
     };
   }
+
+  /// Maps the success value using [fn].
+  Result<T, E> map<T>(T Function(S value) fn) {
+    return switch (this) {
+      Success(value: final v) => Result.success(fn(v)),
+      Failure(error: final e) => Result.failure(e),
+    };
+  }
+
+  /// Maps the failure error using [fn].
+  Result<S, T> mapError<T>(T Function(E error) fn) {
+    return switch (this) {
+      Success(value: final v) => Result.success(v),
+      Failure(error: final e) => Result.failure(fn(e)),
+    };
+  }
+
+  /// Chains another operation that returns a [Result].
+  Result<T, E> flatMap<T>(Result<T, E> Function(S value) fn) {
+    return switch (this) {
+      Success(value: final v) => fn(v),
+      Failure(error: final e) => Result.failure(e),
+    };
+  }
 }
 
 /// A successful [Result] containing a [value].
