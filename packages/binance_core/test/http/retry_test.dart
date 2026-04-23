@@ -9,30 +9,21 @@ void main() {
       const policy = ExponentialBackoffRetryPolicy();
       final response = http.Response('', 429);
 
-      expect(
-        policy.shouldRetry(response: response, attempt: 0),
-        isTrue,
-      );
+      expect(policy.shouldRetry(response: response, attempt: 0), isTrue);
     });
 
     test('should retry on 500', () {
       const policy = ExponentialBackoffRetryPolicy();
       final response = http.Response('', 500);
 
-      expect(
-        policy.shouldRetry(response: response, attempt: 0),
-        isTrue,
-      );
+      expect(policy.shouldRetry(response: response, attempt: 0), isTrue);
     });
 
     test('should NOT retry after max attempts', () {
       const policy = ExponentialBackoffRetryPolicy();
       final response = http.Response('', 500);
 
-      expect(
-        policy.shouldRetry(response: response, attempt: 3),
-        isFalse,
-      );
+      expect(policy.shouldRetry(response: response, attempt: 3), isFalse);
     });
 
     test('should retry on network error', () {

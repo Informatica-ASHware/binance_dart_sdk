@@ -98,10 +98,7 @@ class MockWebSocketProvider implements BinanceWebSocketProvider {
 void main() {
   group('ReconnectionStrategy', () {
     test('calculates delay with exponential backoff', () {
-      const strategy = ReconnectionStrategy(
-        multiplier: 2,
-        jitter: 0,
-      );
+      const strategy = ReconnectionStrategy(multiplier: 2, jitter: 0);
 
       expect(strategy.getDelay(0).inSeconds, 1);
       expect(strategy.getDelay(1).inSeconds, 2);
@@ -129,9 +126,7 @@ void main() {
       client = WebSocketStreamClient(
         baseUrl: Uri.parse('wss://stream.binance.com:9443'),
         provider: provider,
-        hooks: BinanceObservabilityHooks(
-          logger: PrintLogger(),
-        ),
+        hooks: BinanceObservabilityHooks(logger: PrintLogger()),
         reconnectionStrategy: const ReconnectionStrategy(
           initialDelay: Duration(milliseconds: 10),
           jitter: 0,
@@ -270,9 +265,7 @@ void main() {
       client = WebSocketApiClient(
         baseUrl: Uri.parse('wss://ws-api.binance.com/ws-api/v3'),
         provider: provider,
-        hooks: BinanceObservabilityHooks(
-          logger: PrintLogger(),
-        ),
+        hooks: BinanceObservabilityHooks(logger: PrintLogger()),
       );
     });
 
@@ -295,11 +288,7 @@ void main() {
       final id = requestData['id'];
 
       channel.addFromServer(
-        jsonEncode({
-          'id': id,
-          'status': 200,
-          'result': <String, dynamic>{},
-        }),
+        jsonEncode({'id': id, 'status': 200, 'result': <String, dynamic>{}}),
       );
 
       final response = await requestFuture;

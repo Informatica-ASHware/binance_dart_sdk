@@ -80,10 +80,7 @@ sealed class UserDataEvent {
 /// Event triggered when account information is updated.
 final class AccountUpdate extends UserDataEvent {
   /// Creates an [AccountUpdate] event.
-  const AccountUpdate({
-    required this.updateTime,
-    required this.balances,
-  });
+  const AccountUpdate({required this.updateTime, required this.balances});
 
   /// The time the update occurred.
   final DateTime updateTime;
@@ -179,9 +176,7 @@ final class ListenKeyExpired extends UserDataEvent {
 /// Event triggered by a margin call (Futures only).
 final class MarginCall extends UserDataEvent {
   /// Creates a [MarginCall] event.
-  const MarginCall({
-    required this.positions,
-  });
+  const MarginCall({required this.positions});
 
   /// The positions affected by the margin call.
   final List<MarginCallPosition> positions;
@@ -190,9 +185,7 @@ final class MarginCall extends UserDataEvent {
 /// Event triggered when account configuration changes.
 final class AccountConfigUpdate extends UserDataEvent {
   /// Creates an [AccountConfigUpdate] event.
-  const AccountConfigUpdate({
-    required this.eventTime,
-  });
+  const AccountConfigUpdate({required this.eventTime});
 
   /// The time the event occurred.
   final DateTime eventTime;
@@ -201,10 +194,7 @@ final class AccountConfigUpdate extends UserDataEvent {
 /// Event triggered when leverage changes.
 final class LeverageUpdate extends UserDataEvent {
   /// Creates a [LeverageUpdate] event.
-  const LeverageUpdate({
-    required this.symbol,
-    required this.leverage,
-  });
+  const LeverageUpdate({required this.symbol, required this.leverage});
 
   /// The symbol whose leverage was updated.
   final Symbol symbol;
@@ -411,8 +401,9 @@ class SpotUserDataFeed extends BaseUserDataFeed {
       BinanceVenue.spot => 'userDataStream.subscribe',
       BinanceVenue.margin => 'marginUserDataStream.subscribe',
       BinanceVenue.isolatedMargin => 'isolatedMarginUserDataStream.subscribe',
-      _ =>
-        throw ArgumentError('Unsupported venue for SpotUserDataFeed: $_venue'),
+      _ => throw ArgumentError(
+          'Unsupported venue for SpotUserDataFeed: $_venue',
+        ),
     };
 
     final response =
@@ -680,7 +671,8 @@ class FuturesUserDataFeed extends BaseUserDataFeed {
                 (b) => AccountBalance(
                   asset: Asset((b as Map)['a'] as String),
                   free: Decimal.parse(b['wb'] as String),
-                  locked: Decimal.zero, // Futures doesn't have locked per se here
+                  locked:
+                      Decimal.zero, // Futures doesn't have locked per se here
                 ),
               )
               .toList(),
@@ -695,8 +687,9 @@ class FuturesUserDataFeed extends BaseUserDataFeed {
           price: Decimal.parse((data['o'] as Map)['p'] as String),
           quantity: Decimal.parse((data['o'] as Map)['q'] as String),
           lastFilledQuantity: Decimal.parse((data['o'] as Map)['l'] as String),
-          cumulativeFilledQuantity:
-              Decimal.parse((data['o'] as Map)['z'] as String),
+          cumulativeFilledQuantity: Decimal.parse(
+            (data['o'] as Map)['z'] as String,
+          ),
           lastFilledPrice: Decimal.parse((data['o'] as Map)['L'] as String),
           transactionTime:
               DateTime.fromMillisecondsSinceEpoch(data['T'] as int),

@@ -297,9 +297,7 @@ final class Decimal implements Comparable<Decimal> {
     final thisUnits = units * BigInt.from(10).pow(maxPrecision - precision);
     final otherUnits =
         other.units * BigInt.from(10).pow(maxPrecision - other.precision);
-    return Decimal.parse(
-      _formatRaw(thisUnits + otherUnits, maxPrecision),
-    );
+    return Decimal.parse(_formatRaw(thisUnits + otherUnits, maxPrecision));
   }
 
   /// Subtracts [other] from this [Decimal].
@@ -309,9 +307,7 @@ final class Decimal implements Comparable<Decimal> {
     final thisUnits = units * BigInt.from(10).pow(maxPrecision - precision);
     final otherUnits =
         other.units * BigInt.from(10).pow(maxPrecision - other.precision);
-    return Decimal.parse(
-      _formatRaw(thisUnits - otherUnits, maxPrecision),
-    );
+    return Decimal.parse(_formatRaw(thisUnits - otherUnits, maxPrecision));
   }
 
   /// Multiplies this [Decimal] by [other].

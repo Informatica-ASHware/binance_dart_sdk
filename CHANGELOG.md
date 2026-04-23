@@ -1,22 +1,23 @@
 # Changelog
 
-## 0.2.0
+All notable changes to this project will be documented in this file.
 
-- Added unified `UserDataFeed` abstraction in `binance_core`.
-- Implemented `SpotUserDataFeed` using modern WS API mechanism (post 2026-02-20).
-- Implemented `FuturesUserDataFeed` using classic `listenKey` mechanism with 30-minute auto-renewal.
-- Added support for `session.logon` in `WebSocketApiClient` and automatic re-authentication.
-- Enhanced `DefaultBinanceHttpClient` with better venue routing and improved retry logic.
-- Defined sealed class hierarchies for `UserDataEvent` and `UserDataFeedStatus`.
-- Implemented gap detection in user data streams for state reconciliation.
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## 0.1.1
+## [0.2.0] - 2026-04-23
 
-- Added HTTP transport layer with rate limiting, circuit breaker, and retry policy.
-- Implemented `BinanceHttpClient` and `DefaultBinanceHttpClient`.
-- Added support for preventative rate-limiting and 429/418 error handling.
+### Added
+- New `binance_spot` package covering Binance Spot API.
+- Support for Spot Market Data REST endpoints (ping, time, exchangeInfo, depth, trades, etc.).
+- Support for Spot Account and Trade REST endpoints (order, account, myTrades, etc.).
+- Support for Spot Smart Order Routing (SOR) endpoints.
+- Support for Spot WebSocket Market Streams (aggTrade, trade, kline, ticker, etc.).
+- Enhanced `Result` class in `binance_core` with `map`, `mapError`, and `flatMap`.
 
-## 0.1.0
+### Changed
+- Refactored `BinanceHttpClient` in `binance_core` to support generic JSON responses.
+- Updated `DefaultBinanceHttpClient` to handle venue routing more robustly.
 
-- Initial monorepo setup with Melos.
-- Created binance_core package.
+## [0.1.0] - 2026-04-23
+- Initial release with `binance_core` base transport and primitives.

@@ -17,10 +17,8 @@ sealed class BinanceError {
 /// Represents an error returned by the Binance API.
 final class BinanceApiError extends BinanceError {
   /// Creates a [BinanceApiError].
-  const BinanceApiError({
-    required this.code,
-    required String message,
-  }) : super(message);
+  const BinanceApiError({required this.code, required String message})
+      : super(message);
 
   /// The error code returned by Binance.
   final int code;
@@ -32,10 +30,8 @@ final class BinanceApiError extends BinanceError {
 /// Represents a network-related error.
 final class BinanceNetworkError extends BinanceError {
   /// Creates a [BinanceNetworkError].
-  const BinanceNetworkError({
-    required String message,
-    this.cause,
-  }) : super(message);
+  const BinanceNetworkError({required String message, this.cause})
+      : super(message);
 
   /// The underlying cause of the network error.
   final Object? cause;

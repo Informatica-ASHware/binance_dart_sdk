@@ -159,10 +159,7 @@ class WebSocketApiClient {
     final completer = Completer<dynamic>();
     _pendingRequests[id] = completer;
 
-    final request = <String, dynamic>{
-      'id': id,
-      'method': method,
-    };
+    final request = <String, dynamic>{'id': id, 'method': method};
     if (params != null) {
       request['params'] = params;
     }
@@ -209,11 +206,7 @@ class WebSocketApiClient {
   }
 
   void _onError(Object error, StackTrace stackTrace) {
-    _logger.error(
-      'WebSocket API error',
-      error: error,
-      stackTrace: stackTrace,
-    );
+    _logger.error('WebSocket API error', error: error, stackTrace: stackTrace);
     _scheduleReconnect();
   }
 

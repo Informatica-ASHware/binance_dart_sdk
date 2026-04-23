@@ -20,10 +20,7 @@ void main() {
       ),
     );
     registerFallbackValue(
-      const BinanceRequest(
-        method: HttpMethod.post,
-        path: '',
-      ),
+      const BinanceRequest(method: HttpMethod.post, path: ''),
     );
     registerFallbackValue(WebSocketApiClientStatus.connected);
   });
@@ -41,8 +38,10 @@ void main() {
       );
       apiClient = MockWebSocketApiClient();
       statusController = StreamController<WebSocketApiClientStatus>.broadcast();
-      feed =
-          SpotUserDataFeed(apiClient: apiClient, credentials: hmacCredentials);
+      feed = SpotUserDataFeed(
+        apiClient: apiClient,
+        credentials: hmacCredentials,
+      );
 
       when(() => apiClient.connect()).thenAnswer((_) async {});
       when(() => apiClient.logon(any())).thenAnswer((_) async {});
@@ -52,8 +51,9 @@ void main() {
     });
 
     test('start() performs logon and subscribes', () async {
-      when(() => apiClient.sendRequest('userDataStream.subscribe'))
-          .thenAnswer((_) async => {'status': 200});
+      when(
+        () => apiClient.sendRequest('userDataStream.subscribe'),
+      ).thenAnswer((_) async => {'status': 200});
 
       final statusFuture = feed.status.first;
       await feed.start();
@@ -68,8 +68,9 @@ void main() {
     });
 
     test('re-subscribes on reconnection', () async {
-      when(() => apiClient.sendRequest('userDataStream.subscribe'))
-          .thenAnswer((_) async => {'status': 200});
+      when(
+        () => apiClient.sendRequest('userDataStream.subscribe'),
+      ).thenAnswer((_) async => {'status': 200});
 
       await feed.start();
 
@@ -94,8 +95,9 @@ void main() {
     test('parses Spot events correctly', () async {
       final controller = StreamController<dynamic>.broadcast();
       when(() => apiClient.events).thenAnswer((_) => controller.stream);
-      when(() => apiClient.sendRequest('userDataStream.subscribe'))
-          .thenAnswer((_) async => {'status': 200});
+      when(
+        () => apiClient.sendRequest('userDataStream.subscribe'),
+      ).thenAnswer((_) async => {'status': 200});
 
       await feed.start();
       statusController.add(WebSocketApiClientStatus.authenticated);
@@ -132,20 +134,22 @@ void main() {
 
     test('start() obtains listenKey and subscribes', () async {
       when(() => httpClient.send(any())).thenAnswer(
-        (_) async => const Result.success({
-          'listenKey': 'test-listen-key',
-        }),
+        (_) async => const Result.success({'listenKey': 'test-listen-key'}),
       );
-      when(() => streamClient.subscribe('test-listen-key'))
-          .thenAnswer((_) => const Stream.empty());
+      when(
+        () => streamClient.subscribe('test-listen-key'),
+      ).thenAnswer((_) => const Stream.empty());
 
       await feed.start();
 
       verify(
         () => httpClient.send(
           any(
-            that: isA<BinanceRequest>()
-                .having((r) => r.method, 'method', HttpMethod.post),
+            that: isA<BinanceRequest>().having(
+              (r) => r.method,
+              'method',
+              HttpMethod.post,
+            ),
           ),
         ),
       ).called(1);
@@ -154,13 +158,12 @@ void main() {
 
     test('parses Futures ACCOUNT_UPDATE correctly', () async {
       when(() => httpClient.send(any())).thenAnswer(
-        (_) async => const Result.success({
-          'listenKey': 'test-key',
-        }),
+        (_) async => const Result.success({'listenKey': 'test-key'}),
       );
       final controller = StreamController<dynamic>.broadcast();
-      when(() => streamClient.subscribe('test-key'))
-          .thenAnswer((_) => controller.stream);
+      when(
+        () => streamClient.subscribe('test-key'),
+      ).thenAnswer((_) => controller.stream);
 
       await feed.start();
 

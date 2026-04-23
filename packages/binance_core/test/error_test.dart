@@ -35,26 +35,14 @@ void main() {
     test('Success stores value', () {
       const result = Result<int, BinanceError>.success(42);
       expect(result.isSuccess, isTrue);
-      expect(
-        result.fold(
-          onSuccess: (v) => v,
-          onFailure: (e) => 0,
-        ),
-        42,
-      );
+      expect(result.fold(onSuccess: (v) => v, onFailure: (e) => 0), 42);
     });
 
     test('Failure stores BinanceError', () {
       const error = BinanceApiError(code: 1, message: 'err');
       const result = Result<int, BinanceError>.failure(error);
       expect(result.isFailure, isTrue);
-      expect(
-        result.fold(
-          onSuccess: (v) => null,
-          onFailure: (e) => e,
-        ),
-        error,
-      );
+      expect(result.fold(onSuccess: (v) => null, onFailure: (e) => e), error);
     });
   });
 }
