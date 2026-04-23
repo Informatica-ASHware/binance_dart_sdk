@@ -141,7 +141,7 @@ void main() {
       }));
 
       final event = await future;
-      expect(event['p'], '50000');
+      expect((event as Map<String, dynamic>)['p'], '50000');
     });
 
     test('multiplexes multiple streams', () async {
@@ -266,7 +266,7 @@ void main() {
           .addFromServer(jsonEncode({'id': id, 'status': 200, 'result': {}}));
 
       final response = await requestFuture;
-      expect(response['status'], 200);
+      expect((response as Map<String, dynamic>)['status'], 200);
     });
 
     test('performs logon and resumes after reconnect', () async {

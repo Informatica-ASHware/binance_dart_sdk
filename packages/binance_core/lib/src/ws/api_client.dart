@@ -57,10 +57,10 @@ class WebSocketApiClient {
   bool _isLoggedIn = false;
 
   /// Whether the client is currently connected.
-  bool get IsConnected => _channel != null;
+  bool get isConnected => _channel != null;
 
   /// Whether the session is currently authenticated.
-  bool get IsLoggedIn => _isLoggedIn;
+  bool get isLoggedIn => _isLoggedIn;
 
   /// Connects to the WebSocket API.
   Future<void> connect() async {

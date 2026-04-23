@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'package:binance_core/src/auth.dart';
-import 'package:binance_core/src/enums.dart';
 import 'package:binance_core/src/http/client.dart';
 import 'package:binance_core/src/http/request.dart';
 import 'package:binance_core/src/http/security.dart';
@@ -286,8 +285,8 @@ class SpotUserDataFeed extends BaseUserDataFeed {
   final BinanceCredentials _credentials;
   final BinanceVenue _venue;
   bool _isStarted = false;
-  StreamSubscription? _apiEventsSubscription;
-  StreamSubscription? _statusSubscription;
+  StreamSubscription<dynamic>? _apiEventsSubscription;
+  StreamSubscription<WebSocketApiClientStatus>? _statusSubscription;
   DateTime? _lastDisconnectTime;
 
   @override
@@ -440,7 +439,7 @@ class FuturesUserDataFeed extends BaseUserDataFeed {
 
   String? _listenKey;
   Timer? _keepAliveTimer;
-  StreamSubscription? _streamSubscription;
+  StreamSubscription<dynamic>? _streamSubscription;
   DateTime? _lastDisconnectTime;
 
   @override
@@ -604,19 +603,6 @@ class FuturesUserDataFeed extends BaseUserDataFeed {
       'LEVERAGE_UPDATE' => LeverageUpdate(
           symbol: Symbol((data['ac'] as Map)['s'] as String),
           leverage: (data['ac'] as Map)['l'] as int,
-        ),
-      'MARGIN_CALL' => MarginCall(
-          positions: (data['p'] as List)
-              .map((p) => MarginCallPosition(
-                    symbol: Symbol(p['s'] as String),
-                    positionSide: p['ps'] as String,
-                    markPrice: Decimal.parse(p['mp'] as String),
-                    isolatedWallet: Decimal.parse(p['iw'] as String),
-                  ))
-              .toList(),
-        ),
-      'ACCOUNT_CONFIG_UPDATE' => AccountConfigUpdate(
-          eventTime: DateTime.fromMillisecondsSinceEpoch(data['E'] as int),
         ),
       'CONDITIONAL_ORDER_TRIGGER_REJECT' => const IsolatedPositionUpdate(),
       _ => null,
