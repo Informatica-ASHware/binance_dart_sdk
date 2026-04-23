@@ -98,10 +98,7 @@ class MockWebSocketProvider implements BinanceWebSocketProvider {
 void main() {
   group('ReconnectionStrategy', () {
     test('calculates delay with exponential backoff', () {
-      const strategy = ReconnectionStrategy(
-        multiplier: 2,
-        jitter: 0,
-      );
+      const strategy = ReconnectionStrategy(multiplier: 2, jitter: 0);
 
       expect(strategy.getDelay(0).inSeconds, 1);
       expect(strategy.getDelay(1).inSeconds, 2);
@@ -129,9 +126,7 @@ void main() {
       client = WebSocketStreamClient(
         baseUrl: Uri.parse('wss://stream.binance.com:9443'),
         provider: provider,
-        hooks: BinanceObservabilityHooks(
-          logger: PrintLogger(),
-        ),
+        hooks: BinanceObservabilityHooks(logger: PrintLogger()),
         reconnectionStrategy: const ReconnectionStrategy(
           initialDelay: Duration(milliseconds: 10),
           jitter: 0,
@@ -146,17 +141,22 @@ void main() {
     test('subscribes and receives data', () async {
       final stream = client.subscribe('btcusdt@aggTrade');
 
-      // Start listening before the channel is even created
-      final future = stream.first;
+      // Start listening
+      final events = <dynamic>[];
+      final subscription = stream.listen(events.add);
 
       // Wait for connection
-      for (var i = 0; i < 40; i++) {
+      for (var i = 0; i < 100; i++) {
         if (provider.lastChannel != null) break;
-        await Future<void>.delayed(const Duration(milliseconds: 100));
+        await Future<void>.delayed(const Duration(milliseconds: 50));
       }
 
       final channel = provider.lastChannel;
       expect(channel, isNotNull, reason: 'Channel should be connected');
+
+      // Ensure the client has established the subscription internally
+      await Future<void>.delayed(const Duration(milliseconds: 200));
+
       channel!.addFromServer(
         jsonEncode({
           'stream': 'btcusdt@aggTrade',
@@ -164,8 +164,16 @@ void main() {
         }),
       );
 
-      final event = await future.timeout(const Duration(seconds: 5));
-      expect((event as Map)['p'], '50000');
+      // Wait for event to be processed
+      for (var i = 0; i < 100; i++) {
+        if (events.isNotEmpty) break;
+        await Future<void>.delayed(const Duration(milliseconds: 50));
+      }
+
+      expect(events, isNotEmpty);
+      expect((events.first as Map)['p'], '50000');
+
+      await subscription.cancel();
     });
 
     test('multiplexes multiple streams', () async {
@@ -270,9 +278,7 @@ void main() {
       client = WebSocketApiClient(
         baseUrl: Uri.parse('wss://ws-api.binance.com/ws-api/v3'),
         provider: provider,
-        hooks: BinanceObservabilityHooks(
-          logger: PrintLogger(),
-        ),
+        hooks: BinanceObservabilityHooks(logger: PrintLogger()),
       );
     });
 
@@ -295,11 +301,7 @@ void main() {
       final id = requestData['id'];
 
       channel.addFromServer(
-        jsonEncode({
-          'id': id,
-          'status': 200,
-          'result': <String, dynamic>{},
-        }),
+        jsonEncode({'id': id, 'status': 200, 'result': <String, dynamic>{}}),
       );
 
       final response = await requestFuture;

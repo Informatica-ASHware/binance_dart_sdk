@@ -17,7 +17,7 @@ import 'package:http/http.dart' as http;
 /// Abstract client for interacting with the Binance HTTP API.
 abstract interface class BinanceHttpClient {
   /// Sends a [BinanceRequest] and returns a [Result].
-  Future<Result<Map<String, dynamic>, BinanceError>> send(
+  Future<Result<dynamic, BinanceError>> send(
     BinanceRequest request,
   );
 
@@ -69,7 +69,7 @@ class DefaultBinanceHttpClient implements BinanceHttpClient {
   }
 
   @override
-  Future<Result<Map<String, dynamic>, BinanceError>> send(
+  Future<Result<dynamic, BinanceError>> send(
     BinanceRequest request,
   ) async {
     final chain = InterceptorChain(_interceptors);
@@ -100,9 +100,8 @@ class DefaultBinanceHttpClient implements BinanceHttpClient {
         }
       }
 
-      Result<Map<String, dynamic>, BinanceError> result;
+      Result<dynamic, BinanceError> result;
       http.Response? response;
-      Result<Map<String, dynamic>, BinanceError> result;
 
       try {
         response = await _sendInternal(currentRequest);
@@ -112,8 +111,7 @@ class DefaultBinanceHttpClient implements BinanceHttpClient {
 
         if (interceptedResponse.statusCode == 200) {
           breaker.recordSuccess();
-          final data =
-              json.decode(interceptedResponse.body) as Map<String, dynamic>;
+          final dynamic data = json.decode(interceptedResponse.body);
           return Result.success(data);
         }
 
@@ -125,8 +123,7 @@ class DefaultBinanceHttpClient implements BinanceHttpClient {
         );
       }
 
-      final r = result;
-      final error = r.fold(onSuccess: (_) => null, onFailure: (e) => e);
+      final error = result.fold(onSuccess: (_) => null, onFailure: (e) => e);
       if (error != null) {
         if (response?.statusCode == 418 ||
             !_retryPolicy.shouldRetry(
@@ -135,7 +132,7 @@ class DefaultBinanceHttpClient implements BinanceHttpClient {
               error: error,
             )) {
           breaker.recordFailure();
-          return r;
+          return result;
         }
 
         attempt++;
@@ -144,19 +141,8 @@ class DefaultBinanceHttpClient implements BinanceHttpClient {
         continue;
       }
 
-      return r;
+      return result;
     }
-  }
-
-  bool _shouldRetry(http.Response? response, BinanceError error, int attempt) {
-    // Specifically don't retry if we just got a 418 IP Ban
-    if (response?.statusCode == 418) return false;
-
-    return _retryPolicy.shouldRetry(
-      response: response,
-      error: error,
-      attempt: attempt,
-    );
   }
 
   Future<http.Response> _sendInternal(BinanceRequest request) async {
@@ -190,9 +176,7 @@ class DefaultBinanceHttpClient implements BinanceHttpClient {
       queryParameters: queryParams.isNotEmpty ? queryParams : null,
     );
 
-    final headers = <String, String>{
-      'Accept': 'application/json',
-    };
+    final headers = <String, String>{'Accept': 'application/json'};
 
     final creds = credentials;
     if (creds != null) {
@@ -219,7 +203,7 @@ class DefaultBinanceHttpClient implements BinanceHttpClient {
         .join('&');
   }
 
-  Future<Result<Map<String, dynamic>, BinanceError>> _handleError(
+  Future<Result<dynamic, BinanceError>> _handleError(
     http.Response response,
   ) async {
     final statusCode = response.statusCode;
@@ -260,9 +244,7 @@ class DefaultBinanceHttpClient implements BinanceHttpClient {
     }
 
     return Result.failure(
-      BinanceNetworkError(
-        message: 'HTTP error $statusCode: ${response.body}',
-      ),
+      BinanceNetworkError(message: 'HTTP error $statusCode: ${response.body}'),
     );
   }
 }

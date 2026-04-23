@@ -53,19 +53,13 @@ void main() {
   group('Result fold', () {
     test('fold on Success', () {
       const result = Result<int, String>.success(10);
-      final value = result.fold(
-        onSuccess: (v) => v * 2,
-        onFailure: (e) => 0,
-      );
+      final value = result.fold(onSuccess: (v) => v * 2, onFailure: (e) => 0);
       expect(value, 20);
     });
 
     test('fold on Failure', () {
       const result = Result<int, String>.failure('error');
-      final value = result.fold(
-        onSuccess: (v) => v * 2,
-        onFailure: (e) => 0,
-      );
+      final value = result.fold(onSuccess: (v) => v * 2, onFailure: (e) => 0);
       expect(value, 0);
     });
   });
@@ -74,19 +68,13 @@ void main() {
     test('success factory', () {
       const result = Result<int, String>.success(10);
       expect(result, isA<Success<int, String>>());
-      expect(
-        result,
-        equals(const Success<int, String>(10)),
-      );
+      expect(result, equals(const Success<int, String>(10)));
     });
 
     test('failure factory', () {
       const result = Result<int, String>.failure('error');
       expect(result, isA<Failure<int, String>>());
-      expect(
-        result,
-        equals(const Failure<int, String>('error')),
-      );
+      expect(result, equals(const Failure<int, String>('error')));
     });
   });
 }

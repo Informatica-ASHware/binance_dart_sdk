@@ -42,9 +42,7 @@ void main() {
         return http.Response(
           'Rate limit exceeded',
           429,
-          headers: {
-            'retry-after': '1',
-          },
+          headers: {'retry-after': '1'},
         );
       });
 
@@ -70,13 +68,7 @@ void main() {
       var callCount = 0;
       final mockClient = MockClient((request) async {
         callCount++;
-        return http.Response(
-          'Banned',
-          418,
-          headers: {
-            'retry-after': '10',
-          },
-        );
+        return http.Response('Banned', 418, headers: {'retry-after': '10'});
       });
 
       final client = DefaultBinanceHttpClient(
@@ -158,10 +150,12 @@ void main() {
         const BinanceRequest(method: HttpMethod.get, path: '/api/v3/ping'),
       );
 
-      expect(
-        log,
-        ['onRequest A', 'onRequest B', 'onResponse B', 'onResponse A'],
-      );
+      expect(log, [
+        'onRequest A',
+        'onRequest B',
+        'onResponse B',
+        'onResponse A',
+      ]);
     });
 
     test('signed request includes timestamp and signature', () async {
