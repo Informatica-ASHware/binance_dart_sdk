@@ -752,17 +752,19 @@ class FuturesUserDataFeed extends BaseUserDataFeed {
     return switch (eventType) {
       'ACCOUNT_UPDATE' => AccountUpdate(
           updateTime: DateTime.fromMillisecondsSinceEpoch(data['E'] as int),
-          balances: ((data['a'] as Map)['B'] as List)
+          balances: (((data['a'] as Map)['B'] as List?) ?? [])
               .map(
                 (b) => AccountBalance(
                   asset: Asset((b as Map)['a'] as String),
                   free: Decimal.parse(b['wb'] as String),
                   locked: Decimal.zero,
-                  crossWalletBalance: Decimal.parse(b['cw'] as String),
+                  crossWalletBalance: b['cw'] != null
+                      ? Decimal.parse(b['cw'] as String)
+                      : null,
                 ),
               )
               .toList(),
-          positions: ((data['a'] as Map)['P'] as List)
+          positions: (((data['a'] as Map)['P'] as List?) ?? [])
               .map(
                 (p) => AccountPosition(
                   symbol: Symbol((p as Map)['s'] as String),
