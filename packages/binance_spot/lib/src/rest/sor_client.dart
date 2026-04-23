@@ -64,7 +64,7 @@ class BinanceSpotSorClient {
     );
   }
 
-  /// Test SOR order creation.
+  /// Test SOR order placement.
   ///
   /// Weight: 1
   Future<Result<void, BinanceError>> testNewOrder({

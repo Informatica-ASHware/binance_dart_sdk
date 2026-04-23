@@ -98,7 +98,7 @@ class MockWebSocketProvider implements BinanceWebSocketProvider {
 void main() {
   group('ReconnectionStrategy', () {
     test('calculates delay with exponential backoff', () {
-      const strategy = ReconnectionStrategy(multiplier: 2, jitter: 0);
+      const strategy = ReconnectionStrategy(jitter: 0);
 
       expect(strategy.getDelay(0).inSeconds, 1);
       expect(strategy.getDelay(1).inSeconds, 2);
@@ -108,7 +108,6 @@ void main() {
     test('respects maxDelay', () {
       const strategy = ReconnectionStrategy(
         maxDelay: Duration(seconds: 10),
-        multiplier: 2,
         jitter: 0,
       );
 

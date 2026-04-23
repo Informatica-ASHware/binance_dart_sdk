@@ -2,47 +2,58 @@ import 'package:binance_core/binance_core.dart';
 import 'package:test/test.dart';
 
 void main() {
-  group('BinanceError', () {
-    test('BinanceApiError', () {
-      const error = BinanceApiError(code: -1001, message: 'Invalid format');
-      expect(error.code, -1001);
-      expect(error.message, 'Invalid format');
-      expect(error.toString(), contains('-1001'));
-    });
-
-    test('BinanceNetworkError', () {
-      const error = BinanceNetworkError(
-        message: 'Timeout',
-        cause: 'SocketException',
+  group('BinanceError hierarchy', () {
+    test('BinanceApiError.fromCode creates correct subclass', () {
+      expect(
+        BinanceApiError.fromCode(code: -1022, message: 'Invalid signature'),
+        isA<BinanceSignatureError>(),
       );
-      expect(error.message, 'Timeout');
-      expect(error.cause, 'SocketException');
-      expect(error.toString(), contains('Timeout'));
+      expect(
+        BinanceApiError.fromCode(code: -1021, message: 'Timestamp error'),
+        isA<BinanceTimestampError>(),
+      );
+      expect(
+        BinanceApiError.fromCode(code: -1003, message: 'Rate limit'),
+        isA<BinanceRateLimitError>(),
+      );
+      expect(
+        BinanceApiError.fromCode(code: -1121, message: 'Invalid symbol'),
+        isA<BinanceInvalidSymbol>(),
+      );
+      expect(
+        BinanceApiError.fromCode(code: -2010, message: 'Rejected'),
+        isA<BinanceOrderRejected>(),
+      );
+      expect(
+        BinanceApiError.fromCode(code: -2011, message: 'Cancel rejected'),
+        isA<BinanceCancelRejected>(),
+      );
+      expect(
+        BinanceApiError.fromCode(code: -2013, message: 'Not found'),
+        isA<BinanceOrderNotFound>(),
+      );
+      expect(
+        BinanceApiError.fromCode(code: -2014, message: 'Invalid API Key'),
+        isA<BinanceInvalidApiKey>(),
+      );
+      expect(
+        BinanceApiError.fromCode(code: -21015, message: 'Endpoint gone'),
+        isA<BinanceEndpointGone>(),
+      );
+      expect(
+        BinanceApiError.fromCode(code: -4109, message: 'Account inactive'),
+        isA<BinanceAccountInactive>(),
+      );
+      expect(
+        BinanceApiError.fromCode(code: -999, message: 'Unknown'),
+        isA<GenericBinanceApiError>(),
+      );
     });
 
-    test('BinanceParseError', () {
-      const error = BinanceParseError('Bad JSON');
-      expect(error.message, 'Bad JSON');
-    });
-
-    test('BinanceAuthError', () {
-      const error = BinanceAuthError('Invalid API Key');
-      expect(error.message, 'Invalid API Key');
-    });
-  });
-
-  group('Result with BinanceError', () {
-    test('Success stores value', () {
-      const result = Result<int, BinanceError>.success(42);
-      expect(result.isSuccess, isTrue);
-      expect(result.fold(onSuccess: (v) => v, onFailure: (e) => 0), 42);
-    });
-
-    test('Failure stores BinanceError', () {
-      const error = BinanceApiError(code: 1, message: 'err');
-      const result = Result<int, BinanceError>.failure(error);
-      expect(result.isFailure, isTrue);
-      expect(result.fold(onSuccess: (v) => null, onFailure: (e) => e), error);
+    test('BinanceHttpError toString', () {
+      const error = BinanceHttpError(statusCode: 404, message: 'Not Found');
+      expect(error.toString(), contains('404'));
+      expect(error.toString(), contains('Not Found'));
     });
   });
 }

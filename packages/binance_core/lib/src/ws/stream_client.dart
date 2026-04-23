@@ -246,6 +246,15 @@ class WebSocketStreamClient {
 
     final delay = _reconnectionStrategy.getDelay(_reconnectAttempts++);
     _logger.info('Reconnecting in ${delay.inSeconds}s...');
+
+    _hooks.telemetry.report(
+      WebSocketReconnecting(
+        timestamp: DateTime.now(),
+        url: _buildUrl(),
+        attempt: _reconnectAttempts,
+      ),
+    );
+
     Timer(delay, () => unawaited(_connect()));
   }
 

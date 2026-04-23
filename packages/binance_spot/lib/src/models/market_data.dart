@@ -94,7 +94,9 @@ final class SymbolInfo {
       cancelReplaceAllowed: json['cancelReplaceAllowed'] as bool,
       isSpotTradingAllowed: json['isSpotTradingAllowed'] as bool,
       isMarginTradingAllowed: json['isMarginTradingAllowed'] as bool,
-      filters: json['filters'] as List<dynamic>,
+      filters: (json['filters'] as List<dynamic>)
+          .map((f) => SymbolFilter.fromJson(f as Map<String, dynamic>))
+          .toList(),
       permissions: (json['permissions'] as List<dynamic>).cast<String>(),
       permissionSets: (json['permissionSets'] as List<dynamic>?)
           ?.map((e) => (e as List<dynamic>).cast<String>())
@@ -162,7 +164,7 @@ final class SymbolInfo {
   final bool isMarginTradingAllowed;
 
   /// Filters for this symbol.
-  final List<dynamic> filters;
+  final List<SymbolFilter> filters;
 
   /// Permissions for this symbol.
   final List<String> permissions;
@@ -175,6 +177,366 @@ final class SymbolInfo {
 
   /// Allowed self-trade prevention modes.
   final List<String> allowedSelfTradePreventionModes;
+
+  /// Returns the filter of type [T].
+  T? getFilter<T extends SymbolFilter>() {
+    for (final filter in filters) {
+      if (filter is T) return filter;
+    }
+    return null;
+  }
+}
+
+/// Base class for symbol filters.
+@immutable
+sealed class SymbolFilter {
+  /// Creates a [SymbolFilter].
+  const SymbolFilter();
+
+  /// Creates a [SymbolFilter] from a JSON map.
+  factory SymbolFilter.fromJson(Map<String, dynamic> json) {
+    final type = json['filterType'] as String;
+    return switch (type) {
+      'PRICE_FILTER' => PriceFilter.fromJson(json),
+      'PERCENT_PRICE' => PercentPriceFilter.fromJson(json),
+      'PERCENT_PRICE_BY_SIDE' => PercentPriceBySideFilter.fromJson(json),
+      'LOT_SIZE' => LotSizeFilter.fromJson(json),
+      'MIN_NOTIONAL' => MinNotionalFilter.fromJson(json),
+      'NOTIONAL' => NotionalFilter.fromJson(json),
+      'ICEBERG_PARTS' => IcebergPartsFilter.fromJson(json),
+      'MARKET_LOT_SIZE' => MarketLotSizeFilter.fromJson(json),
+      'MAX_NUM_ORDERS' => MaxNumOrdersFilter.fromJson(json),
+      'MAX_NUM_ALGO_ORDERS' => MaxNumAlgoOrdersFilter.fromJson(json),
+      'MAX_NUM_ICEBERG_ORDERS' => MaxNumIcebergOrdersFilter.fromJson(json),
+      'MAX_POSITION' => MaxPositionFilter.fromJson(json),
+      'TRAILING_DELTA' => TrailingDeltaFilter.fromJson(json),
+      _ => UnknownFilter(type, json),
+    };
+  }
+}
+
+/// Filter for price constraints.
+final class PriceFilter extends SymbolFilter {
+  /// Creates a [PriceFilter].
+  const PriceFilter({
+    required this.minPrice,
+    required this.maxPrice,
+    required this.tickSize,
+  });
+
+  /// Creates a [PriceFilter] from a JSON map.
+  factory PriceFilter.fromJson(Map<String, dynamic> json) {
+    return PriceFilter(
+      minPrice: Price.fromString(json['minPrice'] as String),
+      maxPrice: Price.fromString(json['maxPrice'] as String),
+      tickSize: Price.fromString(json['tickSize'] as String),
+    );
+  }
+
+  /// Minimum price.
+  final Price minPrice;
+
+  /// Maximum price.
+  final Price maxPrice;
+
+  /// Tick size.
+  final Price tickSize;
+}
+
+/// Filter for percent price constraints.
+final class PercentPriceFilter extends SymbolFilter {
+  /// Creates a [PercentPriceFilter].
+  const PercentPriceFilter({
+    required this.multiplierUp,
+    required this.multiplierDown,
+    required this.avgPriceMins,
+  });
+
+  /// Creates a [PercentPriceFilter] from a JSON map.
+  factory PercentPriceFilter.fromJson(Map<String, dynamic> json) {
+    return PercentPriceFilter(
+      multiplierUp: Decimal.parse(json['multiplierUp'] as String),
+      multiplierDown: Decimal.parse(json['multiplierDown'] as String),
+      avgPriceMins: json['avgPriceMins'] as int,
+    );
+  }
+
+  /// Multiplier up.
+  final Decimal multiplierUp;
+
+  /// Multiplier down.
+  final Decimal multiplierDown;
+
+  /// Average price minutes.
+  final int avgPriceMins;
+}
+
+/// Filter for percent price by side constraints.
+final class PercentPriceBySideFilter extends SymbolFilter {
+  /// Creates a [PercentPriceBySideFilter].
+  const PercentPriceBySideFilter({
+    required this.bidMultiplierUp,
+    required this.bidMultiplierDown,
+    required this.askMultiplierUp,
+    required this.askMultiplierDown,
+    required this.avgPriceMins,
+  });
+
+  /// Creates a [PercentPriceBySideFilter] from a JSON map.
+  factory PercentPriceBySideFilter.fromJson(Map<String, dynamic> json) {
+    return PercentPriceBySideFilter(
+      bidMultiplierUp: Decimal.parse(json['bidMultiplierUp'] as String),
+      bidMultiplierDown: Decimal.parse(json['bidMultiplierDown'] as String),
+      askMultiplierUp: Decimal.parse(json['askMultiplierUp'] as String),
+      askMultiplierDown: Decimal.parse(json['askMultiplierDown'] as String),
+      avgPriceMins: json['avgPriceMins'] as int,
+    );
+  }
+
+  /// Bid multiplier up.
+  final Decimal bidMultiplierUp;
+
+  /// Bid multiplier down.
+  final Decimal bidMultiplierDown;
+
+  /// Ask multiplier up.
+  final Decimal askMultiplierUp;
+
+  /// Ask multiplier down.
+  final Decimal askMultiplierDown;
+
+  /// Average price minutes.
+  final int avgPriceMins;
+}
+
+/// Filter for quantity constraints.
+final class LotSizeFilter extends SymbolFilter {
+  /// Creates a [LotSizeFilter].
+  const LotSizeFilter({
+    required this.minQty,
+    required this.maxQty,
+    required this.stepSize,
+  });
+
+  /// Creates a [LotSizeFilter] from a JSON map.
+  factory LotSizeFilter.fromJson(Map<String, dynamic> json) {
+    return LotSizeFilter(
+      minQty: Quantity.fromString(json['minQty'] as String),
+      maxQty: Quantity.fromString(json['maxQty'] as String),
+      stepSize: Quantity.fromString(json['stepSize'] as String),
+    );
+  }
+
+  /// Minimum quantity.
+  final Quantity minQty;
+
+  /// Maximum quantity.
+  final Quantity maxQty;
+
+  /// Step size.
+  final Quantity stepSize;
+}
+
+/// Filter for minimum notional value (legacy).
+final class MinNotionalFilter extends SymbolFilter {
+  /// Creates a [MinNotionalFilter].
+  const MinNotionalFilter({
+    required this.minNotional,
+    required this.applyToMarket,
+    required this.avgPriceMins,
+  });
+
+  /// Creates a [MinNotionalFilter] from a JSON map.
+  factory MinNotionalFilter.fromJson(Map<String, dynamic> json) {
+    return MinNotionalFilter(
+      minNotional: Price.fromString(json['minNotional'] as String),
+      applyToMarket: json['applyToMarket'] as bool,
+      avgPriceMins: json['avgPriceMins'] as int,
+    );
+  }
+
+  /// Minimum notional value.
+  final Price minNotional;
+
+  /// Whether to apply to market orders.
+  final bool applyToMarket;
+
+  /// Average price minutes.
+  final int avgPriceMins;
+}
+
+/// Filter for notional value.
+final class NotionalFilter extends SymbolFilter {
+  /// Creates a [NotionalFilter].
+  const NotionalFilter({
+    required this.minNotional,
+    required this.applyMinToMarket,
+    required this.maxNotional,
+    required this.applyMaxToMarket,
+    required this.avgPriceMins,
+  });
+
+  /// Creates a [NotionalFilter] from a JSON map.
+  factory NotionalFilter.fromJson(Map<String, dynamic> json) {
+    return NotionalFilter(
+      minNotional: Price.fromString(json['minNotional'] as String),
+      applyMinToMarket: json['applyMinToMarket'] as bool,
+      maxNotional: Price.fromString(json['maxNotional'] as String),
+      applyMaxToMarket: json['applyMaxToMarket'] as bool,
+      avgPriceMins: json['avgPriceMins'] as int,
+    );
+  }
+
+  /// Minimum notional value.
+  final Price minNotional;
+
+  /// Whether to apply min notional to market orders.
+  final bool applyMinToMarket;
+
+  /// Maximum notional value.
+  final Price maxNotional;
+
+  /// Whether to apply max notional to market orders.
+  final bool applyMaxToMarket;
+
+  /// Average price minutes.
+  final int avgPriceMins;
+}
+
+/// Filter for iceberg order parts.
+final class IcebergPartsFilter extends SymbolFilter {
+  /// Creates an [IcebergPartsFilter].
+  const IcebergPartsFilter({required this.limit});
+
+  /// Creates an [IcebergPartsFilter] from a JSON map.
+  factory IcebergPartsFilter.fromJson(Map<String, dynamic> json) {
+    return IcebergPartsFilter(limit: json['limit'] as int);
+  }
+
+  /// Limit of iceberg parts.
+  final int limit;
+}
+
+/// Filter for market order quantity constraints.
+final class MarketLotSizeFilter extends SymbolFilter {
+  /// Creates a [MarketLotSizeFilter].
+  const MarketLotSizeFilter({
+    required this.minQty,
+    required this.maxQty,
+    required this.stepSize,
+  });
+
+  /// Creates a [MarketLotSizeFilter] from a JSON map.
+  factory MarketLotSizeFilter.fromJson(Map<String, dynamic> json) {
+    return MarketLotSizeFilter(
+      minQty: Quantity.fromString(json['minQty'] as String),
+      maxQty: Quantity.fromString(json['maxQty'] as String),
+      stepSize: Quantity.fromString(json['stepSize'] as String),
+    );
+  }
+
+  /// Minimum quantity.
+  final Quantity minQty;
+
+  /// Maximum quantity.
+  final Quantity maxQty;
+
+  /// Step size.
+  final Quantity stepSize;
+}
+
+/// Filter for maximum number of orders.
+final class MaxNumOrdersFilter extends SymbolFilter {
+  /// Creates a [MaxNumOrdersFilter].
+  const MaxNumOrdersFilter({required this.maxNumOrders});
+
+  /// Creates a [MaxNumOrdersFilter] from a JSON map.
+  factory MaxNumOrdersFilter.fromJson(Map<String, dynamic> json) {
+    return MaxNumOrdersFilter(maxNumOrders: json['maxNumOrders'] as int);
+  }
+
+  /// Maximum number of orders.
+  final int maxNumOrders;
+}
+
+/// Filter for maximum number of algo orders.
+final class MaxNumAlgoOrdersFilter extends SymbolFilter {
+  /// Creates a [MaxNumAlgoOrdersFilter].
+  const MaxNumAlgoOrdersFilter({required this.maxNumAlgoOrders});
+
+  /// Creates a [MaxNumAlgoOrdersFilter] from a JSON map.
+  factory MaxNumAlgoOrdersFilter.fromJson(Map<String, dynamic> json) {
+    return MaxNumAlgoOrdersFilter(
+        maxNumAlgoOrders: json['maxNumAlgoOrders'] as int);
+  }
+
+  /// Maximum number of algo orders.
+  final int maxNumAlgoOrders;
+}
+
+/// Filter for maximum number of iceberg orders.
+final class MaxNumIcebergOrdersFilter extends SymbolFilter {
+  /// Creates a [MaxNumIcebergOrdersFilter].
+  const MaxNumIcebergOrdersFilter({required this.maxNumIcebergOrders});
+
+  /// Creates a [MaxNumIcebergOrdersFilter] from a JSON map.
+  factory MaxNumIcebergOrdersFilter.fromJson(Map<String, dynamic> json) {
+    return MaxNumIcebergOrdersFilter(
+        maxNumIcebergOrders: json['maxNumIcebergOrders'] as int);
+  }
+
+  /// Maximum number of iceberg orders.
+  final int maxNumIcebergOrders;
+}
+
+/// Filter for maximum position.
+final class MaxPositionFilter extends SymbolFilter {
+  /// Creates a [MaxPositionFilter].
+  const MaxPositionFilter({required this.maxPosition});
+
+  /// Creates a [MaxPositionFilter] from a JSON map.
+  factory MaxPositionFilter.fromJson(Map<String, dynamic> json) {
+    return MaxPositionFilter(
+        maxPosition: Quantity.fromString(json['maxPosition'] as String));
+  }
+
+  /// Maximum position.
+  final Quantity maxPosition;
+}
+
+/// Filter for trailing delta constraints.
+final class TrailingDeltaFilter extends SymbolFilter {
+  /// Creates a [TrailingDeltaFilter].
+  const TrailingDeltaFilter({
+    required this.minTrailingDelta,
+    required this.maxTrailingDelta,
+  });
+
+  /// Creates a [TrailingDeltaFilter] from a JSON map.
+  factory TrailingDeltaFilter.fromJson(Map<String, dynamic> json) {
+    return TrailingDeltaFilter(
+      minTrailingDelta: json['minTrailingDelta'] as int,
+      maxTrailingDelta: json['maxTrailingDelta'] as int,
+    );
+  }
+
+  /// Minimum trailing delta.
+  final int minTrailingDelta;
+
+  /// Maximum trailing delta.
+  final int maxTrailingDelta;
+}
+
+/// Unknown filter type.
+final class UnknownFilter extends SymbolFilter {
+  /// Creates an [UnknownFilter].
+  const UnknownFilter(this.type, this.data);
+
+  /// The filter type.
+  final String type;
+
+  /// The raw filter data.
+  final Map<String, dynamic> data;
 }
 
 /// Represents the order book depth.

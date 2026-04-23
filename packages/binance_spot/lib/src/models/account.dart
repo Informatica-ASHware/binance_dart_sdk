@@ -173,27 +173,34 @@ final class NewOrderResponse {
           ? Quantity.fromString(json['cummulativeQuoteQty'] as String)
           : null,
       status: json.containsKey('status')
-          ? OrderStatus.values.firstWhere((e) => e.value == json['status'])
+          ? OrderStatus.values
+              .firstWhere((OrderStatus e) => e.value == json['status'])
           : null,
       timeInForce: json.containsKey('timeInForce')
-          ? TimeInForce.values.firstWhere((e) => e.value == json['timeInForce'])
+          ? TimeInForce.values
+              .firstWhere((TimeInForce e) => e.value == json['timeInForce'])
           : null,
       type: json.containsKey('type')
-          ? OrderType.values.firstWhere((e) => e.value == json['type'])
+          ? OrderType.values
+              .firstWhere((OrderType e) => e.value == json['type'])
           : null,
       side: json.containsKey('side')
-          ? Side.values.firstWhere((e) => e.value == json['side'])
+          ? Side.values.firstWhere((Side e) => e.value == json['side'])
           : null,
       workingTime: json.containsKey('workingTime')
           ? DateTime.fromMillisecondsSinceEpoch(json['workingTime'] as int)
           : null,
       selfTradePreventionMode: json.containsKey('selfTradePreventionMode')
-          ? SelfTradePreventionMode.values
-              .firstWhere((e) => e.value == json['selfTradePreventionMode'])
+          ? SelfTradePreventionMode.values.firstWhere(
+              (SelfTradePreventionMode e) =>
+                  e.value == json['selfTradePreventionMode'],
+            )
           : null,
       fills: json.containsKey('fills')
           ? (json['fills'] as List<dynamic>)
-              .map((f) => OrderFill.fromJson(f as Map<String, dynamic>))
+              .map(
+                (f) => OrderFill.fromJson(f as Map<String, dynamic>),
+              )
               .toList()
           : null,
     );
@@ -326,11 +333,13 @@ final class Order {
       executedQty: Quantity.fromString(json['executedQty'] as String),
       cummulativeQuoteQty:
           Quantity.fromString(json['cummulativeQuoteQty'] as String),
-      status: OrderStatus.values.firstWhere((e) => e.value == json['status']),
-      timeInForce:
-          TimeInForce.values.firstWhere((e) => e.value == json['timeInForce']),
-      type: OrderType.values.firstWhere((e) => e.value == json['type']),
-      side: Side.values.firstWhere((e) => e.value == json['side']),
+      status: OrderStatus.values
+          .firstWhere((OrderStatus e) => e.value == json['status']),
+      timeInForce: TimeInForce.values
+          .firstWhere((TimeInForce e) => e.value == json['timeInForce']),
+      type:
+          OrderType.values.firstWhere((OrderType e) => e.value == json['type']),
+      side: Side.values.firstWhere((Side e) => e.value == json['side']),
       stopPrice: Price.fromString(json['stopPrice'] as String),
       icebergQty: Quantity.fromString(json['icebergQty'] as String),
       time: DateTime.fromMillisecondsSinceEpoch(json['time'] as int),
@@ -341,8 +350,10 @@ final class Order {
           DateTime.fromMillisecondsSinceEpoch(json['workingTime'] as int),
       origQuoteOrderQty:
           Quantity.fromString(json['origQuoteOrderQty'] as String),
-      selfTradePreventionMode: SelfTradePreventionMode.values
-          .firstWhere((e) => e.value == json['selfTradePreventionMode']),
+      selfTradePreventionMode: SelfTradePreventionMode.values.firstWhere(
+        (SelfTradePreventionMode e) =>
+            e.value == json['selfTradePreventionMode'],
+      ),
     );
   }
 

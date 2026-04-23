@@ -102,12 +102,22 @@ class DefaultBinanceHttpClient implements BinanceHttpClient {
 
       Result<dynamic, BinanceError> result;
       http.Response? response;
+      final startTime = DateTime.now();
 
       try {
         response = await _sendInternal(currentRequest);
         _rateLimitTracker.updateFromHeaders(response.headers);
 
         final interceptedResponse = await chain.interceptResponse(response);
+
+        observability.telemetry.report(
+          ResponseReceived(
+            timestamp: DateTime.now(),
+            statusCode: interceptedResponse.statusCode,
+            url: interceptedResponse.request?.url ?? Uri.parse(''),
+            duration: DateTime.now().difference(startTime),
+          ),
+        );
 
         if (interceptedResponse.statusCode == 200) {
           breaker.recordSuccess();
@@ -137,6 +147,17 @@ class DefaultBinanceHttpClient implements BinanceHttpClient {
 
         attempt++;
         final delay = _retryPolicy.getDelay(attempt);
+
+        observability.telemetry.report(
+          RetryAttempt(
+            timestamp: DateTime.now(),
+            attempt: attempt,
+            url: Uri.parse(
+                '${_getBaseUrl(currentRequest)}${currentRequest.path}'),
+            reason: error.toString(),
+          ),
+        );
+
         await Future<void>.delayed(delay);
         continue;
       }
@@ -145,15 +166,16 @@ class DefaultBinanceHttpClient implements BinanceHttpClient {
     }
   }
 
-  Future<http.Response> _sendInternal(BinanceRequest request) async {
-    // More robust venue detection
-    final String baseUrl;
+  String _getBaseUrl(BinanceRequest request) {
     if (request.path.startsWith('/fapi') || request.path.startsWith('/dapi')) {
-      baseUrl = environment.futuresBaseUrl;
+      return environment.futuresBaseUrl;
     } else {
-      baseUrl = environment.spotBaseUrl;
+      return environment.spotBaseUrl;
     }
+  }
 
+  Future<http.Response> _sendInternal(BinanceRequest request) async {
+    final baseUrl = _getBaseUrl(request);
     var uri = Uri.parse('$baseUrl${request.path}');
 
     final queryParams = Map<String, String>.from(request.queryParams);
@@ -168,6 +190,14 @@ class DefaultBinanceHttpClient implements BinanceHttpClient {
       queryParams['timestamp'] = timestamp;
 
       final queryString = _buildQueryString(queryParams);
+
+      observability.telemetry.report(
+        SignatureComputed(
+          timestamp: DateTime.now(),
+          payload: queryString,
+        ),
+      );
+
       final signature = await s.sign(queryString);
       queryParams['signature'] = signature.value;
     }
@@ -189,6 +219,15 @@ class DefaultBinanceHttpClient implements BinanceHttpClient {
       httpRequest.body = json.encode(request.body);
       httpRequest.headers['Content-Type'] = 'application/json';
     }
+
+    observability.telemetry.report(
+      RequestSent(
+        timestamp: DateTime.now(),
+        method: request.method.toString(),
+        url: uri,
+        weight: request.weight,
+      ),
+    );
 
     final streamedResponse = await _httpClient.send(httpRequest);
     return http.Response.fromStream(streamedResponse);
@@ -212,11 +251,19 @@ class DefaultBinanceHttpClient implements BinanceHttpClient {
       final retryAfter = response.headers['retry-after'];
       final seconds = int.tryParse(retryAfter ?? '60') ?? 60;
 
+      observability.telemetry.report(
+        RateLimitHit(
+          timestamp: DateTime.now(),
+          limitType: statusCode == 418 ? 'IP_BAN' : 'REQUEST_WEIGHT',
+          retryAfter: Duration(seconds: seconds),
+        ),
+      );
+
       if (statusCode == 418) {
         _isIpBanned = true;
         _ipBanEndTime = DateTime.now().add(Duration(seconds: seconds));
         return Result.failure(
-          BinanceApiError(
+          BinanceApiError.fromCode(
             code: -1003,
             message: 'IP Banned. Retry after $seconds seconds',
           ),
@@ -224,7 +271,7 @@ class DefaultBinanceHttpClient implements BinanceHttpClient {
       }
 
       return Result.failure(
-        BinanceApiError(
+        BinanceApiError.fromCode(
           code: -1003,
           message: 'Too many requests. Retry after $seconds seconds',
         ),
@@ -237,10 +284,29 @@ class DefaultBinanceHttpClient implements BinanceHttpClient {
       final msg = data['msg'] as String?;
 
       if (code != null && msg != null) {
-        return Result.failure(BinanceApiError(code: code, message: msg));
+        return Result.failure(
+            BinanceApiError.fromCode(code: code, message: msg));
       }
     } catch (_) {
       // Not a JSON error body
+    }
+
+    if (statusCode >= 500) {
+      return Result.failure(
+        BinanceHttpError(
+          statusCode: statusCode,
+          message: 'Server Error: ${response.body}',
+        ),
+      );
+    }
+
+    if (statusCode == 400 || statusCode == 401 || statusCode == 403) {
+      return Result.failure(
+        BinanceHttpError(
+          statusCode: statusCode,
+          message: 'HTTP Error $statusCode: ${response.body}',
+        ),
+      );
     }
 
     return Result.failure(
