@@ -8,9 +8,9 @@ abstract interface class RetryPolicy {
   /// Whether a request should be retried based on the [response], [error]
   /// and [attempt].
   bool shouldRetry({
+    required int attempt,
     http.BaseResponse? response,
     BinanceError? error,
-    required int attempt,
   });
 
   /// Returns the delay before the next retry attempt.
@@ -41,9 +41,9 @@ class ExponentialBackoffRetryPolicy implements RetryPolicy {
 
   @override
   bool shouldRetry({
+    required int attempt,
     http.BaseResponse? response,
     BinanceError? error,
-    required int attempt,
   }) {
     if (attempt >= maxAttempts) return false;
 

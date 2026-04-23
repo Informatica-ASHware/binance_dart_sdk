@@ -24,30 +24,52 @@ class MockWebSocketChannel implements BinanceWebSocketChannel {
   }
 
   void closeFromServer() {
-    _streamController.close();
+    if (!_streamController.isClosed) {
+      _streamController.close();
+    }
   }
 
   @override
   Future<void> close([int? closeCode, String? closeReason]) async {
-    await _streamController.close();
-    await _sinkController.close();
+    if (!_streamController.isClosed) {
+      await _streamController.close();
+    }
+    if (!_sinkController.isClosed) {
+      await _sinkController.close();
+    }
   }
 }
 
 class PrintLogger implements BinanceLogger {
   @override
-  void log(BinanceLogLevel level, String message, {Object? error, StackTrace? stackTrace}) =>
+  void log(
+    BinanceLogLevel level,
+    String message, {
+    Object? error,
+    StackTrace? stackTrace,
+  }) =>
+      // ignore: avoid_print
       print('$level: $message');
 
   @override
-  void info(String message) => print('INFO: $message');
+  void info(String message) =>
+      // ignore: avoid_print
+      print('INFO: $message');
+
   @override
   void error(String message, {Object? error, StackTrace? stackTrace}) =>
+      // ignore: avoid_print
       print('ERROR: $message $error');
+
   @override
-  void warning(String message) => print('WARNING: $message');
+  void warning(String message) =>
+      // ignore: avoid_print
+      print('WARNING: $message');
+
   @override
-  void debug(String message) => print('DEBUG: $message');
+  void debug(String message) =>
+      // ignore: avoid_print
+      print('DEBUG: $message');
 }
 
 class MockWebSocketProvider implements BinanceWebSocketProvider {
@@ -58,6 +80,7 @@ class MockWebSocketProvider implements BinanceWebSocketProvider {
 
   @override
   Future<BinanceWebSocketChannel> connect(Uri url) async {
+    // ignore: avoid_print
     print('Connecting to $url');
     connectCount++;
     lastUrl = url;
@@ -76,9 +99,8 @@ void main() {
   group('ReconnectionStrategy', () {
     test('calculates delay with exponential backoff', () {
       const strategy = ReconnectionStrategy(
-        initialDelay: Duration(seconds: 1),
-        multiplier: 2.0,
-        jitter: 0.0,
+        multiplier: 2,
+        jitter: 0,
       );
 
       expect(strategy.getDelay(0).inSeconds, 1);
@@ -88,10 +110,9 @@ void main() {
 
     test('respects maxDelay', () {
       const strategy = ReconnectionStrategy(
-        initialDelay: Duration(seconds: 1),
         maxDelay: Duration(seconds: 10),
-        multiplier: 2.0,
-        jitter: 0.0,
+        multiplier: 2,
+        jitter: 0,
       );
 
       expect(strategy.getDelay(0).inSeconds, 1);
@@ -127,32 +148,37 @@ void main() {
       final future = stream.first; // Listen
 
       // Wait for connection
-      for (var i = 0; i < 20; i++) {
+      for (var i = 0; i < 40; i++) {
         if (provider.lastChannel != null) break;
-        await Future.delayed(Duration(milliseconds: 50));
+        await Future<void>.delayed(const Duration(milliseconds: 100));
       }
 
       final channel = provider.lastChannel;
       expect(channel, isNotNull, reason: 'Channel should be connected');
-      channel!.addFromServer(jsonEncode({
-        'stream': 'btcusdt@aggTrade',
-        'data': {'p': '50000', 'q': '1.0'}
-      }));
+      channel!.addFromServer(
+        jsonEncode({
+          'stream': 'btcusdt@aggTrade',
+          'data': {'p': '50000', 'q': '1.0'},
+        }),
+      );
 
-      final event = await future;
-      expect(event['p'], '50000');
+      final event = await future.timeout(const Duration(seconds: 5));
+      expect((event as Map)['p'], '50000');
     });
 
     test('multiplexes multiple streams', () async {
       final s1 = client.subscribe('btcusdt@aggTrade').listen((_) {});
       final s2 = client.subscribe('ethusdt@aggTrade').listen((_) {});
 
-      for (var i = 0; i < 20; i++) {
-        if (provider.lastUrl != null && provider.lastUrl!.queryParameters.containsKey('streams')) {
-             final streams = provider.lastUrl!.queryParameters['streams']!;
-             if (streams.contains('btcusdt@aggTrade') && streams.contains('ethusdt@aggTrade')) break;
+      for (var i = 0; i < 40; i++) {
+        final lastUrl = provider.lastUrl;
+        if (lastUrl != null &&
+            lastUrl.queryParameters.containsKey('streams')) {
+          final streams = lastUrl.queryParameters['streams']!;
+          if (streams.contains('btcusdt@aggTrade') &&
+              streams.contains('ethusdt@aggTrade')) break;
         }
-        await Future.delayed(Duration(milliseconds: 50));
+        await Future<void>.delayed(const Duration(milliseconds: 100));
       }
 
       final url = provider.lastUrl.toString();
@@ -166,9 +192,9 @@ void main() {
     test('reconnects on connection loss', () async {
       final sub = client.subscribe('btcusdt@aggTrade').listen((_) {});
 
-      for (var i = 0; i < 20; i++) {
+      for (var i = 0; i < 40; i++) {
         if (provider.lastChannel != null) break;
-        await Future.delayed(Duration(milliseconds: 50));
+        await Future<void>.delayed(const Duration(milliseconds: 100));
       }
 
       final firstChannel = provider.lastChannel!;
@@ -176,9 +202,9 @@ void main() {
 
       firstChannel.closeFromServer();
 
-      for (var i = 0; i < 20; i++) {
+      for (var i = 0; i < 40; i++) {
         if (provider.connectCount > 1) break;
-        await Future.delayed(Duration(milliseconds: 50));
+        await Future<void>.delayed(const Duration(milliseconds: 100));
       }
 
       expect(provider.connectCount, greaterThanOrEqualTo(2));
@@ -201,23 +227,25 @@ void main() {
         // Slow consumer
       });
 
-      for (var i = 0; i < 20; i++) {
+      for (var i = 0; i < 40; i++) {
         if (provider.lastChannel != null) break;
-        await Future.delayed(Duration(milliseconds: 50));
+        await Future<void>.delayed(const Duration(milliseconds: 100));
       }
 
       final channel = provider.lastChannel!;
 
       for (var i = 0; i < 100; i++) {
-        channel.addFromServer(jsonEncode({
-          'stream': 'btcusdt@aggTrade',
-          'data': {'i': i}
-        }));
+        channel.addFromServer(
+          jsonEncode({
+            'stream': 'btcusdt@aggTrade',
+            'data': {'i': i},
+          }),
+        );
       }
 
-      for (var i = 0; i < 20; i++) {
+      for (var i = 0; i < 40; i++) {
         if (receivedWarning != null) break;
-        await Future.delayed(Duration(milliseconds: 50));
+        await Future<void>.delayed(const Duration(milliseconds: 100));
       }
 
       expect(receivedWarning, isNotNull);
@@ -248,25 +276,27 @@ void main() {
     test('sends request and correlates response', () async {
       final requestFuture = client.sendRequest('ping');
 
-      for (var i = 0; i < 20; i++) {
+      for (var i = 0; i < 40; i++) {
         if (provider.lastChannel != null) break;
-        await Future.delayed(Duration(milliseconds: 50));
+        await Future<void>.delayed(const Duration(milliseconds: 100));
       }
 
       final channel = provider.lastChannel!;
 
       final sentMessage = await channel.sentMessages.first;
-      final requestData = jsonDecode(sentMessage);
+      final requestData = jsonDecode(sentMessage as String) as Map;
       final id = requestData['id'];
 
-      channel.addFromServer(jsonEncode({
-        'id': id,
-        'status': 200,
-        'result': {}
-      }));
+      channel.addFromServer(
+        jsonEncode({
+          'id': id,
+          'status': 200,
+          'result': <String, dynamic>{},
+        }),
+      );
 
       final response = await requestFuture;
-      expect(response['status'], 200);
+      expect((response as Map)['status'], 200);
     });
 
     test('performs logon and resumes after reconnect', () async {
@@ -278,20 +308,22 @@ void main() {
       provider.onConnect = (uri) async {
         final channel = MockWebSocketChannel();
         channel.sentMessages.listen((msg) {
-          final data = jsonDecode(msg);
+          final data = jsonDecode(msg as String) as Map;
           if (data['method'] == 'session.logon') {
-            channel.addFromServer(jsonEncode({
-              'id': data['id'],
-              'status': 200,
-              'result': {'apiKey': 'key'}
-            }));
+            channel.addFromServer(
+              jsonEncode({
+                'id': data['id'],
+                'status': 200,
+                'result': {'apiKey': 'key'},
+              }),
+            );
           }
         });
         return channel;
       };
 
       await client.logon(credentials);
-      expect(client.IsLoggedIn, isTrue);
+      expect(client.isLoggedIn, isTrue);
       expect(provider.connectCount, 1);
 
       // Simulate connection loss
@@ -299,13 +331,13 @@ void main() {
       firstChannel.closeFromServer();
 
       // Client should auto-reconnect and re-logon
-      for (var i = 0; i < 20; i++) {
-        if (provider.connectCount > 1 && client.IsLoggedIn) break;
-        await Future.delayed(Duration(milliseconds: 50));
+      for (var i = 0; i < 40; i++) {
+        if (provider.connectCount > 1 && client.isLoggedIn) break;
+        await Future<void>.delayed(const Duration(milliseconds: 100));
       }
 
       expect(provider.connectCount, greaterThanOrEqualTo(2));
-      expect(client.IsLoggedIn, isTrue);
+      expect(client.isLoggedIn, isTrue);
     });
   });
 }

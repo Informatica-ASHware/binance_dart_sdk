@@ -33,7 +33,7 @@ class WebSocketApiClient {
   final Duration pingInterval;
 
   BinanceWebSocketChannel? _channel;
-  StreamSubscription? _channelSubscription;
+  StreamSubscription<dynamic>? _channelSubscription;
   Timer? _heartbeatTimer;
   DateTime? _lastFrameTime;
 
@@ -46,10 +46,10 @@ class WebSocketApiClient {
   bool _isLoggedIn = false;
 
   /// Whether the client is currently connected.
-  bool get IsConnected => _channel != null;
+  bool get isConnected => _channel != null;
 
   /// Whether the session is currently authenticated.
-  bool get IsLoggedIn => _isLoggedIn;
+  bool get isLoggedIn => _isLoggedIn;
 
   /// Connects to the WebSocket API.
   Future<void> connect() async {
@@ -68,13 +68,17 @@ class WebSocketApiClient {
         onDone: _onDone,
       );
 
-      if (_credentials != null && _isLoggedIn) {
+      final credentials = _credentials;
+      if (credentials != null && _isLoggedIn) {
         // Resume session if it was active
-        await _performLogon(_credentials!);
+        await _performLogon(credentials);
       }
     } catch (e, st) {
-      _logger.error('Failed to connect to WebSocket API',
-          error: e, stackTrace: st);
+      _logger.error(
+        'Failed to connect to WebSocket API',
+        error: e,
+        stackTrace: st,
+      );
       _scheduleReconnect();
       rethrow;
     }
@@ -99,20 +103,19 @@ class WebSocketApiClient {
     };
 
     final signer = _createSigner(credentials);
-    // Note: For session.logon, the payload to sign is typically
-    // apiKey=...&timestamp=...
     final canonicalPayload = _buildCanonicalPayload(params);
     final signature = await signer.sign(canonicalPayload);
     params['signature'] = signature.value;
 
     final response = await sendRequest('session.logon', params);
-    if (response['status'] == 200) {
+    if (response is Map && response['status'] == 200) {
       _isLoggedIn = true;
       _logger.info('WebSocket session logon successful');
     } else {
       _isLoggedIn = false;
-      _logger.error('WebSocket session logon failed: ${response['error']}');
-      throw Exception('Logon failed: ${response['error']}');
+      final error = response is Map ? response['error'] : 'Unknown error';
+      _logger.error('WebSocket session logon failed: $error');
+      throw Exception('Logon failed: $error');
     }
   }
 
@@ -130,8 +133,10 @@ class WebSocketApiClient {
   }
 
   /// Sends a request to the WebSocket API and waits for a response.
-  Future<dynamic> sendRequest(String method,
-      [Map<String, dynamic>? params]) async {
+  Future<dynamic> sendRequest(
+    String method, [
+    Map<String, dynamic>? params,
+  ]) async {
     if (_channel == null) {
       await connect();
     }
@@ -175,8 +180,11 @@ class WebSocketApiClient {
         _channel?.sink.add(jsonEncode({'method': 'pong'}));
       }
     } catch (e, st) {
-      _logger.error('Error parsing WebSocket API message',
-          error: e, stackTrace: st);
+      _logger.error(
+        'Error parsing WebSocket API message',
+        error: e,
+        stackTrace: st,
+      );
     }
   }
 
@@ -195,22 +203,25 @@ class WebSocketApiClient {
   void _scheduleReconnect() {
     _stopHeartbeat();
     _channelSubscription?.cancel();
+    _channelSubscription = null;
     _channel = null;
 
     if (_isClosing) return;
 
     final delay = _reconnectionStrategy.getDelay(_reconnectAttempts++);
     _logger.info('Reconnecting to WebSocket API in ${delay.inSeconds}s...');
-    Timer(delay, connect);
+    Timer(delay, () => unawaited(connect()));
   }
 
   void _startHeartbeat() {
     _heartbeatTimer?.cancel();
     _heartbeatTimer = Timer.periodic(pingInterval, (timer) {
       final now = DateTime.now();
-      if (_lastFrameTime != null &&
-          now.difference(_lastFrameTime!) > pingInterval * 3) {
-        _logger.warning('WebSocket API heartbeat timeout, forcing reconnection');
+      final lastFrame = _lastFrameTime;
+      if (lastFrame != null && now.difference(lastFrame) > pingInterval * 3) {
+        _logger.warning(
+          'WebSocket API heartbeat timeout, forcing reconnection',
+        );
         _channel?.close();
         _scheduleReconnect();
       } else {
@@ -218,10 +229,12 @@ class WebSocketApiClient {
         if (_isLoggedIn) {
           getSessionStatus().catchError((_) => null);
         } else {
-          _channel?.sink.add(jsonEncode({
-            'id': 'hb_${DateTime.now().millisecondsSinceEpoch}',
-            'method': 'ping',
-          }));
+          _channel?.sink.add(
+            jsonEncode({
+              'id': 'hb_${DateTime.now().millisecondsSinceEpoch}',
+              'method': 'ping',
+            }),
+          );
         }
       }
     });
@@ -249,6 +262,7 @@ class WebSocketApiClient {
     _isClosing = true;
     _stopHeartbeat();
     await _channelSubscription?.cancel();
+    _channelSubscription = null;
     await _channel?.close();
     _channel = null;
 

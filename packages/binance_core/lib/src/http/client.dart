@@ -72,19 +72,8 @@ class DefaultBinanceHttpClient implements BinanceHttpClient {
   Future<Result<Map<String, dynamic>, BinanceError>> send(
     BinanceRequest request,
   ) async {
-    if (_isIpBanned && _ipBanEndTime != null) {
-      if (DateTime.now().isBefore(_ipBanEndTime!)) {
-        return const Result.failure(
-          BinanceNetworkError(message: 'IP is currently banned by Binance'),
-        );
-      } else {
-        _isIpBanned = false;
-        _ipBanEndTime = null;
-      }
-    }
-
     final chain = InterceptorChain(_interceptors);
-    var currentRequest = await chain.interceptRequest(request);
+    final currentRequest = await chain.interceptRequest(request);
 
     final breaker = _circuitBreakers.getBreaker(currentRequest.path);
     if (breaker.isOpen) {
@@ -99,7 +88,19 @@ class DefaultBinanceHttpClient implements BinanceHttpClient {
 
     var attempt = 0;
     while (true) {
-      Result<Map<String, dynamic>, BinanceError>? result;
+      final ipBanEnd = _ipBanEndTime;
+      if (_isIpBanned && ipBanEnd != null) {
+        if (DateTime.now().isBefore(ipBanEnd)) {
+          return const Result.failure(
+            BinanceNetworkError(message: 'IP is currently banned by Binance'),
+          );
+        } else {
+          _isIpBanned = false;
+          _ipBanEndTime = null;
+        }
+      }
+
+      Result<Map<String, dynamic>, BinanceError> result;
       http.Response? response;
 
       try {
@@ -124,33 +125,35 @@ class DefaultBinanceHttpClient implements BinanceHttpClient {
         );
       }
 
-      if (result != null && result is Failure<Map<String, dynamic>, BinanceError>) {
-        final error = result.error;
+      final error = result.fold(onSuccess: (_) => null, onFailure: (e) => e);
 
-        // Check if we should retry
-        if (_retryPolicy.shouldRetry(
-          response: response,
-          error: error,
-          attempt: attempt,
-        )) {
-          attempt++;
-          final delay = _retryPolicy.getDelay(attempt);
-          await Future<void>.delayed(delay);
-          continue;
-        }
-
-        // Handle terminal errors
-        breaker.recordFailure();
-        return result;
+      // Check if we should retry
+      if (error != null &&
+          _shouldRetry(response, error, attempt)) {
+        attempt++;
+        final delay = _retryPolicy.getDelay(attempt);
+        await Future<void>.delayed(delay);
+        continue;
       }
 
-      if (result != null) return result;
+      if (error != null) {
+        // Handle terminal errors
+        breaker.recordFailure();
+      }
 
-      // Should not reach here
-      return const Result.failure(
-        BinanceNetworkError(message: 'Unknown error occurred'),
-      );
+      return result;
     }
+  }
+
+  bool _shouldRetry(http.Response? response, BinanceError error, int attempt) {
+    // Specifically don't retry if we just got a 418 IP Ban
+    if (response?.statusCode == 418) return false;
+
+    return _retryPolicy.shouldRetry(
+      response: response,
+      error: error,
+      attempt: attempt,
+    );
   }
 
   Future<http.Response> _sendInternal(BinanceRequest request) async {
@@ -160,26 +163,30 @@ class DefaultBinanceHttpClient implements BinanceHttpClient {
     final queryParams = Map<String, String>.from(request.queryParams);
 
     if (request.securityType is SignedSecurityType) {
-      if (signer == null) {
-        throw const BinanceAuthError('RequestSigner is required for signed requests');
+      final s = signer;
+      if (s == null) {
+        throw Exception('RequestSigner is required for signed requests');
       }
 
       final timestamp = DateTime.now().millisecondsSinceEpoch.toString();
       queryParams['timestamp'] = timestamp;
 
       final queryString = _buildQueryString(queryParams);
-      final signature = await signer!.sign(queryString);
+      final signature = await s.sign(queryString);
       queryParams['signature'] = signature.value;
     }
 
-    uri = uri.replace(queryParameters: queryParams.isNotEmpty ? queryParams : null);
+    uri = uri.replace(
+      queryParameters: queryParams.isNotEmpty ? queryParams : null,
+    );
 
     final headers = <String, String>{
       'Accept': 'application/json',
     };
 
-    if (credentials != null) {
-      headers['X-MBX-APIKEY'] = credentials!.apiKey;
+    final creds = credentials;
+    if (creds != null) {
+      headers['X-MBX-APIKEY'] = creds.apiKey;
     }
 
     final httpRequest = http.Request(request.method.toString(), uri);
@@ -195,7 +202,10 @@ class DefaultBinanceHttpClient implements BinanceHttpClient {
 
   String _buildQueryString(Map<String, String> params) {
     return params.entries
-        .map((e) => '${Uri.encodeComponent(e.key)}=${Uri.encodeComponent(e.value)}')
+        .map(
+          (e) =>
+              '${Uri.encodeComponent(e.key)}=${Uri.encodeComponent(e.value)}',
+        )
         .join('&');
   }
 

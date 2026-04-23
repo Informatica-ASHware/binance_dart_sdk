@@ -146,8 +146,8 @@ final class RsaRequestSigner implements RequestSigner {
     return pc.RSAPrivateKey(
       (rsaSeq.elements![1] as pc_asn1.ASN1Integer).integer!,
       (rsaSeq.elements![3] as pc_asn1.ASN1Integer).integer!,
-      (rsaSeq.elements![4] as pc_asn1.ASN1Integer).integer!,
-      (rsaSeq.elements![5] as pc_asn1.ASN1Integer).integer!,
+      (rsaSeq.elements![4] as pc_asn1.ASN1Integer).integer,
+      (rsaSeq.elements![5] as pc_asn1.ASN1Integer).integer,
     );
   }
 }

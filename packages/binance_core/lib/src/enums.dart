@@ -105,7 +105,8 @@ enum BinanceEnvironment {
   /// WebSocket base URL for Spot API.
   String get spotWsApiBaseUrl => switch (this) {
         BinanceEnvironment.mainnet => 'wss://ws-api.binance.com/ws-api/v3',
-        BinanceEnvironment.spotTestnet => 'wss://testnet.binance.vision/ws-api/v3',
+        BinanceEnvironment.spotTestnet =>
+          'wss://testnet.binance.vision/ws-api/v3',
         BinanceEnvironment.futuresTestnet => '',
       };
 

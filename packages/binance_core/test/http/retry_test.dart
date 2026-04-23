@@ -8,21 +8,21 @@ void main() {
     test('shouldRetry returns true for 5xx errors', () {
       final policy = ExponentialBackoffRetryPolicy();
       final response = http.Response('', 500);
-      expect(policy.shouldRetry(response, 0), isTrue);
+      expect(policy.shouldRetry(response: response, attempt: 0), isTrue);
     });
 
     test('shouldRetry returns false for 4xx errors', () {
       final policy = ExponentialBackoffRetryPolicy();
       final response = http.Response('', 400);
-      expect(policy.shouldRetry(response, 0), isFalse);
+      expect(policy.shouldRetry(response: response, attempt: 0), isFalse);
     });
 
     test('shouldRetry returns false after max attempts', () {
       final policy = ExponentialBackoffRetryPolicy(maxAttempts: 2);
       final response = http.Response('', 500);
-      expect(policy.shouldRetry(response, 0), isTrue);
-      expect(policy.shouldRetry(response, 1), isTrue);
-      expect(policy.shouldRetry(response, 2), isFalse);
+      expect(policy.shouldRetry(response: response, attempt: 0), isTrue);
+      expect(policy.shouldRetry(response: response, attempt: 1), isTrue);
+      expect(policy.shouldRetry(response: response, attempt: 2), isFalse);
     });
 
     test('getDelay increases exponentially', () {

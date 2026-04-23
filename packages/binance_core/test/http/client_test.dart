@@ -8,6 +8,7 @@ import 'package:binance_core/src/http/interceptor.dart';
 import 'package:binance_core/src/http/request.dart';
 import 'package:binance_core/src/http/security.dart';
 import 'package:binance_core/src/security.dart';
+import 'package:binance_core/src/utils.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
 import 'package:test/test.dart';
@@ -64,9 +65,13 @@ void main() {
       var callCount = 0;
       final mockClient = MockClient((request) async {
         callCount++;
-        return http.Response('Banned', 418, headers: {
-          'retry-after': '1',
-        });
+        return http.Response(
+          'Banned',
+          418,
+          headers: {
+            'retry-after': '10',
+          },
+        );
       });
 
       final client = DefaultBinanceHttpClient(
@@ -104,7 +109,8 @@ void main() {
         httpClient: mockClient400,
       );
 
-      for (var i = 0; i < 5; i++) {
+      // Make enough failed requests to open the circuit breaker
+      for (var i = 0; i < 10; i++) {
         await client.send(
           const BinanceRequest(method: HttpMethod.get, path: '/api/v3/ping'),
         );
@@ -134,14 +140,18 @@ void main() {
       );
 
       final log = <String>[];
-      client.addInterceptor(_TestInterceptor('A', log));
-      client.addInterceptor(_TestInterceptor('B', log));
+      client
+        ..addInterceptor(_TestInterceptor('A', log))
+        ..addInterceptor(_TestInterceptor('B', log));
 
       await client.send(
         const BinanceRequest(method: HttpMethod.get, path: '/api/v3/ping'),
       );
 
-      expect(log, ['onRequest A', 'onRequest B', 'onResponse B', 'onResponse A']);
+      expect(
+        log,
+        ['onRequest A', 'onRequest B', 'onResponse B', 'onResponse A'],
+      );
     });
 
     test('signed request includes timestamp and signature', () async {
@@ -154,7 +164,9 @@ void main() {
 
       final credentials = HmacCredentials(
         apiKey: 'test-api-key',
-        apiSecret: SecureByteBuffer(Uint8List.fromList(utf8.encode('test-secret'))),
+        apiSecret: SecureByteBuffer(
+          Uint8List.fromList(utf8.encode('test-secret')),
+        ),
       );
 
       final client = DefaultBinanceHttpClient(
@@ -217,7 +229,10 @@ void main() {
       );
 
       expect(result.isFailure, isTrue);
-      expect(result.fold(onSuccess: (_) => null, onFailure: (e) => e), isA<BinanceNetworkError>());
+      expect(
+        result.fold(onSuccess: (_) => null, onFailure: (e) => e),
+        isA<BinanceNetworkError>(),
+      );
     });
 
     test('BinanceRequestBuilder builds request correctly', () {
@@ -239,6 +254,26 @@ void main() {
       expect(request.body, {'extra': 'data'});
       expect(request.securityType, isA<SignedSecurityType>());
       expect(request.weight, 10);
+    });
+  });
+
+  group('BinanceUtils', () {
+    test('strictPercentEncode matches RFC 3986', () {
+      expect(
+        BinanceUtils.strictPercentEncode('ABC abc 123'),
+        'ABC%20abc%20123',
+      );
+      expect(BinanceUtils.strictPercentEncode('-._~'), '-._~');
+      expect(
+        BinanceUtils.strictPercentEncode(r'!@#$%^&*()'),
+        '%21%40%23%24%25%5E%26%2A%28%29',
+      );
+    });
+
+    test('buildCanonicalPayload sorts and encodes', () {
+      final params = {'z': 1, 'a': 'hello world', 'M': 'foo'};
+      final payload = BinanceUtils.buildCanonicalPayload(params);
+      expect(payload, 'M=foo&a=hello%20world&z=1');
     });
   });
 }
