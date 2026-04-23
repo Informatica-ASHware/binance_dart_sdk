@@ -54,7 +54,8 @@ void main() {
           .build(btcUsdt);
 
       expect(result.isSuccess, isTrue);
-      final request = result.fold(onSuccess: (r) => r, onFailure: (_) => throw Exception());
+      final request =
+          result.fold(onSuccess: (r) => r, onFailure: (_) => throw Exception());
       expect(request.symbol.value, 'BTCUSDT');
       expect(request.price?.value.toString(), '50000');
     });
@@ -65,7 +66,8 @@ void main() {
           .build(btcUsdt);
 
       expect(result.isFailure, isTrue);
-      expect(result.fold(onSuccess: (_) => '', onFailure: (e) => e.message), contains('Symbol mismatch'));
+      expect(result.fold(onSuccess: (_) => '', onFailure: (e) => e.message),
+          contains('Symbol mismatch'));
     });
   });
 

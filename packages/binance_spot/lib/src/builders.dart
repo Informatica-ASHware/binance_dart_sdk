@@ -293,7 +293,8 @@ class SpotOrderBuilder {
     if (symbolInfo.symbol != _symbol) {
       return Result.failure(
         BinanceValidationError(
-          'Symbol mismatch: builder symbol is $_symbol but SymbolInfo is for ${symbolInfo.symbol}',
+          'Symbol mismatch: builder symbol is $_symbol but SymbolInfo is for '
+          '${symbolInfo.symbol}',
         ),
       );
     }
@@ -459,13 +460,15 @@ class OcoOrderBuilder {
     final sp = _stopPrice;
 
     if (q == null) {
-      return const Result.failure(BinanceValidationError('quantity is required'));
+      return const Result.failure(
+          BinanceValidationError('quantity is required'));
     }
     if (p == null) {
       return const Result.failure(BinanceValidationError('price is required'));
     }
     if (sp == null) {
-      return const Result.failure(BinanceValidationError('stopPrice is required'));
+      return const Result.failure(
+          BinanceValidationError('stopPrice is required'));
     }
 
     // Re-use validation logic for components
