@@ -3,5 +3,3 @@ environment:
   sdk: ">=3.5.0 <4.0.0"
 dev_dependencies:
   melos: ^6.0.0
-workspace:
-  - packages/binance_core

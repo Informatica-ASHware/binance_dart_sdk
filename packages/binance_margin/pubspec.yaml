@@ -1,5 +1,5 @@
-name: binance_core
-description: Primitivas y transporte base para binance_dart_sdk.
+name: binance_margin
+description: Cobertura de Binance Margin Trading (Cross e Isolated).
 version: 0.1.0
 publish_to: none
 
@@ -7,10 +7,11 @@ environment:
   sdk: '>=3.5.0 <4.0.0'
 
 dependencies:
-  cryptography: ^2.7.0
-  http: ^1.2.0
+  binance_core:
+    path: ../binance_core
+  binance_spot:
+    path: ../binance_spot
   meta: ^1.10.0
-  pointycastle: ^3.9.1
 
 dev_dependencies:
   mocktail: ^1.0.5
