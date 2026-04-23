@@ -87,4 +87,33 @@ enum BinanceEnvironment {
 
   /// Base URL for Futures API.
   final String futuresBaseUrl;
+
+  /// WebSocket base URL for Spot streams.
+  String get spotStreamBaseUrl => switch (this) {
+        BinanceEnvironment.mainnet => 'wss://stream.binance.com:9443',
+        BinanceEnvironment.spotTestnet => 'wss://testnet.binance.vision',
+        BinanceEnvironment.futuresTestnet => '',
+      };
+
+  /// WebSocket base URL for Futures streams.
+  String get futuresStreamBaseUrl => switch (this) {
+        BinanceEnvironment.mainnet => 'wss://fstream.binance.com',
+        BinanceEnvironment.spotTestnet => '',
+        BinanceEnvironment.futuresTestnet => 'wss://fstream.binancefuture.com',
+      };
+
+  /// WebSocket base URL for Spot API.
+  String get spotWsApiBaseUrl => switch (this) {
+        BinanceEnvironment.mainnet => 'wss://ws-api.binance.com/ws-api/v3',
+        BinanceEnvironment.spotTestnet => 'wss://testnet.binance.vision/ws-api/v3',
+        BinanceEnvironment.futuresTestnet => '',
+      };
+
+  /// WebSocket base URL for Futures API.
+  String get futuresWsApiBaseUrl => switch (this) {
+        BinanceEnvironment.mainnet => 'wss://ws-fapi.binance.com/ws-fapi/v1',
+        BinanceEnvironment.spotTestnet => '',
+        BinanceEnvironment.futuresTestnet =>
+          'wss://testnet.binancefuture.com/ws-fapi/v1',
+      };
 }

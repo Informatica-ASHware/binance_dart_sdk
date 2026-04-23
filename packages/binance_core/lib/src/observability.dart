@@ -1,3 +1,4 @@
+import 'package:binance_core/src/ws/base.dart';
 import 'package:meta/meta.dart';
 
 /// Level of logging.
@@ -69,11 +70,15 @@ final class BinanceObservabilityHooks {
   /// Creates [BinanceObservabilityHooks].
   const BinanceObservabilityHooks({
     this.logger = const NoOpBinanceLogger(),
+    this.onStreamLag,
     this.onTimeSyncWarning,
   });
 
   /// The logger to use.
   final BinanceLogger logger;
+
+  /// Callback when a stream is lagging.
+  final void Function(StreamLagWarning warning)? onStreamLag;
 
   /// Callback when a time synchronization warning occurs.
   /// The [offset] is the detected time offset in milliseconds.

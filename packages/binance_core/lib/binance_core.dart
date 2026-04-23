@@ -17,3 +17,6 @@ export 'src/result.dart';
 export 'src/security.dart';
 export 'src/time.dart';
 export 'src/utils.dart';
+export 'src/ws/api_client.dart';
+export 'src/ws/base.dart';
+export 'src/ws/stream_client.dart';
