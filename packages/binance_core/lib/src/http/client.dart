@@ -154,7 +154,14 @@ class DefaultBinanceHttpClient implements BinanceHttpClient {
   }
 
   Future<http.Response> _sendInternal(BinanceRequest request) async {
-    final baseUrl = environment.spotBaseUrl; // Assuming spot for now
+    // More robust venue detection
+    final String baseUrl;
+    if (request.path.startsWith('/fapi') || request.path.startsWith('/dapi')) {
+      baseUrl = environment.futuresBaseUrl;
+    } else {
+      baseUrl = environment.spotBaseUrl;
+    }
+
     var uri = Uri.parse('$baseUrl${request.path}');
 
     final queryParams = Map<String, String>.from(request.queryParams);
