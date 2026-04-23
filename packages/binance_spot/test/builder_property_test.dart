@@ -32,7 +32,8 @@ void main() {
     Glados(any.double).test(
       'build LIMIT order with various prices',
       (priceValue) {
-        if (priceValue <= 0 || priceValue.isNaN || priceValue.isInfinite) return;
+        if (priceValue <= 0 || priceValue.isNaN || priceValue.isInfinite)
+          return;
 
         final priceStr = priceValue.toStringAsFixed(8);
         final builder = SpotOrderBuilder.limit()

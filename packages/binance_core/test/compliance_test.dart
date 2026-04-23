@@ -12,7 +12,8 @@ void main() {
   File findVectors() {
     var dir = Directory.current;
     while (true) {
-      final fallback = File('${dir.path}/test/fixtures/signatures/vectors.json');
+      final fallback =
+          File('${dir.path}/test/fixtures/signatures/vectors.json');
       if (fallback.existsSync()) return fallback;
       if (dir.path == dir.parent.path) break;
       dir = dir.parent;
@@ -24,7 +25,8 @@ void main() {
 
   setUpAll(() async {
     final vectorsFile = findVectors();
-    vectors = jsonDecode(await vectorsFile.readAsString()) as Map<String, dynamic>;
+    vectors =
+        jsonDecode(await vectorsFile.readAsString()) as Map<String, dynamic>;
   });
 
   group('Signature Compliance', () {

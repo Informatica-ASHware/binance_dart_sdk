@@ -41,7 +41,8 @@ void main() {
         // Use a fixed precision to avoid scientific notation issues in toString
         final s = value.toStringAsFixed(8);
         final decimal = Decimal.parse(s);
-        expect(decimal.toString(), Decimal.parse(decimal.toString()).toString());
+        expect(
+            decimal.toString(), Decimal.parse(decimal.toString()).toString());
       },
     );
   });
