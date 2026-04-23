@@ -31,16 +31,18 @@ class BinanceSpotWsApiClient {
 
   /// Ping the server.
   Future<Result<void, BinanceError>> ping() async {
-    final response = await _apiClient.sendRequest('ping');
-    return _handleResponse(response, (_) => null);
+    final dynamic response = await _apiClient.sendRequest('ping');
+    return _handleResponse(response, (_) {});
   }
 
   /// Get server time.
   Future<Result<DateTime, BinanceError>> time() async {
-    final response = await _apiClient.sendRequest('time');
+    final dynamic response = await _apiClient.sendRequest('time');
     return _handleResponse(
       response,
-      (data) => DateTime.fromMillisecondsSinceEpoch(data['serverTime'] as int),
+      (dynamic data) => DateTime.fromMillisecondsSinceEpoch(
+        (data as Map<String, dynamic>)['serverTime'] as int,
+      ),
     );
   }
 
@@ -50,13 +52,17 @@ class BinanceSpotWsApiClient {
     List<String>? permissions,
   }) async {
     final params = <String, dynamic>{};
-    if (symbols != null)
+    if (symbols != null) {
       params['symbols'] = symbols.map((s) => s.value).toList();
+    }
     if (permissions != null) params['permissions'] = permissions;
 
-    final response = await _apiClient.sendRequest('exchangeInfo', params);
-    return _handleResponse(response,
-        (data) => ExchangeInfo.fromJson(data as Map<String, dynamic>));
+    final dynamic response =
+        await _apiClient.sendRequest('exchangeInfo', params);
+    return _handleResponse(
+      response,
+      (dynamic data) => ExchangeInfo.fromJson(data as Map<String, dynamic>),
+    );
   }
 
   /// New order.
@@ -81,22 +87,24 @@ class BinanceSpotWsApiClient {
     };
     if (timeInForce != null) params['timeInForce'] = timeInForce.value;
     if (quantity != null) params['quantity'] = quantity.toString();
-    if (quoteOrderQty != null)
+    if (quoteOrderQty != null) {
       params['quoteOrderQty'] = quoteOrderQty.toString();
+    }
     if (price != null) params['price'] = price.toString();
     if (newClientOrderId != null) params['newClientOrderId'] = newClientOrderId;
     if (stopPrice != null) params['stopPrice'] = stopPrice.toString();
     if (icebergQty != null) params['icebergQty'] = icebergQty.toString();
-    if (newOrderRespType != null)
+    if (newOrderRespType != null) {
       params['newOrderRespType'] = newOrderRespType.value;
+    }
     if (selfTradePreventionMode != null) {
       params['selfTradePreventionMode'] = selfTradePreventionMode.value;
     }
 
-    final response = await _apiClient.sendRequest('order.place', params);
+    final dynamic response = await _apiClient.sendRequest('order.place', params);
     return _handleResponse(
       response,
-      (data) => NewOrderResponse.fromJson(data as Map<String, dynamic>),
+      (dynamic data) => NewOrderResponse.fromJson(data as Map<String, dynamic>),
     );
   }
 

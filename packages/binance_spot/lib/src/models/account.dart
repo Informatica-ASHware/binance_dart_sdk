@@ -39,8 +39,7 @@ final class AccountInfo {
       brokered: json['brokered'] as bool,
       requireSelfTradePrevention: json['requireSelfTradePrevention'] as bool,
       preventSor: json['preventSor'] as bool,
-      updateTime:
-          DateTime.fromMillisecondsSinceEpoch(json['updateTime'] as int),
+      updateTime: DateTime.fromMillisecondsSinceEpoch(json['updateTime'] as int),
       accountType: json['accountType'] as String,
       balances: (json['balances'] as List<dynamic>)
           .map((b) => AssetBalance.fromJson(b as Map<String, dynamic>))
@@ -334,8 +333,7 @@ final class Order {
       stopPrice: Price.fromString(json['stopPrice'] as String),
       icebergQty: Quantity.fromString(json['icebergQty'] as String),
       time: DateTime.fromMillisecondsSinceEpoch(json['time'] as int),
-      updateTime:
-          DateTime.fromMillisecondsSinceEpoch(json['updateTime'] as int),
+      updateTime: DateTime.fromMillisecondsSinceEpoch(json['updateTime'] as int),
       isWorking: json['isWorking'] as bool,
       workingTime:
           DateTime.fromMillisecondsSinceEpoch(json['workingTime'] as int),

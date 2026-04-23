@@ -17,8 +17,7 @@ final class ExchangeInfo {
   factory ExchangeInfo.fromJson(Map<String, dynamic> json) {
     return ExchangeInfo(
       timezone: json['timezone'] as String,
-      serverTime:
-          DateTime.fromMillisecondsSinceEpoch(json['serverTime'] as int),
+      serverTime: DateTime.fromMillisecondsSinceEpoch(json['serverTime'] as int),
       rateLimits: json['rateLimits'] as List<dynamic>,
       exchangeFilters: json['exchangeFilters'] as List<dynamic>,
       symbols: (json['symbols'] as List<dynamic>)
@@ -60,7 +59,6 @@ final class SymbolInfo {
     required this.orderTypes,
     required this.icebergAllowed,
     required this.ocoAllowed,
-    required this.otoAllowed,
     required this.quoteOrderQtyMarketAllowed,
     required this.allowTrailingStop,
     required this.cancelReplaceAllowed,
@@ -68,9 +66,10 @@ final class SymbolInfo {
     required this.isMarginTradingAllowed,
     required this.filters,
     required this.permissions,
-    this.permissionSets,
     required this.defaultSelfTradePreventionMode,
     required this.allowedSelfTradePreventionModes,
+    this.otoAllowed = false,
+    this.permissionSets,
   });
 
   /// Creates a [SymbolInfo] from a JSON map.
@@ -222,10 +221,10 @@ final class Trade {
     required this.id,
     required this.price,
     required this.quantity,
-    this.quoteQuantity,
     required this.time,
     required this.isBuyerMaker,
     required this.isBestMatch,
+    this.quoteQuantity,
   });
 
   /// Creates a [Trade] from a JSON map.

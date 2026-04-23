@@ -575,7 +575,7 @@ class FuturesUserDataFeed extends BaseUserDataFeed {
     );
 
     return result.fold(
-      onSuccess: (data) => data['listenKey'] as String,
+      onSuccess: (data) => (data as Map<String, dynamic>)['listenKey'] as String,
       onFailure: (error) =>
           throw Exception('Failed to obtain listenKey: $error'),
     );

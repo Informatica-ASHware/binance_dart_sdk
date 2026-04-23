@@ -6,7 +6,10 @@ import 'package:meta/meta.dart';
 @immutable
 sealed class SpotEvent {
   /// Creates a [SpotEvent] instance.
-  const SpotEvent({required this.eventType, required this.eventTime});
+  const SpotEvent({
+    required this.eventType,
+    required this.eventTime,
+  });
 
   /// Event type.
   final String eventType;
@@ -29,7 +32,23 @@ final class AggTradeEvent extends SpotEvent {
     required this.lastTradeId,
     required this.tradeTime,
     required this.isBuyerMaker,
-  }) : super();
+  });
+
+  /// Creates an [AggTradeEvent] from a JSON map.
+  factory AggTradeEvent.fromJson(Map<String, dynamic> json) {
+    return AggTradeEvent(
+      eventType: json['e'] as String,
+      eventTime: DateTime.fromMillisecondsSinceEpoch(json['E'] as int),
+      symbol: Symbol(json['s'] as String),
+      aggTradeId: json['a'] as int,
+      price: Price.fromString(json['p'] as String),
+      quantity: Quantity.fromString(json['q'] as String),
+      firstTradeId: json['f'] as int,
+      lastTradeId: json['l'] as int,
+      tradeTime: DateTime.fromMillisecondsSinceEpoch(json['T'] as int),
+      isBuyerMaker: json['m'] as bool,
+    );
+  }
 
   /// Symbol.
   final Symbol symbol;
@@ -54,22 +73,6 @@ final class AggTradeEvent extends SpotEvent {
 
   /// Whether the buyer is the maker.
   final bool isBuyerMaker;
-
-  /// Creates an [AggTradeEvent] from a JSON map.
-  factory AggTradeEvent.fromJson(Map<String, dynamic> json) {
-    return AggTradeEvent(
-      eventType: json['e'] as String,
-      eventTime: DateTime.fromMillisecondsSinceEpoch(json['E'] as int),
-      symbol: Symbol(json['s'] as String),
-      aggTradeId: json['a'] as int,
-      price: Price.fromString(json['p'] as String),
-      quantity: Quantity.fromString(json['q'] as String),
-      firstTradeId: json['f'] as int,
-      lastTradeId: json['l'] as int,
-      tradeTime: DateTime.fromMillisecondsSinceEpoch(json['T'] as int),
-      isBuyerMaker: json['m'] as bool,
-    );
-  }
 }
 
 /// Trade event.
@@ -86,7 +89,23 @@ final class TradeEvent extends SpotEvent {
     required this.sellerOrderId,
     required this.tradeTime,
     required this.isBuyerMaker,
-  }) : super();
+  });
+
+  /// Creates a [TradeEvent] from a JSON map.
+  factory TradeEvent.fromJson(Map<String, dynamic> json) {
+    return TradeEvent(
+      eventType: json['e'] as String,
+      eventTime: DateTime.fromMillisecondsSinceEpoch(json['E'] as int),
+      symbol: Symbol(json['s'] as String),
+      tradeId: json['t'] as int,
+      price: Price.fromString(json['p'] as String),
+      quantity: Quantity.fromString(json['q'] as String),
+      buyerOrderId: json['b'] as int,
+      sellerOrderId: json['a'] as int,
+      tradeTime: DateTime.fromMillisecondsSinceEpoch(json['T'] as int),
+      isBuyerMaker: json['m'] as bool,
+    );
+  }
 
   /// Symbol.
   final Symbol symbol;
@@ -111,22 +130,6 @@ final class TradeEvent extends SpotEvent {
 
   /// Whether the buyer is the maker.
   final bool isBuyerMaker;
-
-  /// Creates a [TradeEvent] from a JSON map.
-  factory TradeEvent.fromJson(Map<String, dynamic> json) {
-    return TradeEvent(
-      eventType: json['e'] as String,
-      eventTime: DateTime.fromMillisecondsSinceEpoch(json['E'] as int),
-      symbol: Symbol(json['s'] as String),
-      tradeId: json['t'] as int,
-      price: Price.fromString(json['p'] as String),
-      quantity: Quantity.fromString(json['q'] as String),
-      buyerOrderId: json['b'] as int,
-      sellerOrderId: json['a'] as int,
-      tradeTime: DateTime.fromMillisecondsSinceEpoch(json['T'] as int),
-      isBuyerMaker: json['m'] as bool,
-    );
-  }
 }
 
 /// Kline/Candlestick event.
@@ -137,13 +140,7 @@ final class KlineEvent extends SpotEvent {
     required super.eventTime,
     required this.symbol,
     required this.kline,
-  }) : super();
-
-  /// Symbol.
-  final Symbol symbol;
-
-  /// Kline data.
-  final KlineData kline;
+  });
 
   /// Creates a [KlineEvent] from a JSON map.
   factory KlineEvent.fromJson(Map<String, dynamic> json) {
@@ -154,6 +151,12 @@ final class KlineEvent extends SpotEvent {
       kline: KlineData.fromJson(json['k'] as Map<String, dynamic>),
     );
   }
+
+  /// Symbol.
+  final Symbol symbol;
+
+  /// Kline data.
+  final KlineData kline;
 }
 
 /// Kline data in an event.
@@ -178,6 +181,28 @@ final class KlineData {
     required this.takerBuyBaseAssetVolume,
     required this.takerBuyQuoteAssetVolume,
   });
+
+  /// Creates a [KlineData] from a JSON map.
+  factory KlineData.fromJson(Map<String, dynamic> json) {
+    return KlineData(
+      startTime: DateTime.fromMillisecondsSinceEpoch(json['t'] as int),
+      endTime: DateTime.fromMillisecondsSinceEpoch(json['T'] as int),
+      symbol: Symbol(json['s'] as String),
+      interval: json['i'] as String,
+      firstTradeId: json['f'] as int,
+      lastTradeId: json['L'] as int,
+      openPrice: Price.fromString(json['o'] as String),
+      closePrice: Price.fromString(json['c'] as String),
+      highPrice: Price.fromString(json['h'] as String),
+      lowPrice: Price.fromString(json['l'] as String),
+      baseAssetVolume: Quantity.fromString(json['v'] as String),
+      numberOfTrades: json['n'] as int,
+      isClosed: json['x'] as bool,
+      quoteAssetVolume: Quantity.fromString(json['q'] as String),
+      takerBuyBaseAssetVolume: Quantity.fromString(json['V'] as String),
+      takerBuyQuoteAssetVolume: Quantity.fromString(json['Q'] as String),
+    );
+  }
 
   /// Start time.
   final DateTime startTime;
@@ -226,28 +251,6 @@ final class KlineData {
 
   /// Taker buy quote asset volume.
   final Quantity takerBuyQuoteAssetVolume;
-
-  /// Creates a [KlineData] from a JSON map.
-  factory KlineData.fromJson(Map<String, dynamic> json) {
-    return KlineData(
-      startTime: DateTime.fromMillisecondsSinceEpoch(json['t'] as int),
-      endTime: DateTime.fromMillisecondsSinceEpoch(json['T'] as int),
-      symbol: Symbol(json['s'] as String),
-      interval: json['i'] as String,
-      firstTradeId: json['f'] as int,
-      lastTradeId: json['L'] as int,
-      openPrice: Price.fromString(json['o'] as String),
-      closePrice: Price.fromString(json['c'] as String),
-      highPrice: Price.fromString(json['h'] as String),
-      lowPrice: Price.fromString(json['l'] as String),
-      baseAssetVolume: Quantity.fromString(json['v'] as String),
-      numberOfTrades: json['n'] as int,
-      isClosed: json['x'] as bool,
-      quoteAssetVolume: Quantity.fromString(json['q'] as String),
-      takerBuyBaseAssetVolume: Quantity.fromString(json['V'] as String),
-      takerBuyQuoteAssetVolume: Quantity.fromString(json['Q'] as String),
-    );
-  }
 }
 
 /// Individual symbol mini-ticker event.
@@ -263,7 +266,22 @@ final class MiniTickerEvent extends SpotEvent {
     required this.lowPrice,
     required this.baseAssetVolume,
     required this.quoteAssetVolume,
-  }) : super();
+  });
+
+  /// Creates a [MiniTickerEvent] from a JSON map.
+  factory MiniTickerEvent.fromJson(Map<String, dynamic> json) {
+    return MiniTickerEvent(
+      eventType: json['e'] as String,
+      eventTime: DateTime.fromMillisecondsSinceEpoch(json['E'] as int),
+      symbol: Symbol(json['s'] as String),
+      closePrice: Price.fromString(json['c'] as String),
+      openPrice: Price.fromString(json['o'] as String),
+      highPrice: Price.fromString(json['h'] as String),
+      lowPrice: Price.fromString(json['l'] as String),
+      baseAssetVolume: Quantity.fromString(json['v'] as String),
+      quoteAssetVolume: Quantity.fromString(json['q'] as String),
+    );
+  }
 
   /// Symbol.
   final Symbol symbol;
@@ -285,21 +303,6 @@ final class MiniTickerEvent extends SpotEvent {
 
   /// Quote asset volume.
   final Quantity quoteAssetVolume;
-
-  /// Creates a [MiniTickerEvent] from a JSON map.
-  factory MiniTickerEvent.fromJson(Map<String, dynamic> json) {
-    return MiniTickerEvent(
-      eventType: json['e'] as String,
-      eventTime: DateTime.fromMillisecondsSinceEpoch(json['E'] as int),
-      symbol: Symbol(json['s'] as String),
-      closePrice: Price.fromString(json['c'] as String),
-      openPrice: Price.fromString(json['o'] as String),
-      highPrice: Price.fromString(json['h'] as String),
-      lowPrice: Price.fromString(json['l'] as String),
-      baseAssetVolume: Quantity.fromString(json['v'] as String),
-      quoteAssetVolume: Quantity.fromString(json['q'] as String),
-    );
-  }
 }
 
 /// Individual symbol ticker event.
@@ -329,7 +332,36 @@ final class TickerEvent extends SpotEvent {
     required this.firstId,
     required this.lastId,
     required this.count,
-  }) : super();
+  });
+
+  /// Creates a [TickerEvent] from a JSON map.
+  factory TickerEvent.fromJson(Map<String, dynamic> json) {
+    return TickerEvent(
+      eventType: json['e'] as String,
+      eventTime: DateTime.fromMillisecondsSinceEpoch(json['E'] as int),
+      symbol: Symbol(json['s'] as String),
+      priceChange: Price.fromString(json['p'] as String),
+      priceChangePercent: Percentage.fromString(json['P'] as String),
+      weightedAvgPrice: Price.fromString(json['w'] as String),
+      prevClosePrice: Price.fromString(json['x'] as String),
+      lastPrice: Price.fromString(json['c'] as String),
+      lastQty: Quantity.fromString(json['Q'] as String),
+      bidPrice: Price.fromString(json['b'] as String),
+      bidQty: Quantity.fromString(json['B'] as String),
+      askPrice: Price.fromString(json['a'] as String),
+      askQty: Quantity.fromString(json['A'] as String),
+      openPrice: Price.fromString(json['o'] as String),
+      highPrice: Price.fromString(json['h'] as String),
+      lowPrice: Price.fromString(json['l'] as String),
+      volume: Quantity.fromString(json['v'] as String),
+      quoteVolume: Quantity.fromString(json['q'] as String),
+      openTime: DateTime.fromMillisecondsSinceEpoch(json['O'] as int),
+      closeTime: DateTime.fromMillisecondsSinceEpoch(json['C'] as int),
+      firstId: json['F'] as int,
+      lastId: json['L'] as int,
+      count: json['n'] as int,
+    );
+  }
 
   /// Symbol.
   final Symbol symbol;
@@ -393,35 +425,6 @@ final class TickerEvent extends SpotEvent {
 
   /// Count.
   final int count;
-
-  /// Creates a [TickerEvent] from a JSON map.
-  factory TickerEvent.fromJson(Map<String, dynamic> json) {
-    return TickerEvent(
-      eventType: json['e'] as String,
-      eventTime: DateTime.fromMillisecondsSinceEpoch(json['E'] as int),
-      symbol: Symbol(json['s'] as String),
-      priceChange: Price.fromString(json['p'] as String),
-      priceChangePercent: Percentage.fromString(json['P'] as String),
-      weightedAvgPrice: Price.fromString(json['w'] as String),
-      prevClosePrice: Price.fromString(json['x'] as String),
-      lastPrice: Price.fromString(json['c'] as String),
-      lastQty: Quantity.fromString(json['Q'] as String),
-      bidPrice: Price.fromString(json['b'] as String),
-      bidQty: Quantity.fromString(json['B'] as String),
-      askPrice: Price.fromString(json['a'] as String),
-      askQty: Quantity.fromString(json['A'] as String),
-      openPrice: Price.fromString(json['o'] as String),
-      highPrice: Price.fromString(json['h'] as String),
-      lowPrice: Price.fromString(json['l'] as String),
-      volume: Quantity.fromString(json['v'] as String),
-      quoteVolume: Quantity.fromString(json['q'] as String),
-      openTime: DateTime.fromMillisecondsSinceEpoch(json['O'] as int),
-      closeTime: DateTime.fromMillisecondsSinceEpoch(json['C'] as int),
-      firstId: json['F'] as int,
-      lastId: json['L'] as int,
-      count: json['n'] as int,
-    );
-  }
 }
 
 /// Book ticker event.
@@ -436,6 +439,18 @@ final class BookTickerEvent {
     required this.bestAskPrice,
     required this.bestAskQty,
   });
+
+  /// Creates a [BookTickerEvent] from a JSON map.
+  factory BookTickerEvent.fromJson(Map<String, dynamic> json) {
+    return BookTickerEvent(
+      updateId: json['u'] as int,
+      symbol: Symbol(json['s'] as String),
+      bestBidPrice: Price.fromString(json['b'] as String),
+      bestBidQty: Quantity.fromString(json['B'] as String),
+      bestAskPrice: Price.fromString(json['a'] as String),
+      bestAskQty: Quantity.fromString(json['A'] as String),
+    );
+  }
 
   /// Update ID.
   final int updateId;
@@ -454,18 +469,6 @@ final class BookTickerEvent {
 
   /// Best ask quantity.
   final Quantity bestAskQty;
-
-  /// Creates a [BookTickerEvent] from a JSON map.
-  factory BookTickerEvent.fromJson(Map<String, dynamic> json) {
-    return BookTickerEvent(
-      updateId: json['u'] as int,
-      symbol: Symbol(json['s'] as String),
-      bestBidPrice: Price.fromString(json['b'] as String),
-      bestBidQty: Quantity.fromString(json['B'] as String),
-      bestAskPrice: Price.fromString(json['a'] as String),
-      bestAskQty: Quantity.fromString(json['A'] as String),
-    );
-  }
 }
 
 /// Diff. depth stream event.
@@ -479,7 +482,28 @@ final class DepthUpdateEvent extends SpotEvent {
     required this.finalUpdateId,
     required this.bids,
     required this.asks,
-  }) : super();
+  });
+
+  /// Creates a [DepthUpdateEvent] from a JSON map.
+  factory DepthUpdateEvent.fromJson(Map<String, dynamic> json) {
+    (Price, Quantity) parseEntry(dynamic e) {
+      final list = e as List<dynamic>;
+      return (
+        Price.fromString(list[0] as String),
+        Quantity.fromString(list[1] as String)
+      );
+    }
+
+    return DepthUpdateEvent(
+      eventType: json['e'] as String,
+      eventTime: DateTime.fromMillisecondsSinceEpoch(json['E'] as int),
+      symbol: Symbol(json['s'] as String),
+      firstUpdateId: json['U'] as int,
+      finalUpdateId: json['u'] as int,
+      bids: (json['b'] as List<dynamic>).map(parseEntry).toList(),
+      asks: (json['a'] as List<dynamic>).map(parseEntry).toList(),
+    );
+  }
 
   /// Symbol.
   final Symbol symbol;
@@ -495,27 +519,6 @@ final class DepthUpdateEvent extends SpotEvent {
 
   /// Asks [price, quantity].
   final List<(Price, Quantity)> asks;
-
-  /// Creates a [DepthUpdateEvent] from a JSON map.
-  factory DepthUpdateEvent.fromJson(Map<String, dynamic> json) {
-    (Price, Quantity) parseEntry(dynamic e) {
-      final list = e as List<dynamic>;
-      return (
-        Price.fromString(list[0] as String),
-        Quantity.fromString(list[1] as String),
-      );
-    }
-
-    return DepthUpdateEvent(
-      eventType: json['e'] as String,
-      eventTime: DateTime.fromMillisecondsSinceEpoch(json['E'] as int),
-      symbol: Symbol(json['s'] as String),
-      firstUpdateId: json['U'] as int,
-      finalUpdateId: json['u'] as int,
-      bids: (json['b'] as List<dynamic>).map(parseEntry).toList(),
-      asks: (json['a'] as List<dynamic>).map(parseEntry).toList(),
-    );
-  }
 }
 
 /// Execution report event (user data stream).
@@ -553,7 +556,48 @@ final class ExecutionReportEvent extends SpotEvent {
     required this.lastQuoteAssetTransactedQuantity,
     required this.quoteOrderQuantity,
     required this.selfTradePreventionMode,
-  }) : super();
+  });
+
+  /// Creates an [ExecutionReportEvent] from a JSON map.
+  factory ExecutionReportEvent.fromJson(Map<String, dynamic> json) {
+    return ExecutionReportEvent(
+      eventType: json['e'] as String,
+      eventTime: DateTime.fromMillisecondsSinceEpoch(json['E'] as int),
+      symbol: Symbol(json['s'] as String),
+      clientOrderId: json['c'] as String,
+      side: Side.values.firstWhere((e) => e.value == json['S']),
+      orderType: OrderType.values.firstWhere((e) => e.value == json['o']),
+      timeInForce: TimeInForce.values.firstWhere((e) => e.value == json['f']),
+      orderQuantity: Quantity.fromString(json['q'] as String),
+      orderPrice: Price.fromString(json['p'] as String),
+      stopPrice: Price.fromString(json['P'] as String),
+      icebergQuantity: Quantity.fromString(json['F'] as String),
+      orderListId: json['g'] as int,
+      originalClientOrderId: json['C'] as String,
+      executionType:
+          OrderExecutionType.values.firstWhere((e) => e.value == json['x']),
+      orderStatus: OrderStatus.values.firstWhere((e) => e.value == json['X']),
+      orderRejectReason: json['r'] as String,
+      orderId: json['i'] as int,
+      lastExecutedQuantity: Quantity.fromString(json['l'] as String),
+      cumulativeFilledQuantity: Quantity.fromString(json['z'] as String),
+      lastExecutedPrice: Price.fromString(json['L'] as String),
+      commissionAmount: Quantity.fromString(json['n'] as String),
+      commissionAsset: json['N'] as String?,
+      transactionTime: DateTime.fromMillisecondsSinceEpoch(json['T'] as int),
+      tradeId: json['t'] as int,
+      isOrderOnBook: json['w'] as bool,
+      isMakerSide: json['m'] as bool,
+      orderCreationTime: DateTime.fromMillisecondsSinceEpoch(json['O'] as int),
+      cumulativeQuoteAssetTransactedQuantity:
+          Quantity.fromString(json['Z'] as String),
+      lastQuoteAssetTransactedQuantity:
+          Quantity.fromString(json['Y'] as String),
+      quoteOrderQuantity: Quantity.fromString(json['Q'] as String),
+      selfTradePreventionMode:
+          SelfTradePreventionMode.values.firstWhere((e) => e.value == json['V']),
+    );
+  }
 
   /// Symbol.
   final Symbol symbol;
@@ -641,51 +685,6 @@ final class ExecutionReportEvent extends SpotEvent {
 
   /// STP mode.
   final SelfTradePreventionMode selfTradePreventionMode;
-
-  /// Creates an [ExecutionReportEvent] from a JSON map.
-  factory ExecutionReportEvent.fromJson(Map<String, dynamic> json) {
-    return ExecutionReportEvent(
-      eventType: json['e'] as String,
-      eventTime: DateTime.fromMillisecondsSinceEpoch(json['E'] as int),
-      symbol: Symbol(json['s'] as String),
-      clientOrderId: json['c'] as String,
-      side: Side.values.firstWhere((e) => e.value == json['S']),
-      orderType: OrderType.values.firstWhere((e) => e.value == json['o']),
-      timeInForce: TimeInForce.values.firstWhere((e) => e.value == json['f']),
-      orderQuantity: Quantity.fromString(json['q'] as String),
-      orderPrice: Price.fromString(json['p'] as String),
-      stopPrice: Price.fromString(json['P'] as String),
-      icebergQuantity: Quantity.fromString(json['F'] as String),
-      orderListId: json['g'] as int,
-      originalClientOrderId: json['C'] as String,
-      executionType: OrderExecutionType.values.firstWhere(
-        (e) => e.value == json['x'],
-      ),
-      orderStatus: OrderStatus.values.firstWhere((e) => e.value == json['X']),
-      orderRejectReason: json['r'] as String,
-      orderId: json['i'] as int,
-      lastExecutedQuantity: Quantity.fromString(json['l'] as String),
-      cumulativeFilledQuantity: Quantity.fromString(json['z'] as String),
-      lastExecutedPrice: Price.fromString(json['L'] as String),
-      commissionAmount: Quantity.fromString(json['n'] as String),
-      commissionAsset: json['N'] as String?,
-      transactionTime: DateTime.fromMillisecondsSinceEpoch(json['T'] as int),
-      tradeId: json['t'] as int,
-      isOrderOnBook: json['w'] as bool,
-      isMakerSide: json['m'] as bool,
-      orderCreationTime: DateTime.fromMillisecondsSinceEpoch(json['O'] as int),
-      cumulativeQuoteAssetTransactedQuantity: Quantity.fromString(
-        json['Z'] as String,
-      ),
-      lastQuoteAssetTransactedQuantity: Quantity.fromString(
-        json['Y'] as String,
-      ),
-      quoteOrderQuantity: Quantity.fromString(json['Q'] as String),
-      selfTradePreventionMode: SelfTradePreventionMode.values.firstWhere(
-        (e) => e.value == json['V'],
-      ),
-    );
-  }
 }
 
 /// Outbound account position event (user data stream).
@@ -696,13 +695,7 @@ final class OutboundAccountPositionEvent extends SpotEvent {
     required super.eventTime,
     required this.lastUpdateTime,
     required this.balances,
-  }) : super();
-
-  /// Last update time.
-  final DateTime lastUpdateTime;
-
-  /// Balances.
-  final List<AssetBalanceUpdate> balances;
+  });
 
   /// Creates an [OutboundAccountPositionEvent] from a JSON map.
   factory OutboundAccountPositionEvent.fromJson(Map<String, dynamic> json) {
@@ -715,6 +708,12 @@ final class OutboundAccountPositionEvent extends SpotEvent {
           .toList(),
     );
   }
+
+  /// Last update time.
+  final DateTime lastUpdateTime;
+
+  /// Balances.
+  final List<AssetBalanceUpdate> balances;
 }
 
 /// Asset balance update in an event.
@@ -727,15 +726,6 @@ final class AssetBalanceUpdate {
     required this.locked,
   });
 
-  /// Asset.
-  final Asset asset;
-
-  /// Free balance.
-  final Quantity free;
-
-  /// Locked balance.
-  final Quantity locked;
-
   /// Creates an [AssetBalanceUpdate] from a JSON map.
   factory AssetBalanceUpdate.fromJson(Map<String, dynamic> json) {
     return AssetBalanceUpdate(
@@ -744,4 +734,13 @@ final class AssetBalanceUpdate {
       locked: Quantity.fromString(json['l'] as String),
     );
   }
+
+  /// Asset.
+  final Asset asset;
+
+  /// Free balance.
+  final Quantity free;
+
+  /// Locked balance.
+  final Quantity locked;
 }

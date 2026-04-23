@@ -141,17 +141,22 @@ void main() {
     test('subscribes and receives data', () async {
       final stream = client.subscribe('btcusdt@aggTrade');
 
-      // Start listening before the channel is even created
-      final future = stream.first;
+      // Start listening
+      final events = <dynamic>[];
+      final subscription = stream.listen(events.add);
 
       // Wait for connection
-      for (var i = 0; i < 40; i++) {
+      for (var i = 0; i < 100; i++) {
         if (provider.lastChannel != null) break;
-        await Future<void>.delayed(const Duration(milliseconds: 100));
+        await Future<void>.delayed(const Duration(milliseconds: 50));
       }
 
       final channel = provider.lastChannel;
       expect(channel, isNotNull, reason: 'Channel should be connected');
+
+      // Ensure the client has established the subscription internally
+      await Future<void>.delayed(const Duration(milliseconds: 200));
+
       channel!.addFromServer(
         jsonEncode({
           'stream': 'btcusdt@aggTrade',
@@ -159,8 +164,16 @@ void main() {
         }),
       );
 
-      final event = await future.timeout(const Duration(seconds: 5));
-      expect((event as Map)['p'], '50000');
+      // Wait for event to be processed
+      for (var i = 0; i < 100; i++) {
+        if (events.isNotEmpty) break;
+        await Future<void>.delayed(const Duration(milliseconds: 50));
+      }
+
+      expect(events, isNotEmpty);
+      expect((events.first as Map)['p'], '50000');
+
+      await subscription.cancel();
     });
 
     test('multiplexes multiple streams', () async {
