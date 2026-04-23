@@ -6,7 +6,7 @@ abstract interface class RetryPolicy {
   /// Whether the request should be retried.
   bool shouldRetry({
     required int attempt,
-    http.Response? response,
+    http.BaseResponse? response,
     BinanceError? error,
   });
 
@@ -31,7 +31,7 @@ class ExponentialBackoffRetryPolicy implements RetryPolicy {
   @override
   bool shouldRetry({
     required int attempt,
-    http.Response? response,
+    http.BaseResponse? response,
     BinanceError? error,
   }) {
     if (attempt >= maxAttempts) return false;

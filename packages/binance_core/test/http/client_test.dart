@@ -9,6 +9,7 @@ import 'package:binance_core/src/http/request.dart';
 import 'package:binance_core/src/http/retry.dart';
 import 'package:binance_core/src/http/security.dart';
 import 'package:binance_core/src/security.dart';
+import 'package:binance_core/src/utils.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
 import 'package:test/test.dart';
@@ -73,7 +74,7 @@ void main() {
           'Banned',
           418,
           headers: {
-            'retry-after': '1',
+            'retry-after': '10',
           },
         );
       });
@@ -149,8 +150,9 @@ void main() {
       );
 
       final log = <String>[];
-      client.addInterceptor(_TestInterceptor('A', log));
-      client.addInterceptor(_TestInterceptor('B', log));
+      client
+        ..addInterceptor(_TestInterceptor('A', log))
+        ..addInterceptor(_TestInterceptor('B', log));
 
       await client.send(
         const BinanceRequest(method: HttpMethod.get, path: '/api/v3/ping'),
@@ -172,8 +174,9 @@ void main() {
 
       final credentials = HmacCredentials(
         apiKey: 'test-api-key',
-        apiSecret:
-            SecureByteBuffer(Uint8List.fromList(utf8.encode('test-secret'))),
+        apiSecret: SecureByteBuffer(
+          Uint8List.fromList(utf8.encode('test-secret')),
+        ),
       );
 
       final client = DefaultBinanceHttpClient(
@@ -261,6 +264,26 @@ void main() {
       expect(request.body, {'extra': 'data'});
       expect(request.securityType, isA<SignedSecurityType>());
       expect(request.weight, 10);
+    });
+  });
+
+  group('BinanceUtils', () {
+    test('strictPercentEncode matches RFC 3986', () {
+      expect(
+        BinanceUtils.strictPercentEncode('ABC abc 123'),
+        'ABC%20abc%20123',
+      );
+      expect(BinanceUtils.strictPercentEncode('-._~'), '-._~');
+      expect(
+        BinanceUtils.strictPercentEncode(r'!@#$%^&*()'),
+        '%21%40%23%24%25%5E%26%2A%28%29',
+      );
+    });
+
+    test('buildCanonicalPayload sorts and encodes', () {
+      final params = {'z': 1, 'a': 'hello world', 'M': 'foo'};
+      final payload = BinanceUtils.buildCanonicalPayload(params);
+      expect(payload, 'M=foo&a=hello%20world&z=1');
     });
   });
 }

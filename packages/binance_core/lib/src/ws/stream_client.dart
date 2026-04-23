@@ -6,7 +6,8 @@ import 'package:binance_core/src/ws/base.dart';
 
 /// Client for Binance WebSocket Streams (unidirectional data feeds).
 ///
-/// Supports single and combined streams with auto-reconnection and multiplexing.
+/// Supports single and combined streams with auto-reconnection and
+/// multiplexing.
 class WebSocketStreamClient {
   /// Creates a [WebSocketStreamClient].
   WebSocketStreamClient({
@@ -252,8 +253,8 @@ class WebSocketStreamClient {
     _heartbeatTimer?.cancel();
     _heartbeatTimer = Timer.periodic(pingInterval, (timer) {
       final now = DateTime.now();
-      if (_lastFrameTime != null &&
-          now.difference(_lastFrameTime!) > pingInterval * 3) {
+      final lastFrame = _lastFrameTime;
+      if (lastFrame != null && now.difference(lastFrame) > pingInterval * 3) {
         _logger.warning('WebSocket heartbeat timeout, forcing reconnection');
         _channel?.close();
         _scheduleReconnect();

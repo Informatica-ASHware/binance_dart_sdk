@@ -116,22 +116,20 @@ class WebSocketApiClient {
     };
 
     final signer = _createSigner(credentials);
-    // Note: For session.logon, the payload to sign is typically
-    // apiKey=...&timestamp=...
     final canonicalPayload = _buildCanonicalPayload(params);
     final signature = await signer.sign(canonicalPayload);
     params['signature'] = signature.value;
 
-    final response =
-        await sendRequest('session.logon', params) as Map<String, dynamic>;
-    if (response['status'] == 200) {
+    final response = await sendRequest('session.logon', params);
+    if (response is Map && response['status'] == 200) {
       _isLoggedIn = true;
       _logger.info('WebSocket session logon successful');
       _statusController.add(WebSocketApiClientStatus.authenticated);
     } else {
       _isLoggedIn = false;
-      _logger.error('WebSocket session logon failed: ${response['error']}');
-      throw Exception('Logon failed: ${response['error']}');
+      final error = response is Map ? response['error'] : 'Unknown error';
+      _logger.error('WebSocket session logon failed: $error');
+      throw Exception('Logon failed: $error');
     }
   }
 
@@ -230,6 +228,7 @@ class WebSocketApiClient {
   void _scheduleReconnect() {
     _stopHeartbeat();
     _channelSubscription?.cancel();
+    _channelSubscription = null;
     _channel = null;
     _isLoggedIn = false; // Reset session status on disconnect
 
@@ -245,8 +244,8 @@ class WebSocketApiClient {
     _heartbeatTimer?.cancel();
     _heartbeatTimer = Timer.periodic(pingInterval, (timer) {
       final now = DateTime.now();
-      if (_lastFrameTime != null &&
-          now.difference(_lastFrameTime!) > pingInterval * 3) {
+      final lastFrame = _lastFrameTime;
+      if (lastFrame != null && now.difference(lastFrame) > pingInterval * 3) {
         _logger.warning(
           'WebSocket API heartbeat timeout, forcing reconnection',
         );
@@ -292,6 +291,7 @@ class WebSocketApiClient {
     await _statusController.close();
     _stopHeartbeat();
     await _channelSubscription?.cancel();
+    _channelSubscription = null;
     await _channel?.close();
     _channel = null;
 
