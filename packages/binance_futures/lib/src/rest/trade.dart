@@ -152,6 +152,61 @@ class BinanceFuturesTradeRest {
         .map((data) => FuturesOrder.fromJson(data as Map<String, dynamic>));
   }
 
+  /// Test new order.
+  Future<Result<dynamic, BinanceError>> testOrder({
+    required Symbol symbol,
+    required String side,
+    required String type,
+    PositionSide? positionSide,
+    Decimal? quantity,
+    Decimal? price,
+    String? timeInForce,
+    Decimal? stopPrice,
+    bool? closePosition,
+    Decimal? activationPrice,
+    Decimal? callbackRate,
+    WorkingType? workingType,
+    String? priceProtect,
+    String? newClientOrderId,
+    String? responseType,
+    bool? reduceOnly,
+  }) async {
+    final params = {
+      'symbol': symbol.value,
+      'side': side,
+      'type': type,
+    };
+
+    if (positionSide != null) params['positionSide'] = positionSide.value;
+    if (quantity != null) params['quantity'] = quantity.toString();
+    if (price != null) params['price'] = price.toString();
+    if (timeInForce != null) params['timeInForce'] = timeInForce;
+    if (stopPrice != null) params['stopPrice'] = stopPrice.toString();
+    if (closePosition != null) {
+      params['closePosition'] = closePosition.toString();
+    }
+    if (activationPrice != null) {
+      params['activationPrice'] = activationPrice.toString();
+    }
+    if (callbackRate != null) params['callbackRate'] = callbackRate.toString();
+    if (workingType != null) params['workingType'] = workingType.value;
+    if (priceProtect != null) params['priceProtect'] = priceProtect;
+    if (newClientOrderId != null) {
+      params['newClientOrderId'] = newClientOrderId;
+    }
+    if (responseType != null) params['newOrderRespType'] = responseType;
+    if (reduceOnly != null) params['reduceOnly'] = reduceOnly.toString();
+
+    return _client.send(
+      BinanceRequest(
+        method: HttpMethod.post,
+        path: '/fapi/v1/order/test',
+        queryParams: params,
+        securityType: BinanceSecurityType.signed,
+      ),
+    );
+  }
+
   /// Get all open orders.
   Future<Result<List<FuturesOrder>, BinanceError>> getOpenOrders({
     Symbol? symbol,
@@ -205,5 +260,46 @@ class BinanceFuturesTradeRest {
           .map((e) => FuturesOrder.fromJson(e as Map<String, dynamic>))
           .toList(),
     );
+  }
+
+  /// Get user force orders.
+  Future<Result<List<dynamic>, BinanceError>> getForceOrders({
+    Symbol? symbol,
+    bool? autoCloseType,
+    int? startTime,
+    int? endTime,
+    int limit = 100,
+  }) async {
+    final params = {'limit': limit.toString()};
+    if (symbol != null) params['symbol'] = symbol.value;
+    if (autoCloseType != null) {
+      params['autoCloseType'] = autoCloseType ? 'LIQUIDATION' : 'ADL';
+    }
+    if (startTime != null) params['startTime'] = startTime.toString();
+    if (endTime != null) params['endTime'] = endTime.toString();
+
+    final result = await _client.send(
+      BinanceRequest(
+        method: HttpMethod.get,
+        path: '/fapi/v1/forceOrders',
+        queryParams: params,
+        securityType: BinanceSecurityType.userData,
+      ),
+    );
+
+    return result.map((data) => data as List<dynamic>);
+  }
+
+  /// Get order rate limit.
+  Future<Result<List<dynamic>, BinanceError>> getOrderRateLimit() async {
+    final result = await _client.send(
+      const BinanceRequest(
+        method: HttpMethod.get,
+        path: '/fapi/v1/rateLimit/order',
+        securityType: BinanceSecurityType.userData,
+      ),
+    );
+
+    return result.map((data) => data as List<dynamic>);
   }
 }

@@ -134,6 +134,9 @@ final class OrderTradeUpdate extends UserDataEvent {
     this.tradeId,
     this.isMargin = false,
     this.isolatedSymbol,
+    this.averagePrice,
+    this.realizedProfit,
+    this.positionSide,
   });
 
   /// The symbol associated with the order.
@@ -180,6 +183,15 @@ final class OrderTradeUpdate extends UserDataEvent {
 
   /// The isolated symbol if applicable.
   final Symbol? isolatedSymbol;
+
+  /// Average price (Futures only).
+  final Decimal? averagePrice;
+
+  /// Realized profit (Futures only).
+  final Decimal? realizedProfit;
+
+  /// Position side (Futures only).
+  final String? positionSide;
 }
 
 /// Event triggered when the listenKey expires.
@@ -200,10 +212,24 @@ final class MarginCall extends UserDataEvent {
 /// Event triggered when account configuration changes.
 final class AccountConfigUpdate extends UserDataEvent {
   /// Creates an [AccountConfigUpdate] event.
-  const AccountConfigUpdate({required this.eventTime});
+  const AccountConfigUpdate({
+    required this.eventTime,
+    this.symbol,
+    this.leverage,
+    this.multiAssetsMargin,
+  });
 
   /// The time the event occurred.
   final DateTime eventTime;
+
+  /// The symbol whose configuration was updated.
+  final Symbol? symbol;
+
+  /// The new leverage.
+  final int? leverage;
+
+  /// The new multi-assets margin status.
+  final bool? multiAssetsMargin;
 }
 
 /// Event triggered when leverage changes.
@@ -767,12 +793,11 @@ class FuturesUserDataFeed extends BaseUserDataFeed {
           transactionTime:
               DateTime.fromMillisecondsSinceEpoch(data['T'] as int),
           tradeId: (data['o'] as Map)['t'] as int?,
+          averagePrice: Decimal.parse((data['o'] as Map)['ap'] as String),
+          realizedProfit: Decimal.parse((data['o'] as Map)['rp'] as String),
+          positionSide: (data['o'] as Map)['ps'] as String,
         ),
       'listenKeyExpired' => const ListenKeyExpired(),
-      'LEVERAGE_UPDATE' => LeverageUpdate(
-          symbol: Symbol((data['ac'] as Map<dynamic, dynamic>)['s'] as String),
-          leverage: (data['ac'] as Map<dynamic, dynamic>)['l'] as int,
-        ),
       'MARGIN_CALL' => MarginCall(
           positions: (data['p'] as List)
               .map(
@@ -787,6 +812,12 @@ class FuturesUserDataFeed extends BaseUserDataFeed {
         ),
       'ACCOUNT_CONFIG_UPDATE' => AccountConfigUpdate(
           eventTime: DateTime.fromMillisecondsSinceEpoch(data['E'] as int),
+          symbol: data['ac'] != null
+              ? Symbol((data['ac'] as Map)['s'] as String)
+              : null,
+          leverage: data['ac'] != null ? (data['ac'] as Map)['l'] as int : null,
+          multiAssetsMargin:
+              data['ai'] != null ? (data['ai'] as Map)['j'] as bool : null,
         ),
       'CONDITIONAL_ORDER_TRIGGER_REJECT' => const IsolatedPositionUpdate(),
       _ => null,

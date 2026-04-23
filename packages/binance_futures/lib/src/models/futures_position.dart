@@ -47,8 +47,9 @@ final class FuturesPosition {
       entryPrice: Decimal.parse(json['entryPrice'] as String),
       markPrice: Decimal.parse(json['markPrice'] as String),
       liquidationPrice: Decimal.parse(json['liquidationPrice'] as String),
-      maxNotional:
-          Decimal.parse(json['maxNotionalValue'] ?? json['maxNotional'] ?? '0'),
+      maxNotional: Decimal.parse(
+        (json['maxNotionalValue'] ?? json['maxNotional'] ?? '0') as String,
+      ),
       positionSide: PositionSide.values.firstWhere(
         (e) => e.value == json['positionSide'],
         orElse: () => PositionSide.both,

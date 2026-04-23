@@ -82,6 +82,87 @@ class BinanceFuturesMarketDataRest {
     return result.map((data) => data as List<dynamic>);
   }
 
+  /// Get top long/short account ratio.
+  Future<Result<List<dynamic>, BinanceError>> topLongShortAccountRatio(
+    Symbol symbol,
+    String period, {
+    int? startTime,
+    int? endTime,
+    int limit = 30,
+  }) async {
+    final params = {
+      'symbol': symbol.value,
+      'period': period,
+      'limit': limit.toString(),
+    };
+    if (startTime != null) params['startTime'] = startTime.toString();
+    if (endTime != null) params['endTime'] = endTime.toString();
+
+    final result = await _client.send(
+      BinanceRequest(
+        method: HttpMethod.get,
+        path: '/futures/data/topLongShortAccountRatio',
+        queryParams: params,
+      ),
+    );
+
+    return result.map((data) => data as List<dynamic>);
+  }
+
+  /// Get top long/short position ratio.
+  Future<Result<List<dynamic>, BinanceError>> topLongShortPositionRatio(
+    Symbol symbol,
+    String period, {
+    int? startTime,
+    int? endTime,
+    int limit = 30,
+  }) async {
+    final params = {
+      'symbol': symbol.value,
+      'period': period,
+      'limit': limit.toString(),
+    };
+    if (startTime != null) params['startTime'] = startTime.toString();
+    if (endTime != null) params['endTime'] = endTime.toString();
+
+    final result = await _client.send(
+      BinanceRequest(
+        method: HttpMethod.get,
+        path: '/futures/data/topLongShortPositionRatio',
+        queryParams: params,
+      ),
+    );
+
+    return result.map((data) => data as List<dynamic>);
+  }
+
+  /// Get basis.
+  Future<Result<List<dynamic>, BinanceError>> basis(
+    Symbol pair,
+    Interval interval, {
+    int? startTime,
+    int? endTime,
+    int limit = 30,
+  }) async {
+    final params = {
+      'pair': pair.value,
+      'interval': interval.value,
+      'limit': limit.toString(),
+    };
+    if (startTime != null) params['startTime'] = startTime.toString();
+    if (endTime != null) params['endTime'] = endTime.toString();
+
+    final result = await _client.send(
+      BinanceRequest(
+        method: HttpMethod.get,
+        path: '/futures/data/basis',
+        queryParams: params,
+      ),
+    );
+
+    return result.map((data) => data as List<dynamic>);
+  }
+
   /// Old trades lookup (requires API key).
   Future<Result<List<dynamic>, BinanceError>> historicalTrades(
     Symbol symbol, {
@@ -294,6 +375,174 @@ class BinanceFuturesMarketDataRest {
       BinanceRequest(
         method: HttpMethod.get,
         path: '/fapi/v1/openInterest',
+        queryParams: {'symbol': symbol.value},
+      ),
+    );
+
+    return result.map((data) => data as Map<String, dynamic>);
+  }
+
+  /// Get open interest history.
+  Future<Result<List<dynamic>, BinanceError>> openInterestHist(
+    Symbol symbol,
+    String period, {
+    int? startTime,
+    int? endTime,
+    int limit = 30,
+  }) async {
+    final params = {
+      'symbol': symbol.value,
+      'period': period,
+      'limit': limit.toString(),
+    };
+    if (startTime != null) params['startTime'] = startTime.toString();
+    if (endTime != null) params['endTime'] = endTime.toString();
+
+    final result = await _client.send(
+      BinanceRequest(
+        method: HttpMethod.get,
+        path: '/futures/data/openInterestHist',
+        queryParams: params,
+      ),
+    );
+
+    return result.map((data) => data as List<dynamic>);
+  }
+
+  /// Get index price klines.
+  Future<Result<List<dynamic>, BinanceError>> indexPriceKlines(
+    Symbol pair,
+    Interval interval, {
+    int? startTime,
+    int? endTime,
+    int limit = 500,
+  }) async {
+    final params = {
+      'pair': pair.value,
+      'interval': interval.value,
+      'limit': limit.toString(),
+    };
+    if (startTime != null) params['startTime'] = startTime.toString();
+    if (endTime != null) params['endTime'] = endTime.toString();
+
+    final result = await _client.send(
+      BinanceRequest(
+        method: HttpMethod.get,
+        path: '/fapi/v1/indexPriceKlines',
+        queryParams: params,
+      ),
+    );
+
+    return result.map((data) => data as List<dynamic>);
+  }
+
+  /// Get mark price klines.
+  Future<Result<List<dynamic>, BinanceError>> markPriceKlines(
+    Symbol symbol,
+    Interval interval, {
+    int? startTime,
+    int? endTime,
+    int limit = 500,
+  }) async {
+    final params = {
+      'symbol': symbol.value,
+      'interval': interval.value,
+      'limit': limit.toString(),
+    };
+    if (startTime != null) params['startTime'] = startTime.toString();
+    if (endTime != null) params['endTime'] = endTime.toString();
+
+    final result = await _client.send(
+      BinanceRequest(
+        method: HttpMethod.get,
+        path: '/fapi/v1/markPriceKlines',
+        queryParams: params,
+      ),
+    );
+
+    return result.map((data) => data as List<dynamic>);
+  }
+
+  /// Get global long/short ratio.
+  Future<Result<List<dynamic>, BinanceError>> globalLongShortAccountRatio(
+    Symbol symbol,
+    String period, {
+    int? startTime,
+    int? endTime,
+    int limit = 30,
+  }) async {
+    final params = {
+      'symbol': symbol.value,
+      'period': period,
+      'limit': limit.toString(),
+    };
+    if (startTime != null) params['startTime'] = startTime.toString();
+    if (endTime != null) params['endTime'] = endTime.toString();
+
+    final result = await _client.send(
+      BinanceRequest(
+        method: HttpMethod.get,
+        path: '/futures/data/globalLongShortAccountRatio',
+        queryParams: params,
+      ),
+    );
+
+    return result.map((data) => data as List<dynamic>);
+  }
+
+  /// Get taker long/short ratio.
+  Future<Result<List<dynamic>, BinanceError>> takerlongshortRatio(
+    Symbol symbol,
+    String period, {
+    int? startTime,
+    int? endTime,
+    int limit = 30,
+  }) async {
+    final params = {
+      'symbol': symbol.value,
+      'period': period,
+      'limit': limit.toString(),
+    };
+    if (startTime != null) params['startTime'] = startTime.toString();
+    if (endTime != null) params['endTime'] = endTime.toString();
+
+    final result = await _client.send(
+      BinanceRequest(
+        method: HttpMethod.get,
+        path: '/futures/data/takerlongshortRatio',
+        queryParams: params,
+      ),
+    );
+
+    return result.map((data) => data as List<dynamic>);
+  }
+
+  /// Get index info.
+  Future<Result<List<dynamic>, BinanceError>> indexInfo({
+    Symbol? symbol,
+  }) async {
+    final params = <String, String>{};
+    if (symbol != null) params['symbol'] = symbol.value;
+
+    final result = await _client.send(
+      BinanceRequest(
+        method: HttpMethod.get,
+        path: '/fapi/v1/indexInfo',
+        queryParams: params,
+      ),
+    );
+
+    return result.map((data) => data as List<dynamic>);
+  }
+
+  /// Get constituents.
+  Future<Result<Map<String, dynamic>, BinanceError>> constituents(
+    Symbol symbol,
+  ) async {
+    final result = await _client.send(
+      BinanceRequest(
+        method: HttpMethod.get,
+        path: '/fapi/v1/constituents',
         queryParams: {'symbol': symbol.value},
       ),
     );

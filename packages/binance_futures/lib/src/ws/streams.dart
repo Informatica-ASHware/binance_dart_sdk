@@ -3,9 +3,8 @@ import 'package:binance_core/binance_core.dart';
 /// WebSocket stream client for Binance Futures.
 class BinanceFuturesStreamClient {
   /// Creates a [BinanceFuturesStreamClient].
-  BinanceFuturesStreamClient(this._environment, this._client);
+  BinanceFuturesStreamClient(this._client);
 
-  final BinanceEnvironment _environment;
   final WebSocketStreamClient _client;
 
   /// Subscribe to a single stream.
@@ -36,7 +35,8 @@ class BinanceFuturesStreamClient {
     Interval interval,
   ) =>
       subscribe(
-        '${pair.value.toLowerCase()}_${contractType.toLowerCase()}@continuousKline_${interval.value}',
+        '${pair.value.toLowerCase()}_${contractType.toLowerCase()}'
+        '@continuousKline_${interval.value}',
       );
 
   /// Individual Symbol Mini Ticker Stream.
@@ -78,4 +78,7 @@ class BinanceFuturesStreamClient {
   /// Asset Index Stream.
   Stream<dynamic> assetIndex(Asset asset) =>
       subscribe('${asset.value.toLowerCase()}@assetIndex');
+
+  /// Symbol Contract Info Stream.
+  Stream<dynamic> contractInfo() => subscribe('!contractInfo');
 }

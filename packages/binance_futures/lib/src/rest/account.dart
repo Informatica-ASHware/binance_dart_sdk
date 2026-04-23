@@ -125,6 +125,34 @@ class BinanceFuturesAccountRest {
     return result.map((data) => data as Map<String, dynamic>);
   }
 
+  /// Get position margin change history.
+  Future<Result<List<dynamic>, BinanceError>> getPositionMarginHistory(
+    Symbol symbol, {
+    int? type,
+    int? startTime,
+    int? endTime,
+    int limit = 100,
+  }) async {
+    final params = {
+      'symbol': symbol.value,
+      'limit': limit.toString(),
+    };
+    if (type != null) params['type'] = type.toString();
+    if (startTime != null) params['startTime'] = startTime.toString();
+    if (endTime != null) params['endTime'] = endTime.toString();
+
+    final result = await _client.send(
+      BinanceRequest(
+        method: HttpMethod.get,
+        path: '/fapi/v1/positionMargin/history',
+        queryParams: params,
+        securityType: BinanceSecurityType.userData,
+      ),
+    );
+
+    return result.map((data) => data as List<dynamic>);
+  }
+
   /// Get income history.
   Future<Result<List<Income>, BinanceError>> getIncomeHistory({
     Symbol? symbol,
@@ -181,5 +209,56 @@ class BinanceFuturesAccountRest {
     );
 
     return result.map((data) => data as List<dynamic>);
+  }
+
+  /// Get commission rate.
+  Future<Result<Map<String, dynamic>, BinanceError>> getCommissionRate(
+    Symbol symbol,
+  ) async {
+    final result = await _client.send(
+      BinanceRequest(
+        method: HttpMethod.get,
+        path: '/fapi/v1/commissionRate',
+        queryParams: {'symbol': symbol.value},
+        securityType: BinanceSecurityType.userData,
+      ),
+    );
+
+    return result.map((data) => data as Map<String, dynamic>);
+  }
+
+  /// Get portfolio margin account info.
+  Future<Result<Map<String, dynamic>, BinanceError>> getPmAccountInfo({
+    Asset? asset,
+  }) async {
+    final params = <String, String>{};
+    if (asset != null) params['asset'] = asset.value;
+
+    final result = await _client.send(
+      BinanceRequest(
+        method: HttpMethod.get,
+        path: '/fapi/v1/pmAccountInfo',
+        queryParams: params,
+        securityType: BinanceSecurityType.userData,
+      ),
+    );
+
+    return result.map((data) => data as Map<String, dynamic>);
+  }
+
+  /// Change multi-assets mode.
+  Future<Result<Map<String, dynamic>, BinanceError>> changeMultiAssetsMode({
+    required bool multiAssetsMargin,
+  }) async {
+    final result = await _client.send(
+      BinanceRequest(
+        method: HttpMethod.post,
+        path: '/fapi/v1/multiAssetsMargin',
+        queryParams: {'multiAssetsMargin': multiAssetsMargin.toString()},
+        securityType: BinanceSecurityType.signed,
+      ),
+    );
+
+    return result.map((data) => data as Map<String, dynamic>);
   }
 }
