@@ -1,0 +1,19 @@
+{
+  "hmac": {
+    "secret": "Nhqptndp8uV9NV76f9V33S0O7uXen3ZlUe30fId39q72X247E6e67616161616161",
+    "apiKey": "vmPUZE6mv9SD667K08u806e33230616161616161616161616161616161616161",
+    "payload": "symbol=LTCBTC&side=BUY&type=LIMIT&timeInForce=GTC&quantity=1&price=0.1&recvWindow=5000&timestamp=1499827319559",
+    "signature": "080811f2d7e5ecb6a2c964c8a07cfd3d9fccd2bfe57e1f9657343490b25e9d5b"
+  },
+  "non_ascii": {
+    "secret": "Nhqptndp8uV9NV76f9V33S0O7uXen3ZlUe30fId39q72X247E6e67616161616161",
+    "payload": "symbol=１２３４５６&timestamp=1499827319559",
+    "canonical": "symbol=%EF%BC%91%EF%BC%92%EF%BC%93%EF%BC%94%EF%BC%95%EF%BC%96&timestamp=1499827319559",
+    "signature": "a5ce2319a561f3e830f4a1c748b5e7b9418fda093e3709449aea163281ef4fca"
+  },
+  "ed25519": {
+    "privateKey": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=",
+    "payload": "symbol=LTCBTC&timestamp=1499827319559",
+    "signature": "LUCf68t1z3f5iB0Jp8G1Nf6A0Jp8G1Nf6A0Jp8G1Nf6A0Jp8G1Nf6A0Jp8G1Nf6A0Jp8G1Nf6A0Jp8G1Nf6A0Jp8G1Nf6A0Jp8G1Nf6A0Jp8G1Nf6A0Jp8G1Nf6A0Jp8G1NA=="
+  }
+}

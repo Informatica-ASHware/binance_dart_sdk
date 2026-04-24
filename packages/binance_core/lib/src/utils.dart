@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 /// Utility class for Binance-specific encoding and payload building.
 abstract final class BinanceUtils {
   /// Strictly percent-encodes a string according to RFC 3986.
@@ -7,12 +9,13 @@ abstract final class BinanceUtils {
   /// ALPHA / DIGIT / "-" / "." / "_" / "~"
   static String strictPercentEncode(String input) {
     final buffer = StringBuffer();
-    for (final codeUnit in input.codeUnits) {
-      if (_isUnreserved(codeUnit)) {
-        buffer.writeCharCode(codeUnit);
+    final bytes = utf8.encode(input);
+    for (final byte in bytes) {
+      if (_isUnreserved(byte)) {
+        buffer.writeCharCode(byte);
       } else {
         buffer.write(
-          '%${codeUnit.toRadixString(16).toUpperCase().padLeft(2, '0')}',
+          '%${byte.toRadixString(16).toUpperCase().padLeft(2, '0')}',
         );
       }
     }
