@@ -1,16 +1,16 @@
 name: binance_margin
 description: Cobertura de Binance Margin Trading (Cross e Isolated).
 version: 0.1.0
-publish_to: none
+resolution: workspace
+repository: https://github.com/Informatica-ASHware/binance_dart_sdk
+issue_tracker: https://github.com/Informatica-ASHware/binance_dart_sdk/issues
 
 environment:
   sdk: '>=3.5.0 <4.0.0'
 
 dependencies:
-  binance_core:
-    path: ../binance_core
-  binance_spot:
-    path: ../binance_spot
+  binance_core: ^0.1.0
+  binance_spot: ^0.1.0
   meta: ^1.10.0
 
 dev_dependencies:

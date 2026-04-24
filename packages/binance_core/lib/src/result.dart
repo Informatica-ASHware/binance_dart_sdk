@@ -56,6 +56,13 @@ sealed class Result<S, E> {
       Failure(error: final e) => Result.failure(e),
     };
   }
+
+  /// Alias for [fold] to support expressive success/failure handling.
+  T when<T>({
+    required T Function(S value) success,
+    required T Function(E error) failure,
+  }) =>
+      fold(onSuccess: success, onFailure: failure);
 }
 
 /// A successful [Result] containing a [value].

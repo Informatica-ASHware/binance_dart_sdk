@@ -1,5 +1,13 @@
 name: binance_dart_sdk
+workspace:
+  - packages/binance_core
+  - packages/binance_spot
+  - packages/binance_margin
+  - packages/binance_futures
+  - examples/spot_market_watch
+  - examples/margin_cross_trade
+  - examples/futures_position_monitor
 environment:
-  sdk: ">=3.5.0 <4.0.0"
+  sdk: ">=3.11.0 <4.0.0"
 dev_dependencies:
-  melos: ^6.0.0
+  melos: ^7.5.1

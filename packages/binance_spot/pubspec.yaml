@@ -1,14 +1,15 @@
 name: binance_spot
 description: Cobertura completa del API de Binance Spot (REST y WebSockets).
 version: 0.1.0
-publish_to: none
+resolution: workspace
+repository: https://github.com/Informatica-ASHware/binance_dart_sdk
+issue_tracker: https://github.com/Informatica-ASHware/binance_dart_sdk/issues
 
 environment:
   sdk: '>=3.5.0 <4.0.0'
 
 dependencies:
-  binance_core:
-    path: ../binance_core
+  binance_core: ^0.1.0
   http: ^1.2.0
   meta: ^1.10.0
 

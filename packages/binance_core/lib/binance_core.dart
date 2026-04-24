@@ -26,4 +26,5 @@ export 'src/user_data.dart';
 export 'src/utils.dart';
 export 'src/ws/api_client.dart';
 export 'src/ws/base.dart';
+export 'src/ws/provider.dart';
 export 'src/ws/stream_client.dart';

@@ -15,13 +15,19 @@ import 'package:binance_core/src/result.dart';
 import 'package:http/http.dart' as http;
 
 /// Abstract client for interacting with the Binance HTTP API.
+///
+/// This client handles automatic base URL routing, rate limiting,
+/// retries, and circuit breaking.
 abstract interface class BinanceHttpClient {
   /// Sends a [BinanceRequest] and returns a [Result].
+  ///
+  /// For endpoints starting with `/fapi` or `/dapi`, it routes to
+  /// the futures base URL. All other requests route to the spot base URL.
   Future<Result<dynamic, BinanceError>> send(
     BinanceRequest request,
   );
 
-  /// Adds an interceptor to the client.
+  /// Adds a [BinanceInterceptor] to the client's processing chain.
   void addInterceptor(BinanceInterceptor interceptor);
 }
 

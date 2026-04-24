@@ -1,8 +1,6 @@
 # Changelog
 
 ## 0.1.0
-
-- Initial release of `binance_margin`.
-- Full coverage of Cross and Isolated Margin Trading REST endpoints.
-- Integration with unified `UserDataFeed`.
-- Support for Loans, Transfers, Trading, and Account management.
+- Initial support for Cross and Isolated Margin REST API.
+- Integration with unified `OrderTradeUpdate` events.
+- Support for loans, repayments, and transfers.
