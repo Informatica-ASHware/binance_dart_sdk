@@ -31,3 +31,9 @@ jobs:
 
       - name: Run tests
         run: melos run test
+
+      - name: Check documentation
+        run: melos exec -- "dart doc --dry-run"
+
+      - name: Verify pub publish dry-run
+        run: melos exec -- "dart pub publish --dry-run"

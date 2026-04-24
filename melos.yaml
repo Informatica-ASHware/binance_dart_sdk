@@ -9,8 +9,16 @@ scripts:
     description: Run dart analyze for all packages.
 
   test:
-    run: melos exec -- "dart test"
+    run: melos exec --dir-exists="test" -- "dart test"
     description: Run dart tests for all packages.
+
+  version:
+    run: melos version --yes
+    description: Bump versions and generate changelogs using Conventional Commits.
+
+  publish:
+    run: melos publish --yes
+    description: Publish all packages to pub.dev.
 
   format:
     run: melos exec -- "dart format ."

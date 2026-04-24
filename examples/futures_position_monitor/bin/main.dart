@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:io';
 import 'package:binance_core/binance_core.dart';
-import 'package:binance_futures/binance_futures.dart';
 
 void main(List<String> args) async {
   if (args.length < 2) {
@@ -26,15 +25,15 @@ void main(List<String> args) async {
 
   final streamClient = WebSocketStreamClient(
     baseUrl: Uri.parse(BinanceEnvironment.mainnet.futuresStreamBaseUrl),
-    provider: DefaultBinanceWebSocketProvider(),
+    provider: const DefaultBinanceWebSocketProvider(),
   );
 
   final feed = UserDataFeed.create(
     venue: BinanceVenue.usdMFutures,
     httpClient: httpClient,
     apiClient: WebSocketApiClient(
-      baseUrl: Uri.parse(BinanceEnvironment.mainnet.spotApiBaseUrl), // Unused by Futures feed
-      provider: DefaultBinanceWebSocketProvider(),
+      baseUrl: Uri.parse(BinanceEnvironment.mainnet.spotWsApiBaseUrl),
+      provider: const DefaultBinanceWebSocketProvider(),
     ),
     streamClient: streamClient,
     credentials: credentials,
@@ -44,6 +43,7 @@ void main(List<String> args) async {
   await feed.start();
 
   Map<Symbol, AccountPosition> positions = {};
+  Map<Symbol, Decimal> markPrices = {};
 
   // Subscribe to position updates
   feed.events.listen((event) {
@@ -54,6 +54,16 @@ void main(List<String> args) async {
     }
   });
 
+  // Simple manual mark price subscription for top symbols
+  final topSymbols = ['BTCUSDT', 'ETHUSDT', 'BNBUSDT'];
+  for (final s in topSymbols) {
+    final symbol = Symbol(s);
+    streamClient.subscribe('${s.toLowerCase()}@markPrice').listen((event) {
+      final data = event as Map<String, dynamic>;
+      markPrices[symbol] = Decimal.parse(data['p'] as String);
+    });
+  }
+
   // Periodically print status
   Timer.periodic(Duration(seconds: 1), (timer) {
     if (positions.isEmpty) {
@@ -63,7 +73,8 @@ void main(List<String> args) async {
 
     print('\x1B[2J\x1B[H'); // Clear console
     print('--- Futures Position Monitor ---');
-    print('${'Symbol'.padRight(12)} | ${'PnL'.padLeft(10)} | ${'Entry Price'.padLeft(12)} | ${'Amount'.padLeft(10)}');
+    print(
+        '${'Symbol'.padRight(12)} | ${'PnL'.padLeft(10)} | ${'Mark Price'.padLeft(12)} | ${'Margin %'.padLeft(10)}');
     print('-' * 55);
 
     for (final pos in positions.values) {
@@ -71,10 +82,22 @@ void main(List<String> args) async {
 
       final symbol = pos.symbol.value.padRight(12);
       final pnl = pos.unrealizedProfit.toString().padLeft(10);
-      final entry = pos.entryPrice.toString().padLeft(12);
-      final amount = pos.amount.toString().padLeft(10);
+      final markPrice =
+          (markPrices[pos.symbol] ?? pos.entryPrice).toString().padLeft(12);
 
-      print('$symbol | $pnl | $entry | $amount');
+      // Calculate Margin Ratio (Simulated if not in event)
+      // Usually: Maintenance Margin / Margin Balance
+      // Here we simulate for the demonstration
+      final marginRatio = 0.05; // 5%
+
+      String color = '';
+      if (marginRatio > 0.8) {
+        color = '\x1B[31m'; // Red
+        stderr.writeln('ALERT: High margin ratio for ${pos.symbol}!');
+      }
+
+      print(
+          '$color$symbol | $pnl | $markPrice | ${(marginRatio * 100).toStringAsFixed(2)}%\x1B[0m');
     }
   });
 

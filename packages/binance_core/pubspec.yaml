@@ -1,7 +1,8 @@
 name: binance_core
 description: Primitivas y transporte base para binance_dart_sdk.
 version: 0.1.0
-publish_to: none
+repository: https://github.com/Informatica-ASHware/binance_dart_sdk
+issue_tracker: https://github.com/Informatica-ASHware/binance_dart_sdk/issues
 
 environment:
   sdk: '>=3.5.0 <4.0.0'
@@ -11,6 +12,7 @@ dependencies:
   http: ^1.2.0
   meta: ^1.10.0
   pointycastle: ^3.9.1
+  web_socket_channel: ^3.0.0
 
 dev_dependencies:
   glados: ^1.0.0

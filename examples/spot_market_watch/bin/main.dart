@@ -1,10 +1,10 @@
-import 'dart:async';
 import 'dart:io';
 import 'package:binance_core/binance_core.dart';
-import 'package:binance_spot/binance_spot.dart';
 
 void main(List<String> args) async {
-  final symbols = args.isNotEmpty ? args : ['BTCUSDT', 'ETHUSDT', 'BNBUSDT', 'SOLUSDT', 'ADAUSDT'];
+  final symbols = args.isNotEmpty
+      ? args
+      : ['BTCUSDT', 'ETHUSDT', 'BNBUSDT', 'SOLUSDT', 'ADAUSDT'];
 
   print('Watching book tickers for: ${symbols.join(', ')}');
   print('Press Ctrl+C to exit\n');
@@ -21,7 +21,8 @@ void main(List<String> args) async {
 
   final subscription = stream.listen(
     (event) {
-      final data = (event as Map<String, dynamic>)['data'] as Map<String, dynamic>;
+      final data =
+          (event as Map<String, dynamic>)['data'] as Map<String, dynamic>;
       final symbol = (data['s'] as String).padRight(8);
       final bid = (data['b'] as String).padLeft(12);
       final ask = (data['a'] as String).padLeft(12);
