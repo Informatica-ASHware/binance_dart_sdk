@@ -1,6 +1,8 @@
 name: futures_position_monitor
 description: CLI example for monitoring futures positions.
 publish_to: none
+version: 0.1.0
+resolution: workspace
 
 environment:
   sdk: '>=3.5.0 <4.0.0'
