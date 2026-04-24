@@ -237,7 +237,8 @@ final class BinanceObservabilityHooks {
   final void Function(StreamLagWarning warning)? onStreamLag;
 
   /// Callback when a time synchronization warning occurs.
-  /// The [offset] is the detected time offset in milliseconds.
-  /// The [jitter] is the estimated network jitter in milliseconds.
+  ///
+  /// The offset is the detected time offset in milliseconds.
+  /// The jitter is the estimated network jitter in milliseconds.
   final void Function(int offset, double jitter)? onTimeSyncWarning;
 }

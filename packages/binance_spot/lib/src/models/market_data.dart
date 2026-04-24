@@ -569,10 +569,10 @@ final class OrderBook {
   /// The ID of the last update.
   final int lastUpdateId;
 
-  /// List of bids [price, quantity].
+  /// Bids as a list of `(price, quantity)` tuples.
   final List<(Price, Quantity)> bids;
 
-  /// List of asks [price, quantity].
+  /// Asks as a list of `(price, quantity)` tuples.
   final List<(Price, Quantity)> asks;
 }
 

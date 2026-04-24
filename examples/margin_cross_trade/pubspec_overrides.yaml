@@ -1,0 +1,8 @@
+# melos_managed_dependency_overrides: binance_core,binance_margin,binance_spot
+dependency_overrides:
+  binance_core:
+    path: ../../packages/binance_core
+  binance_margin:
+    path: ../../packages/binance_margin
+  binance_spot:
+    path: ../../packages/binance_spot

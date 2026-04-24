@@ -1,6 +1,7 @@
 name: binance_dart_sdk
 packages:
   - packages/*
+  - examples/*
 
 scripts:
   analyze:

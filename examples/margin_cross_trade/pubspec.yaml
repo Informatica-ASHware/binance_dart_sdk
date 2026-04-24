@@ -1,0 +1,14 @@
+name: margin_cross_trade
+description: CLI example for a margin trading workflow.
+publish_to: none
+
+environment:
+  sdk: '>=3.5.0 <4.0.0'
+
+dependencies:
+  binance_core:
+    path: ../../packages/binance_core
+  binance_spot:
+    path: ../../packages/binance_spot
+  binance_margin:
+    path: ../../packages/binance_margin

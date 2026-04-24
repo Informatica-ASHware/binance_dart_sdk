@@ -514,10 +514,10 @@ final class DepthUpdateEvent extends SpotEvent {
   /// Final update ID.
   final int finalUpdateId;
 
-  /// Bids [price, quantity].
+  /// Bids as a list of `(price, quantity)` tuples.
   final List<(Price, Quantity)> bids;
 
-  /// Asks [price, quantity].
+  /// Asks as a list of `(price, quantity)` tuples.
   final List<(Price, Quantity)> asks;
 }
 
