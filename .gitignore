@@ -18,3 +18,7 @@ coverage/
 
 # OS generated files
 .DS_Store
+
+# Flutter plugin and cache files
+.flutter-plugins
+.flutter-plugins-dependencies
