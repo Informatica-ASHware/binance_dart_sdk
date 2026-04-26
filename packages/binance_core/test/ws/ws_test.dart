@@ -348,8 +348,7 @@ void main() {
       expect(provider.connectCount, 1);
 
       // Simulate connection loss
-      final firstChannel = provider.lastChannel!;
-      firstChannel.closeFromServer();
+      provider.lastChannel!.closeFromServer();
 
       // Client should auto-reconnect and re-logon
       for (var i = 0; i < 40; i++) {

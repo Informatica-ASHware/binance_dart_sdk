@@ -86,7 +86,8 @@ void main() {
 
       final statuses = await statusFuture.timeout(const Duration(seconds: 1));
 
-      // Should have called subscribe twice (once at start, once after reconnect)
+      // Should have called subscribe twice (once at start, once after
+      // reconnect)
       verify(() => apiClient.sendRequest('userDataStream.subscribe')).called(2);
 
       expect(
