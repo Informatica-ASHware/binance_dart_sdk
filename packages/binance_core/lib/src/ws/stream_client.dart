@@ -184,7 +184,7 @@ class WebSocketStreamClient {
       } else {
         _logger.debug('Received unknown message format: $message');
       }
-    } catch (e, st) {
+    } on Object catch (e, st) {
       _logger.error(
         'Error parsing WebSocket message',
         error: e,

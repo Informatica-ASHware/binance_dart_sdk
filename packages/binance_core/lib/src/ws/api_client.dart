@@ -204,7 +204,7 @@ class WebSocketApiClient {
         // Handle unsolicited events
         _eventsController.add(data);
       }
-    } catch (e, st) {
+    } on Object catch (e, st) {
       _logger.error(
         'Error parsing WebSocket API message',
         error: e,

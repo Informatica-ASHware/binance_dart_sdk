@@ -28,8 +28,8 @@ void main() {
         'quantity': 1,
         'price': '0.1',
       };
-      const expected =
-          'price=0.1&quantity=1&side=BUY&symbol=LTCBTC&timeInForce=GTC&type=LIMIT';
+      const expected = 'price=0.1&quantity=1&side=BUY&symbol=LTCBTC'
+          '&timeInForce=GTC&type=LIMIT';
       expect(BinanceUtils.buildCanonicalPayload(params), expected);
     });
   });

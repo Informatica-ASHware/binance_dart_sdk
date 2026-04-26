@@ -119,8 +119,8 @@ final class ResponseReceived extends BinanceTelemetryEvent {
   final Duration duration;
 
   @override
-  String toString() =>
-      'ResponseReceived(statusCode: $statusCode, url: $url, duration: $duration)';
+  String toString() => 'ResponseReceived(statusCode: $statusCode, '
+      'url: $url, duration: $duration)';
 }
 
 /// Telemetry event when a retry attempt is made.
