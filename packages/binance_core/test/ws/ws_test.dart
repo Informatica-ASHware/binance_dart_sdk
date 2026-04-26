@@ -329,17 +329,17 @@ void main() {
       provider.onConnect = (uri) async {
         final channel = MockWebSocketChannel();
         channel.sentMessages.listen((msg) {
-            final data = jsonDecode(msg as String) as Map;
-            if (data['method'] == 'session.logon') {
-              channel.addFromServer(
-                jsonEncode({
-                  'id': data['id'],
-                  'status': 200,
-                  'result': {'apiKey': 'key'},
-                }),
-              );
-            }
-          });
+          final data = jsonDecode(msg as String) as Map;
+          if (data['method'] == 'session.logon') {
+            channel.addFromServer(
+              jsonEncode({
+                'id': data['id'],
+                'status': 200,
+                'result': {'apiKey': 'key'},
+              }),
+            );
+          }
+        });
         return channel;
       };
 

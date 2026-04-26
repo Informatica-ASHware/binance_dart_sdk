@@ -16,14 +16,14 @@ void main() {
 
   result.fold(
     onSuccess: (s) {
-        /// Printing is allowed in examples.
-        // ignore: avoid_print
-        print('Success: $s');
-      },
-      onFailure: (e) {
-        /// Printing is allowed in examples.
-        // ignore: avoid_print
-        print('Error: $e');
-      },
+      /// Printing is allowed in examples.
+      // ignore: avoid_print
+      print('Success: $s');
+    },
+    onFailure: (e) {
+      /// Printing is allowed in examples.
+      // ignore: avoid_print
+      print('Error: $e');
+    },
   );
 }
