@@ -11,14 +11,14 @@ environment:
   sdk: ">=3.6.0 <4.0.0"
 
 dependencies:
-  cryptography: any        # versión inyectada desde el root
-  http: any
-  meta: any
-  pointycastle: any
-  web_socket_channel: any
+  cryptography: ^2.7.0        # versión inyectada desde el root
+  http: ^1.2.0
+  meta: ^1.16.0
+  pointycastle: ^3.9.1
+  web_socket_channel: ^3.0.0
 
 dev_dependencies:
-  test: any
-  mocktail: any
-  very_good_analysis: any
-  glados: any
+  test: ^1.25.15
+  mocktail: ^1.0.5
+  very_good_analysis: ^7.0.0
+  glados: ^1.1.7

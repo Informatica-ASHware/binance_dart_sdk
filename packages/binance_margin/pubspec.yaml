@@ -13,9 +13,9 @@ environment:
 dependencies:
   binance_core: any
   binance_spot: any
-  meta: any
+  meta: ^1.16.0
 
 dev_dependencies:
-  test: any
-  mocktail: any
-  very_good_analysis: any
+  test: ^1.25.15
+  mocktail: ^1.0.5
+  very_good_analysis: ^7.0.0

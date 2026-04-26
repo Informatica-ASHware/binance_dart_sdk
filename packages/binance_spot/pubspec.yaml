@@ -6,6 +6,7 @@ version: 0.1.0
 resolution: workspace
 repository: https://github.com/Informatica-ASHware/binance_dart_sdk
 issue_tracker: https://github.com/Informatica-ASHware/binance_dart_sdk/issues
+publish_to: none
 
 environment:
   sdk: ">=3.6.0 <4.0.0"
@@ -16,11 +17,11 @@ dependencies:
       url: https://github.com/Informatica-ASHware/binance_dart_sdk.git
       path: packages/binance_core
       ref: 9bf1f518fdabe8d226e547e6aa773d353dc84803  # ref: PIN_TO_SHA_AFTER_FIRST_TAG
-  http: any
-  meta: any
+  http: ^1.2.0
+  meta: ^1.16.0
 
 dev_dependencies:
-  test: any
-  mocktail: any
-  very_good_analysis: any
-  glados: any
+  test: ^1.25.15
+  mocktail: ^1.0.5
+  very_good_analysis: ^7.0.0
+  glados: ^1.1.7

@@ -12,10 +12,10 @@ environment:
 
 dependencies:
   binance_core: any
-  http: any
-  meta: any
+  http: ^1.2.0
+  meta: ^1.16.0
 
 dev_dependencies:
-  test: any
-  mocktail: any
-  very_good_analysis: any
+  mocktail: ^1.0.5
+  test: ^1.25.15
+  very_good_analysis: ^7.0.0
