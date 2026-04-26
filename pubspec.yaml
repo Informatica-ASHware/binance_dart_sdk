@@ -51,10 +51,14 @@ melos:
 
   scripts:
     analyze:
-      description: "Analyze every package."
-      run: dart analyze .
-      exec:
-        concurrency: 4
+      description: "Analyze every package and example exhaustively."
+      run: |
+        dart analyze . && \
+        dart analyze tools/mock_server && \
+        dart analyze examples/futures_position_monitor && \
+        dart analyze examples/margin_cross_trade && \
+        dart analyze examples/spot_market_watch && \
+        melos exec -- "dart analyze ."
 
     test:
       description: "Run tests in every package that has a /test folder."
