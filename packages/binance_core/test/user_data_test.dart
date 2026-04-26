@@ -89,7 +89,10 @@ void main() {
       // Should have called subscribe twice (once at start, once after reconnect)
       verify(() => apiClient.sendRequest('userDataStream.subscribe')).called(2);
 
-      expect(statuses.any((s) => s is UserDataFeedReconnectedAfterGap), isTrue);
+      expect(
+        statuses.any((s) => s is UserDataFeedReconnectedAfterGap),
+        isTrue,
+      );
     });
 
     test('parses Spot events correctly', () async {

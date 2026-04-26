@@ -81,7 +81,7 @@ final class ServerTimeSynchronizer {
           'Failed to sync time: ${response.statusCode} ${response.body}',
         );
       }
-    } catch (e, stackTrace) {
+    } on Exception catch (e, stackTrace) {
       observability.logger.error(
         'Error syncing time',
         error: e,

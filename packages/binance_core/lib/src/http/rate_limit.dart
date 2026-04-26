@@ -24,7 +24,8 @@ class RateLimitTracker {
           _weights[key] = value;
         }
       } else if (key.startsWith('x-mbx-limit-')) {
-        // Some endpoints might return limits, though not all do in every response.
+        // Some endpoints might return limits, though not all do in every
+        // response.
         final value = int.tryParse(entry.value);
         if (value != null) {
           final type = key.replaceFirst('x-mbx-limit-', '');

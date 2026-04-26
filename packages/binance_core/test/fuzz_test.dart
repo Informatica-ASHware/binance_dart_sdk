@@ -1,6 +1,4 @@
 import 'package:binance_core/binance_core.dart';
-import 'package:binance_core/src/http/client.dart';
-import 'package:binance_core/src/http/security.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
 import 'package:test/test.dart';
@@ -13,7 +11,6 @@ void main() {
       return const BinanceRequest(
         path: '/api/v3/ping',
         method: HttpMethod.get,
-        securityType: BinanceSecurityType.public,
       );
     }
 

@@ -194,7 +194,8 @@ final class SignatureComputed extends BinanceTelemetryEvent {
     required this.payload,
   }) : super(timestamp);
 
-  /// The payload that was signed (sensitive data should be redacted in implementation).
+  /// The payload that was signed (sensitive data should be redacted in
+  /// implementation).
   final String payload;
 
   @override
@@ -202,6 +203,7 @@ final class SignatureComputed extends BinanceTelemetryEvent {
 }
 
 /// Interface for receiving telemetry events.
+// ignore: one_member_abstracts
 abstract interface class BinanceTelemetrySink {
   /// Reports a telemetry event.
   void report(BinanceTelemetryEvent event);

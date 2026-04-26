@@ -86,7 +86,7 @@ class WebSocketApiClient {
         // Resume session if it was active or if we have credentials
         await _performLogon(_credentials!);
       }
-    } catch (e, st) {
+    } on Exception catch (e, st) {
       _logger.error(
         'Failed to connect to WebSocket API',
         error: e,

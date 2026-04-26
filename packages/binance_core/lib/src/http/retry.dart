@@ -39,7 +39,8 @@ class ExponentialBackoffRetryPolicy implements RetryPolicy {
     if (response != null) {
       final statusCode = response.statusCode;
       // Retry on rate limits (429) and server errors (5xx)
-      // Note: 418 (IP Banned) is handled separately in client.dart but we can check here too
+      // Note: 418 (IP Banned) is handled separately in client.dart but we can
+      // check here too
       if (statusCode == 429 || statusCode >= 500) {
         return true;
       }

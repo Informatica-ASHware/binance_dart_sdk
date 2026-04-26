@@ -55,7 +55,6 @@ class BinanceSpotAccountClient {
       path: '/api/v3/order',
       queryParams: params,
       securityType: BinanceSecurityType.signed,
-      weight: 1,
     );
 
     final result = await _httpClient.send(request);
@@ -110,7 +109,6 @@ class BinanceSpotAccountClient {
       path: '/api/v3/order/test',
       queryParams: params,
       securityType: BinanceSecurityType.signed,
-      weight: 1,
     );
 
     final result = await _httpClient.send(request);
@@ -170,7 +168,6 @@ class BinanceSpotAccountClient {
       path: '/api/v3/order',
       queryParams: params,
       securityType: BinanceSecurityType.signed,
-      weight: 1,
     );
 
     final result = await _httpClient.send(request);

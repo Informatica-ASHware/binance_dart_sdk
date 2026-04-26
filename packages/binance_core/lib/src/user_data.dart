@@ -509,14 +509,11 @@ class SpotUserDataFeed extends BaseUserDataFeed {
       case WebSocketApiClientStatus.connecting:
       case WebSocketApiClientStatus.reconnecting:
         emitStatus(const UserDataFeedStatus.reconnecting());
-        break;
       case WebSocketApiClientStatus.disconnected:
         _lastDisconnectTime ??= DateTime.now();
         emitStatus(const UserDataFeedStatus.reconnecting());
-        break;
       case WebSocketApiClientStatus.authenticated:
         unawaited(_subscribe());
-        break;
       case WebSocketApiClientStatus.connected:
         // Wait for authentication
         break;

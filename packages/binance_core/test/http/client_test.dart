@@ -32,7 +32,8 @@ void main() {
 
       expect(result.isSuccess, isTrue);
       result.fold(
-        onSuccess: (data) => expect(data['key'], 'value'),
+        onSuccess: (data) =>
+            expect((data as Map<String, dynamic>)['key'], 'value'),
         onFailure: (error) => fail('Should not fail'),
       );
     });

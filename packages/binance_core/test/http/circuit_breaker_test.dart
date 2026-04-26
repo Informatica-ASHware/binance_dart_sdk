@@ -16,8 +16,7 @@ void main() {
     });
 
     test('transitions back to closed after success', () {
-      final breaker = CircuitBreaker(failureThreshold: 1);
-      breaker.recordFailure();
+      final breaker = CircuitBreaker(failureThreshold: 1)..recordFailure();
       expect(breaker.state, CircuitState.open);
 
       breaker.recordSuccess();
@@ -28,8 +27,7 @@ void main() {
       final breaker = CircuitBreaker(
         failureThreshold: 1,
         resetTimeout: const Duration(milliseconds: 10),
-      );
-      breaker.recordFailure();
+      )..recordFailure();
       expect(breaker.state, CircuitState.open);
 
       await Future<void>.delayed(const Duration(milliseconds: 20));

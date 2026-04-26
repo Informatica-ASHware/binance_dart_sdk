@@ -83,6 +83,7 @@ final class Ed25519Credentials extends BinanceCredentials {
 }
 
 /// Interface for signing Binance API requests.
+// ignore: one_member_abstracts
 abstract interface class RequestSigner {
   /// Signs the given [canonicalPayload] and returns a [Signature].
   Future<Signature> sign(String canonicalPayload);
@@ -124,8 +125,8 @@ final class RsaRequestSigner implements RequestSigner {
   @override
   Future<Signature> sign(String canonicalPayload) async {
     final privateKey = _parsePrivateKey(_credentials.privateKey.bytes);
-    final signer = pc.RSASigner(pc.SHA256Digest(), '0609608648016503040201');
-    signer.init(true, pc.PrivateKeyParameter<pc.RSAPrivateKey>(privateKey));
+    final signer = pc.RSASigner(pc.SHA256Digest(), '0609608648016503040201')
+      ..init(true, pc.PrivateKeyParameter<pc.RSAPrivateKey>(privateKey));
 
     final signature = signer.generateSignature(
       Uint8List.fromList(utf8.encode(canonicalPayload)),

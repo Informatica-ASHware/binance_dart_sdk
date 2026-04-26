@@ -1,3 +1,5 @@
+/// Fluid builders require returning 'this' to allow method chaining.
+// ignore_for_file: avoid_returning_this
 import 'package:binance_core/binance_core.dart';
 import 'package:binance_spot/src/enums.dart';
 import 'package:binance_spot/src/models/market_data.dart';
@@ -443,7 +445,7 @@ class OcoOrderBuilder {
   /// Builds the OCO order and validates it.
   Result<OcoOrderRequest, BinanceValidationError> build(SymbolInfo symbolInfo) {
     if (symbolInfo.symbol != _symbol) {
-      return Result.failure(
+      return const Result.failure(
         BinanceValidationError('Symbol mismatch for OCO'),
       );
     }
@@ -461,14 +463,16 @@ class OcoOrderBuilder {
 
     if (q == null) {
       return const Result.failure(
-          BinanceValidationError('quantity is required'));
+        BinanceValidationError('quantity is required'),
+      );
     }
     if (p == null) {
       return const Result.failure(BinanceValidationError('price is required'));
     }
     if (sp == null) {
       return const Result.failure(
-          BinanceValidationError('stopPrice is required'));
+        BinanceValidationError('stopPrice is required'),
+      );
     }
 
     // Re-use validation logic for components
