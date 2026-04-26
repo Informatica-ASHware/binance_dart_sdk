@@ -11,7 +11,7 @@ environment:
   sdk: ">=3.6.0 <4.0.0"
 
 dependencies:
-  binance_core: any
+  binance_core: ^0.1.0
   http: ^1.2.0
   meta: ^1.16.0
 
