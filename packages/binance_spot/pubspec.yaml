@@ -1,3 +1,5 @@
+# path: binance_dart_sdk/packages/binance_spot/pubspec.yaml
+
 name: binance_spot
 description: Cobertura completa del API de Binance Spot (REST y WebSockets).
 version: 0.1.0
@@ -6,15 +8,15 @@ repository: https://github.com/Informatica-ASHware/binance_dart_sdk
 issue_tracker: https://github.com/Informatica-ASHware/binance_dart_sdk/issues
 
 environment:
-  sdk: '>=3.5.0 <4.0.0'
+  sdk: ">=3.6.0 <4.0.0"
 
 dependencies:
-  binance_core: ^0.1.0
-  http: ^1.2.0
-  meta: ^1.10.0
+  binance_core: any        # workspace member
+  http: any
+  meta: any
 
 dev_dependencies:
-  glados: ^1.0.0
-  mocktail: ^1.0.5
-  test: ^1.24.0
-  very_good_analysis: ^6.0.0
+  test: any
+  mocktail: any
+  very_good_analysis: any
+  glados: any

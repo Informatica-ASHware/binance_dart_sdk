@@ -1,16 +1,45 @@
 name: binance_dart_sdk
+
 packages:
   - packages/*
-  - examples/*
+
+command:
+  bootstrap:
+    environment:
+      sdk: ">=3.6.0 <4.0.0"
+    # Versiones COMPARTIDAS (single source of truth).
+    # Cada paquete hijo declara estas deps con `any` y melos
+    # inyecta la versión definida aquí.
+    dependencies:
+      meta: ^1.16.0
+      http: ^1.2.0
+      cryptography: ^2.7.0
+      pointycastle: ^3.9.1
+      web_socket_channel: ^3.0.0
+    dev_dependencies:
+      test: ^1.25.15
+      mocktail: ^1.0.5
+      very_good_analysis: ^7.0.0
+      glados: ^1.1.7
+
+  version:
+    message: "chore(release): publish binance packages"
+    includeCommitId: true
 
 scripts:
   analyze:
-    run: melos exec -- "dart analyze"
-    description: Run dart analyze for all packages.
+    description: "Analyze every package."
+    run: dart analyze .
+    exec:
+      concurrency: 4
 
   test:
-    run: melos exec --dir-exists="test" -- "dart test"
-    description: Run dart tests for all packages.
+    description: "Run tests in every package that has a /test folder."
+    run: dart test
+    exec:
+      concurrency: 4
+    packageFilters:
+      dirExists: test
 
   version:
     run: melos version --yes
@@ -21,9 +50,11 @@ scripts:
     description: Publish all packages to pub.dev.
 
   format:
-    run: melos exec -- "dart format ."
-    description: Run dart format for all packages.
+    description: "Format all Dart files."
+    run: dart format --set-exit-if-changed .
+    exec:
+      concurrency: 4
 
   format:check:
-    run: melos exec -- "dart format --output=none --set-exit-if-changed ."
     description: Check dart format for all packages.
+    run: melos exec -- "dart format --output=none --set-exit-if-changed ."

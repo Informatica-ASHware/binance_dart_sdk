@@ -1,13 +1,21 @@
-name: binance_dart_sdk
+# path: binance_dart_sdk/pubspec.yaml
+# Workspace ROOT. Pub Workspaces (Dart 3.6+) + Melos 7.x.
+
+name: binance_dart_sdk_workspace
+description: Workspace root for the Binance Dart SDK packages.
+publish_to: none
+
+environment:
+  sdk: ">=3.6.0 <4.0.0"
+
+# === Pub Workspaces (Dart 3.6+) ===
+# Lista los miembros del workspace. Se enlazan automáticamente
+# sin necesidad de dependency_overrides.
 workspace:
   - packages/binance_core
   - packages/binance_spot
   - packages/binance_margin
   - packages/binance_futures
-  - examples/spot_market_watch
-  - examples/margin_cross_trade
-  - examples/futures_position_monitor
-environment:
-  sdk: ">=3.11.0 <4.0.0"
+
 dev_dependencies:
-  melos: ^7.5.1
+  melos: ^7.0.0

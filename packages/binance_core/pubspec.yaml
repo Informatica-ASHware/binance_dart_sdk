@@ -1,22 +1,24 @@
+# path: binance_dart_sdk/packages/binance_core/pubspec.yaml
+
 name: binance_core
-resolution: workspace
 description: Primitivas y transporte base para binance_dart_sdk.
 version: 0.1.0
+resolution: workspace
 repository: https://github.com/Informatica-ASHware/binance_dart_sdk
 issue_tracker: https://github.com/Informatica-ASHware/binance_dart_sdk/issues
 
 environment:
-  sdk: '>=3.5.0 <4.0.0'
+  sdk: ">=3.6.0 <4.0.0"
 
 dependencies:
-  cryptography: ^2.7.0
-  http: ^1.2.0
-  meta: ^1.10.0
-  pointycastle: ^3.9.1
-  web_socket_channel: ^3.0.0
+  cryptography: any        # versión inyectada desde el root
+  http: any
+  meta: any
+  pointycastle: any
+  web_socket_channel: any
 
 dev_dependencies:
-  glados: ^1.0.0
-  mocktail: ^1.0.5
-  test: ^1.24.0
-  very_good_analysis: ^6.0.0
+  test: any
+  mocktail: any
+  very_good_analysis: any
+  glados: any
