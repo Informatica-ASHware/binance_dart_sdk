@@ -12,7 +12,7 @@ void main() {
   // ignore: avoid_print
   print('Price: $price');
 
-  Result<Symbol, String>.success(symbol).fold(
+  const Result<Symbol, String>.success(symbol).fold(
     onSuccess: (s) {
       /// Printing is allowed in examples.
       // ignore: avoid_print
