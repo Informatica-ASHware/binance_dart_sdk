@@ -1,7 +1,8 @@
 import 'package:binance_core/src/ws/base.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
-/// Default implementation of [BinanceWebSocketProvider] using `web_socket_channel`.
+/// Default implementation of [BinanceWebSocketProvider] using
+/// `web_socket_channel`.
 class DefaultBinanceWebSocketProvider implements BinanceWebSocketProvider {
   /// Creates a [DefaultBinanceWebSocketProvider].
   const DefaultBinanceWebSocketProvider();

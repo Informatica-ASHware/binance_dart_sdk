@@ -132,7 +132,7 @@ class DefaultBinanceHttpClient implements BinanceHttpClient {
         }
 
         result = await _handleError(interceptedResponse);
-      } catch (e, st) {
+      } on Exception catch (e, st) {
         await chain.interceptError(e, st);
         result = Result.failure(
           BinanceNetworkError(message: 'Network error: $e', cause: e),
@@ -159,7 +159,8 @@ class DefaultBinanceHttpClient implements BinanceHttpClient {
             timestamp: DateTime.now(),
             attempt: attempt,
             url: Uri.parse(
-                '${_getBaseUrl(currentRequest)}${currentRequest.path}'),
+              '${_getBaseUrl(currentRequest)}${currentRequest.path}',
+            ),
             reason: error.toString(),
           ),
         );
@@ -285,15 +286,18 @@ class DefaultBinanceHttpClient implements BinanceHttpClient {
     }
 
     try {
-      final data = json.decode(response.body) as Map<String, dynamic>;
-      final code = data['code'] as int?;
-      final msg = data['msg'] as String?;
+      final decoded = json.decode(response.body);
+      if (decoded is Map<String, dynamic>) {
+        final code = decoded['code'] is int ? decoded['code'] as int : null;
+        final msg = decoded['msg'] is String ? decoded['msg'] as String : null;
 
-      if (code != null && msg != null) {
-        return Result.failure(
-            BinanceApiError.fromCode(code: code, message: msg));
+        if (code != null && msg != null) {
+          return Result.failure(
+            BinanceApiError.fromCode(code: code, message: msg),
+          );
+        }
       }
-    } catch (_) {
+    } on Exception catch (_) {
       // Not a JSON error body
     }
 

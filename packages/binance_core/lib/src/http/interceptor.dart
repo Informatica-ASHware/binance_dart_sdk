@@ -21,7 +21,8 @@ class InterceptorChain {
   /// The list of interceptors in the chain.
   final List<BinanceInterceptor> interceptors;
 
-  /// Executes the [BinanceInterceptor.onRequest] method of all interceptors in order.
+  /// Executes the [BinanceInterceptor.onRequest] method of all interceptors in
+  /// order.
   Future<BinanceRequest> interceptRequest(BinanceRequest request) async {
     var currentRequest = request;
     for (final interceptor in interceptors) {
@@ -30,7 +31,8 @@ class InterceptorChain {
     return currentRequest;
   }
 
-  /// Executes the [BinanceInterceptor.onResponse] method of all interceptors in reverse order.
+  /// Executes the [BinanceInterceptor.onResponse] method of all interceptors in
+  /// reverse order.
   Future<http.Response> interceptResponse(http.Response response) async {
     var currentResponse = response;
     for (final interceptor in interceptors.reversed) {

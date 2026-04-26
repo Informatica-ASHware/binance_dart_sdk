@@ -4,12 +4,12 @@ import 'package:binance_spot/src/models/market_data.dart';
 import 'package:glados/glados.dart';
 
 void main() {
-  final btcUsdt = SymbolInfo(
-    symbol: const Symbol('BTCUSDT'),
+  const btcUsdt = SymbolInfo(
+    symbol: Symbol('BTCUSDT'),
     status: 'TRADING',
-    baseAsset: const Asset('BTC'),
+    baseAsset: Asset('BTC'),
     baseAssetPrecision: 8,
-    quoteAsset: const Asset('USDT'),
+    quoteAsset: Asset('USDT'),
     quotePrecision: 8,
     quoteAssetPrecision: 8,
     baseCommissionPrecision: 8,
@@ -32,8 +32,9 @@ void main() {
     Glados(any.double).test(
       'build LIMIT order with various prices',
       (priceValue) {
-        if (priceValue <= 0 || priceValue.isNaN || priceValue.isInfinite)
+        if (priceValue <= 0 || priceValue.isNaN || priceValue.isInfinite) {
           return;
+        }
 
         final priceStr = priceValue.toStringAsFixed(8);
         final builder = SpotOrderBuilder.limit()

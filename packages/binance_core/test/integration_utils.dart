@@ -3,7 +3,8 @@ import 'dart:io';
 /// Mixin to handle integration test logic.
 mixin TestnetIntegration {
   /// Whether to run integration tests against the real Testnet.
-  /// Set the BINANCE_INTEGRATION_TESTS environment variable to 'true' to enable.
+  /// Set the BINANCE_INTEGRATION_TESTS environment variable to 'true' to
+  /// enable.
   bool get shouldRunIntegrationTests =>
       Platform.environment['BINANCE_INTEGRATION_TESTS'] == 'true';
 

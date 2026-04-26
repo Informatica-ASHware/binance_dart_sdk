@@ -57,6 +57,7 @@ abstract interface class BinanceWebSocketChannel {
 }
 
 /// Interface for a provider of WebSocket channels.
+// ignore: one_member_abstracts
 abstract interface class BinanceWebSocketProvider {
   /// Connects to the given [url].
   Future<BinanceWebSocketChannel> connect(Uri url);

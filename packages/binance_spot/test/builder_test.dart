@@ -66,8 +66,10 @@ void main() {
           .build(btcUsdt);
 
       expect(result.isFailure, isTrue);
-      expect(result.fold(onSuccess: (_) => '', onFailure: (e) => e.message),
-          contains('Symbol mismatch'));
+      expect(
+        result.fold(onSuccess: (_) => '', onFailure: (e) => e.message),
+        contains('Symbol mismatch'),
+      );
     });
   });
 

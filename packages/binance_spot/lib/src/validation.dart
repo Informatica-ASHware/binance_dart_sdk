@@ -22,7 +22,8 @@ class BinanceSpotValidator {
     if (!symbolInfo.orderTypes.contains(type.value)) {
       return Result.failure(
         BinanceValidationError(
-          'Order type ${type.value} not allowed for symbol ${symbolInfo.symbol}',
+          'Order type ${type.value} not allowed for symbol '
+          '${symbolInfo.symbol}',
         ),
       );
     }
@@ -33,7 +34,8 @@ class BinanceSpotValidator {
       if (!isCompatible) {
         return Result.failure(
           BinanceValidationError(
-            'TimeInForce ${timeInForce.value} is not compatible with OrderType ${type.value}',
+            'TimeInForce ${timeInForce.value} is not compatible with '
+            'OrderType ${type.value}',
           ),
         );
       }

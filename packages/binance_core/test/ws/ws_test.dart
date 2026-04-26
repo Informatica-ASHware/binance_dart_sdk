@@ -48,26 +48,36 @@ class PrintLogger implements BinanceLogger {
     Object? error,
     StackTrace? stackTrace,
   }) =>
+
+      /// Printing is allowed in tests for debugging.
       // ignore: avoid_print
       print('$level: $message');
 
   @override
   void info(String message) =>
+
+      /// Printing is allowed in tests for debugging.
       // ignore: avoid_print
       print('INFO: $message');
 
   @override
   void error(String message, {Object? error, StackTrace? stackTrace}) =>
+
+      /// Printing is allowed in tests for debugging.
       // ignore: avoid_print
       print('ERROR: $message $error');
 
   @override
   void warning(String message) =>
+
+      /// Printing is allowed in tests for debugging.
       // ignore: avoid_print
       print('WARNING: $message');
 
   @override
   void debug(String message) =>
+
+      /// Printing is allowed in tests for debugging.
       // ignore: avoid_print
       print('DEBUG: $message');
 }
@@ -80,6 +90,7 @@ class MockWebSocketProvider implements BinanceWebSocketProvider {
 
   @override
   Future<BinanceWebSocketChannel> connect(Uri url) async {
+    /// Printing is allowed in tests for debugging.
     // ignore: avoid_print
     print('Connecting to $url');
     connectCount++;
@@ -191,7 +202,9 @@ void main() {
         if (lastUrl != null && lastUrl.queryParameters.containsKey('streams')) {
           final streams = lastUrl.queryParameters['streams']!;
           if (streams.contains('btcusdt@aggTrade') &&
-              streams.contains('ethusdt@aggTrade')) break;
+              streams.contains('ethusdt@aggTrade')) {
+            break;
+          }
         }
         await Future<void>.delayed(const Duration(milliseconds: 100));
       }
@@ -316,17 +329,17 @@ void main() {
       provider.onConnect = (uri) async {
         final channel = MockWebSocketChannel();
         channel.sentMessages.listen((msg) {
-          final data = jsonDecode(msg as String) as Map;
-          if (data['method'] == 'session.logon') {
-            channel.addFromServer(
-              jsonEncode({
-                'id': data['id'],
-                'status': 200,
-                'result': {'apiKey': 'key'},
-              }),
-            );
-          }
-        });
+            final data = jsonDecode(msg as String) as Map;
+            if (data['method'] == 'session.logon') {
+              channel.addFromServer(
+                jsonEncode({
+                  'id': data['id'],
+                  'status': 200,
+                  'result': {'apiKey': 'key'},
+                }),
+              );
+            }
+          });
         return channel;
       };
 

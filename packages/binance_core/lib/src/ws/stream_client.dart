@@ -134,7 +134,7 @@ class WebSocketStreamClient {
       );
 
       _connectionCompleter?.complete();
-    } catch (e, st) {
+    } on Exception catch (e, st) {
       _logger.error(
         'Failed to connect to WebSocket Stream',
         error: e,

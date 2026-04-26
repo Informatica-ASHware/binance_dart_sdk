@@ -1,3 +1,5 @@
+/// Fluid builders require returning 'this' to allow method chaining.
+// ignore_for_file: avoid_returning_this
 import 'package:binance_core/src/http/security.dart';
 import 'package:meta/meta.dart';
 

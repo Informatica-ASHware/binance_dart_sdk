@@ -4,8 +4,11 @@ void main() {
   const symbol = Symbol('BTCUSDT');
   final price = Price.fromString('50000.00');
 
+  /// Printing is allowed in examples.
   // ignore: avoid_print
   print('Symbol: $symbol');
+
+  /// Printing is allowed in examples.
   // ignore: avoid_print
   print('Price: $price');
 
@@ -13,12 +16,14 @@ void main() {
 
   result.fold(
     onSuccess: (s) {
-      // ignore: avoid_print
-      print('Success: $s');
-    },
-    onFailure: (e) {
-      // ignore: avoid_print
-      print('Error: $e');
-    },
+        /// Printing is allowed in examples.
+        // ignore: avoid_print
+        print('Success: $s');
+      },
+      onFailure: (e) {
+        /// Printing is allowed in examples.
+        // ignore: avoid_print
+        print('Error: $e');
+      },
   );
 }

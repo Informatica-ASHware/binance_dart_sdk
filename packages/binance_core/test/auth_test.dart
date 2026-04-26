@@ -49,7 +49,8 @@ void main() {
       final signer = HmacRequestSigner(credentials);
 
       const payload =
-          'symbol=LTCBTC&side=BUY&type=LIMIT&timeInForce=GTC&quantity=1&price=0.1&recvWindow=5000&timestamp=1499827319559';
+          'symbol=LTCBTC&side=BUY&type=LIMIT&timeInForce=GTC&quantity=1'
+          '&price=0.1&recvWindow=5000&timestamp=1499827319559';
       final signature = await signer.sign(payload);
 
       expect(signature.value.length, 64);

@@ -55,7 +55,6 @@ class BinanceSpotSorClient {
       path: '/api/v3/sor/order',
       queryParams: params,
       securityType: BinanceSecurityType.signed,
-      weight: 1,
     );
 
     final result = await _httpClient.send(request);
@@ -110,7 +109,6 @@ class BinanceSpotSorClient {
       path: '/api/v3/sor/order/test',
       queryParams: params,
       securityType: BinanceSecurityType.signed,
-      weight: 1,
     );
 
     final result = await _httpClient.send(request);

@@ -16,12 +16,12 @@ dependencies:
     git:
       url: https://github.com/Informatica-ASHware/binance_dart_sdk.git
       path: packages/binance_core
-      ref: 9bf1f518fdabe8d226e547e6aa773d353dc84803  # ref: PIN_TO_SHA_AFTER_FIRST_TAG
+      ref: 9bf1f518fdabe8d226e547e6aa773d353dc84803 # ref: PIN_TO_SHA_AFTER_FIRST_TAG
   http: ^1.2.0
   meta: ^1.16.0
 
 dev_dependencies:
-  test: ^1.25.15
-  mocktail: ^1.0.5
-  very_good_analysis: ^7.0.0
   glados: ^1.1.7
+  mocktail: ^1.0.5
+  test: ^1.25.15
+  very_good_analysis: ^7.0.0

@@ -42,7 +42,9 @@ void main() {
         final s = value.toStringAsFixed(8);
         final decimal = Decimal.parse(s);
         expect(
-            decimal.toString(), Decimal.parse(decimal.toString()).toString());
+          decimal.toString(),
+          Decimal.parse(decimal.toString()).toString(),
+        );
       },
     );
   });

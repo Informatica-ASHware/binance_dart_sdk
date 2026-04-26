@@ -467,7 +467,8 @@ final class MaxNumAlgoOrdersFilter extends SymbolFilter {
   /// Creates a [MaxNumAlgoOrdersFilter] from a JSON map.
   factory MaxNumAlgoOrdersFilter.fromJson(Map<String, dynamic> json) {
     return MaxNumAlgoOrdersFilter(
-        maxNumAlgoOrders: json['maxNumAlgoOrders'] as int);
+      maxNumAlgoOrders: json['maxNumAlgoOrders'] as int,
+    );
   }
 
   /// Maximum number of algo orders.
@@ -482,7 +483,8 @@ final class MaxNumIcebergOrdersFilter extends SymbolFilter {
   /// Creates a [MaxNumIcebergOrdersFilter] from a JSON map.
   factory MaxNumIcebergOrdersFilter.fromJson(Map<String, dynamic> json) {
     return MaxNumIcebergOrdersFilter(
-        maxNumIcebergOrders: json['maxNumIcebergOrders'] as int);
+      maxNumIcebergOrders: json['maxNumIcebergOrders'] as int,
+    );
   }
 
   /// Maximum number of iceberg orders.
@@ -497,7 +499,8 @@ final class MaxPositionFilter extends SymbolFilter {
   /// Creates a [MaxPositionFilter] from a JSON map.
   factory MaxPositionFilter.fromJson(Map<String, dynamic> json) {
     return MaxPositionFilter(
-        maxPosition: Quantity.fromString(json['maxPosition'] as String));
+      maxPosition: Quantity.fromString(json['maxPosition'] as String),
+    );
   }
 
   /// Maximum position.

@@ -1,0 +1,100 @@
+melos run analyze
+  └> melos exec --concurrency 4 -- "dart analyze ."
+     └> RUNNING
+
+$ melos exec
+  └> dart analyze .
+     └> RUNNING (in 4 packages)
+
+--------------------------------------------------------------------------------
+[binance_core]: Analyzing ....
+[binance_margin]: Analyzing ....
+[binance_spot]: Analyzing ....
+[binance_futures]: Analyzing ....
+[binance_core]:
+[binance_core]:    info - example/binance_core_example.dart:7:3 - Missing documentation explaining why the diagnostic is ignored. Try adding a comment immediately above the ignore comment. - document_ignores
+[binance_core]:    info - example/binance_core_example.dart:9:3 - Missing documentation explaining why the diagnostic is ignored. Try adding a comment immediately above the ignore comment. - document_ignores
+[binance_core]:    info - example/binance_core_example.dart:14:3 - Unnecessary duplication of receiver. Try using a cascade to avoid the duplication. - cascade_invocations
+[binance_core]:    info - example/binance_core_example.dart:16:7 - Missing documentation explaining why the diagnostic is ignored. Try adding a comment immediately above the ignore comment. - document_ignores
+[binance_core]:    info - example/binance_core_example.dart:20:7 - Missing documentation explaining why the diagnostic is ignored. Try adding a comment immediately above the ignore comment. - document_ignores
+[binance_core]:    info - lib/src/auth.dart:86:26 - Unnecessary use of an abstract class. Try making 'sign' a top-level function and removing the class. - one_member_abstracts
+[binance_core]:    info - lib/src/auth.dart:128:5 - Unnecessary duplication of receiver. Try using a cascade to avoid the duplication. - cascade_invocations
+[binance_core]:    info - lib/src/http/client.dart:135:9 - Catch clause should use 'on' to specify the type of exception being caught. Try adding an 'on' clause before the 'catch'. - avoid_catches_without_on_clauses
+[binance_core]:    info - lib/src/http/client.dart:296:7 - Catch clause should use 'on' to specify the type of exception being caught. Try adding an 'on' clause before the 'catch'. - avoid_catches_without_on_clauses
+[binance_core]:    info - lib/src/http/interceptor.dart:24:81 - The line length exceeds the 80-character limit. Try breaking the line across multiple lines. - lines_longer_than_80_chars
+[binance_core]:    info - lib/src/http/interceptor.dart:33:81 - The line length exceeds the 80-character limit. Try breaking the line across multiple lines. - lines_longer_than_80_chars
+[binance_core]:    info - lib/src/http/rate_limit.dart:27:81 - The line length exceeds the 80-character limit. Try breaking the line across multiple lines. - lines_longer_than_80_chars
+[binance_core]:    info - lib/src/http/request.dart:69:12 - Don't return 'this' from a method. Try changing the return type to 'void' and removing the return. - avoid_returning_this
+[binance_core]:    info - lib/src/http/request.dart:75:12 - Don't return 'this' from a method. Try changing the return type to 'void' and removing the return. - avoid_returning_this
+[binance_core]:    info - lib/src/http/request.dart:81:12 - Don't return 'this' from a method. Try changing the return type to 'void' and removing the return. - avoid_returning_this
+[binance_core]:    info - lib/src/http/request.dart:87:12 - Don't return 'this' from a method. Try changing the return type to 'void' and removing the return. - avoid_returning_this
+[binance_core]:    info - lib/src/http/request.dart:93:12 - Don't return 'this' from a method. Try changing the return type to 'void' and removing the return. - avoid_returning_this
+[binance_core]:    info - lib/src/http/request.dart:99:12 - Don't return 'this' from a method. Try changing the return type to 'void' and removing the return. - avoid_returning_this
+[binance_core]:    info - lib/src/http/request.dart:105:12 - Don't return 'this' from a method. Try changing the return type to 'void' and removing the return. - avoid_returning_this
+[binance_core]:    info - lib/src/http/retry.dart:42:81 - The line length exceeds the 80-character limit. Try breaking the line across multiple lines. - lines_longer_than_80_chars
+[binance_core]:    info - lib/src/observability.dart:123:81 - The line length exceeds the 80-character limit. Try breaking the line across multiple lines. - lines_longer_than_80_chars
+[binance_core]:    info - lib/src/observability.dart:197:81 - The line length exceeds the 80-character limit. Try breaking the line across multiple lines. - lines_longer_than_80_chars
+[binance_core]:    info - lib/src/observability.dart:205:26 - Unnecessary use of an abstract class. Try making 'report' a top-level function and removing the class. - one_member_abstracts
+[binance_core]:    info - lib/src/time.dart:84:7 - Catch clause should use 'on' to specify the type of exception being caught. Try adding an 'on' clause before the 'catch'. - avoid_catches_without_on_clauses
+[binance_core]:    info - lib/src/ws/api_client.dart:207:7 - Catch clause should use 'on' to specify the type of exception being caught. Try adding an 'on' clause before the 'catch'. - avoid_catches_without_on_clauses
+[binance_core]:    info - lib/src/ws/base.dart:60:26 - Unnecessary use of an abstract class. Try making 'connect' a top-level function and removing the class. - one_member_abstracts
+[binance_core]:    info - lib/src/ws/provider.dart:4:81 - The line length exceeds the 80-character limit. Try breaking the line across multiple lines. - lines_longer_than_80_chars
+[binance_core]:    info - lib/src/ws/stream_client.dart:187:7 - Catch clause should use 'on' to specify the type of exception being caught. Try adding an 'on' clause before the 'catch'. - avoid_catches_without_on_clauses
+[binance_core]:    info - pubspec.yaml:22:3 - Dependencies not sorted alphabetically. Try sorting the dependencies alphabetically (A to Z). - sort_pub_dependencies
+[binance_core]:    info - test/auth_test.dart:32:81 - The line length exceeds the 80-character limit. Try breaking the line across multiple lines. - lines_longer_than_80_chars
+[binance_core]:    info - test/auth_test.dart:52:81 - The line length exceeds the 80-character limit. Try breaking the line across multiple lines. - lines_longer_than_80_chars
+[binance_core]:    info - test/http/circuit_breaker_test.dart:20:7 - Unnecessary duplication of receiver. Try using a cascade to avoid the duplication. - cascade_invocations
+[binance_core]:    info - test/http/circuit_breaker_test.dart:32:7 - Unnecessary duplication of receiver. Try using a cascade to avoid the duplication. - cascade_invocations
+[binance_core]:    info - test/http/client_test.dart:35:37 - Method invocation or property access on a 'dynamic' target. Try giving the target a type. - avoid_dynamic_calls
+[binance_core]:    info - test/integration_utils.dart:6:81 - The line length exceeds the 80-character limit. Try breaking the line across multiple lines. - lines_longer_than_80_chars
+[binance_core]:    info - test/user_data_test.dart:89:81 - The line length exceeds the 80-character limit. Try breaking the line across multiple lines. - lines_longer_than_80_chars
+[binance_core]:    info - test/ws/ws_test.dart:51:7 - Missing documentation explaining why the diagnostic is ignored. Try adding a comment immediately above the ignore comment. - document_ignores
+[binance_core]:    info - test/ws/ws_test.dart:56:7 - Missing documentation explaining why the diagnostic is ignored. Try adding a comment immediately above the ignore comment. - document_ignores
+[binance_core]:    info - test/ws/ws_test.dart:61:7 - Missing documentation explaining why the diagnostic is ignored. Try adding a comment immediately above the ignore comment. - document_ignores
+[binance_core]:    info - test/ws/ws_test.dart:66:7 - Missing documentation explaining why the diagnostic is ignored. Try adding a comment immediately above the ignore comment. - document_ignores
+[binance_core]:    info - test/ws/ws_test.dart:71:7 - Missing documentation explaining why the diagnostic is ignored. Try adding a comment immediately above the ignore comment. - document_ignores
+[binance_core]:    info - test/ws/ws_test.dart:83:5 - Missing documentation explaining why the diagnostic is ignored. Try adding a comment immediately above the ignore comment. - document_ignores
+[binance_core]:    info - test/ws/ws_test.dart:341:7 - Unnecessary duplication of receiver. Try using a cascade to avoid the duplication. - cascade_invocations
+[binance_core]:
+[binance_core]: 43 issues found.
+[binance_margin]: No issues found!
+[binance_spot]:
+[binance_spot]:    info - lib/src/builders.dart:210:12 - Don't return 'this' from a method. Try changing the return type to 'void' and removing the return. - avoid_returning_this
+[binance_spot]:    info - lib/src/builders.dart:216:12 - Don't return 'this' from a method. Try changing the return type to 'void' and removing the return. - avoid_returning_this
+[binance_spot]:    info - lib/src/builders.dart:222:12 - Don't return 'this' from a method. Try changing the return type to 'void' and removing the return. - avoid_returning_this
+[binance_spot]:    info - lib/src/builders.dart:228:12 - Don't return 'this' from a method. Try changing the return type to 'void' and removing the return. - avoid_returning_this
+[binance_spot]:    info - lib/src/builders.dart:234:12 - Don't return 'this' from a method. Try changing the return type to 'void' and removing the return. - avoid_returning_this
+[binance_spot]:    info - lib/src/builders.dart:240:12 - Don't return 'this' from a method. Try changing the return type to 'void' and removing the return. - avoid_returning_this
+[binance_spot]:    info - lib/src/builders.dart:246:12 - Don't return 'this' from a method. Try changing the return type to 'void' and removing the return. - avoid_returning_this
+[binance_spot]:    info - lib/src/builders.dart:252:12 - Don't return 'this' from a method. Try changing the return type to 'void' and removing the return. - avoid_returning_this
+[binance_spot]:    info - lib/src/builders.dart:258:12 - Don't return 'this' from a method. Try changing the return type to 'void' and removing the return. - avoid_returning_this
+[binance_spot]:    info - lib/src/builders.dart:264:12 - Don't return 'this' from a method. Try changing the return type to 'void' and removing the return. - avoid_returning_this
+[binance_spot]:    info - lib/src/builders.dart:270:12 - Don't return 'this' from a method. Try changing the return type to 'void' and removing the return. - avoid_returning_this
+[binance_spot]:    info - lib/src/builders.dart:276:12 - Don't return 'this' from a method. Try changing the return type to 'void' and removing the return. - avoid_returning_this
+[binance_spot]:    info - lib/src/builders.dart:282:12 - Don't return 'this' from a method. Try changing the return type to 'void' and removing the return. - avoid_returning_this
+[binance_spot]:    info - lib/src/builders.dart:288:12 - Don't return 'this' from a method. Try changing the return type to 'void' and removing the return. - avoid_returning_this
+[binance_spot]:    info - lib/src/builders.dart:362:12 - Don't return 'this' from a method. Try changing the return type to 'void' and removing the return. - avoid_returning_this
+[binance_spot]:    info - lib/src/builders.dart:368:12 - Don't return 'this' from a method. Try changing the return type to 'void' and removing the return. - avoid_returning_this
+[binance_spot]:    info - lib/src/builders.dart:374:12 - Don't return 'this' from a method. Try changing the return type to 'void' and removing the return. - avoid_returning_this
+[binance_spot]:    info - lib/src/builders.dart:380:12 - Don't return 'this' from a method. Try changing the return type to 'void' and removing the return. - avoid_returning_this
+[binance_spot]:    info - lib/src/builders.dart:386:12 - Don't return 'this' from a method. Try changing the return type to 'void' and removing the return. - avoid_returning_this
+[binance_spot]:    info - lib/src/builders.dart:392:12 - Don't return 'this' from a method. Try changing the return type to 'void' and removing the return. - avoid_returning_this
+[binance_spot]:    info - lib/src/builders.dart:398:12 - Don't return 'this' from a method. Try changing the return type to 'void' and removing the return. - avoid_returning_this
+[binance_spot]:    info - lib/src/builders.dart:404:12 - Don't return 'this' from a method. Try changing the return type to 'void' and removing the return. - avoid_returning_this
+[binance_spot]:    info - lib/src/builders.dart:410:12 - Don't return 'this' from a method. Try changing the return type to 'void' and removing the return. - avoid_returning_this
+[binance_spot]:    info - lib/src/builders.dart:416:12 - Don't return 'this' from a method. Try changing the return type to 'void' and removing the return. - avoid_returning_this
+[binance_spot]:    info - lib/src/builders.dart:422:12 - Don't return 'this' from a method. Try changing the return type to 'void' and removing the return. - avoid_returning_this
+[binance_spot]:    info - lib/src/builders.dart:428:12 - Don't return 'this' from a method. Try changing the return type to 'void' and removing the return. - avoid_returning_this
+[binance_spot]:    info - lib/src/builders.dart:434:12 - Don't return 'this' from a method. Try changing the return type to 'void' and removing the return. - avoid_returning_this
+[binance_spot]:    info - lib/src/builders.dart:440:12 - Don't return 'this' from a method. Try changing the return type to 'void' and removing the return. - avoid_returning_this
+[binance_spot]:    info - lib/src/validation.dart:25:81 - The line length exceeds the 80-character limit. Try breaking the line across multiple lines. - lines_longer_than_80_chars
+[binance_spot]:    info - lib/src/validation.dart:36:81 - The line length exceeds the 80-character limit. Try breaking the line across multiple lines. - lines_longer_than_80_chars
+[binance_spot]:    info - pubspec.yaml:25:3 - Dependencies not sorted alphabetically. Try sorting the dependencies alphabetically (A to Z). - sort_pub_dependencies
+[binance_spot]:
+[binance_spot]: 31 issues found.
+[binance_futures]: No issues found!
+--------------------------------------------------------------------------------
+
+$ melos exec
+  └> dart analyze .
+     └> SUCCESS
