@@ -1,4 +1,4 @@
-import 'package:binance_core/src/http/request.dart';
+import 'package:ash_binance_api_core/src/http/request.dart';
 import 'package:http/http.dart' as http;
 
 /// Interface for intercepting Binance API requests and responses.

@@ -1,7 +1,7 @@
-import 'package:binance_core/binance_core.dart';
-import 'package:binance_futures/src/enums.dart';
-import 'package:binance_futures/src/models/futures_position.dart';
-import 'package:binance_futures/src/models/market.dart';
+import 'package:ash_binance_api_core/binance_core.dart';
+import 'package:ash_binance_api_futures/src/enums.dart';
+import 'package:ash_binance_api_futures/src/models/futures_position.dart';
+import 'package:ash_binance_api_futures/src/models/market.dart';
 
 /// REST Account API for Binance Futures.
 class BinanceFuturesAccountRest {

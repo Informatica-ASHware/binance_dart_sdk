@@ -3,10 +3,10 @@ library;
 
 // Fluid builders require 'this' to be returned.
 // ignore_for_file: avoid_returning_this
-import 'package:binance_core/binance_core.dart';
-import 'package:binance_spot/src/enums.dart';
-import 'package:binance_spot/src/models/market_data.dart';
-import 'package:binance_spot/src/validation.dart';
+import 'package:ash_binance_api_core/binance_core.dart';
+import 'package:ash_binance_api_spot/src/enums.dart';
+import 'package:ash_binance_api_spot/src/models/market_data.dart';
+import 'package:ash_binance_api_spot/src/validation.dart';
 
 /// Request for a new order.
 class NewOrderRequest {

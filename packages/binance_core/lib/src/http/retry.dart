@@ -1,4 +1,4 @@
-import 'package:binance_core/src/error.dart';
+import 'package:ash_binance_api_core/src/error.dart';
 import 'package:http/http.dart' as http;
 
 /// Strategy for retrying failed HTTP requests.

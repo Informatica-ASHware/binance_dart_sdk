@@ -1,5 +1,5 @@
-import 'package:binance_core/src/models.dart';
-import 'package:binance_core/src/utils.dart';
+import 'package:ash_binance_api_core/src/models.dart';
+import 'package:ash_binance_api_core/src/utils.dart';
 import 'package:glados/glados.dart';
 
 void main() {

@@ -1,6 +1,6 @@
 import 'dart:convert';
-import 'package:binance_core/src/observability.dart';
-import 'package:binance_core/src/time.dart';
+import 'package:ash_binance_api_core/src/observability.dart';
+import 'package:ash_binance_api_core/src/time.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
 import 'package:test/test.dart';

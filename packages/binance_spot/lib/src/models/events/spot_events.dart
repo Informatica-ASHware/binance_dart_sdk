@@ -1,5 +1,5 @@
-import 'package:binance_core/binance_core.dart';
-import 'package:binance_spot/src/enums.dart';
+import 'package:ash_binance_api_core/binance_core.dart';
+import 'package:ash_binance_api_spot/src/enums.dart';
 import 'package:meta/meta.dart';
 
 /// Base class for all Spot WebSocket events.

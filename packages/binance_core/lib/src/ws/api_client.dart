@@ -1,10 +1,10 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:binance_core/src/auth.dart';
-import 'package:binance_core/src/observability.dart';
-import 'package:binance_core/src/utils.dart';
-import 'package:binance_core/src/ws/base.dart';
+import 'package:ash_binance_api_core/src/auth.dart';
+import 'package:ash_binance_api_core/src/observability.dart';
+import 'package:ash_binance_api_core/src/utils.dart';
+import 'package:ash_binance_api_core/src/ws/base.dart';
 
 /// Client for Binance WebSocket API (bidirectional request/response).
 ///

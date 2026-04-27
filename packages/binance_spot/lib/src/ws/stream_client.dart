@@ -1,7 +1,7 @@
 import 'dart:async';
-import 'package:binance_core/binance_core.dart';
-import 'package:binance_spot/src/models/events/spot_events.dart';
-import 'package:binance_spot/src/models/market_data.dart';
+import 'package:ash_binance_api_core/binance_core.dart';
+import 'package:ash_binance_api_spot/src/models/events/spot_events.dart';
+import 'package:ash_binance_api_spot/src/models/market_data.dart';
 
 /// Client for Binance Spot WebSocket Market Streams.
 class BinanceSpotStreamClient {

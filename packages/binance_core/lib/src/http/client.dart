@@ -1,17 +1,17 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:binance_core/src/auth.dart';
-import 'package:binance_core/src/enums.dart';
-import 'package:binance_core/src/error.dart';
-import 'package:binance_core/src/http/circuit_breaker.dart';
-import 'package:binance_core/src/http/interceptor.dart';
-import 'package:binance_core/src/http/rate_limit.dart';
-import 'package:binance_core/src/http/request.dart';
-import 'package:binance_core/src/http/retry.dart';
-import 'package:binance_core/src/http/security.dart';
-import 'package:binance_core/src/observability.dart';
-import 'package:binance_core/src/result.dart';
+import 'package:ash_binance_api_core/src/auth.dart';
+import 'package:ash_binance_api_core/src/enums.dart';
+import 'package:ash_binance_api_core/src/error.dart';
+import 'package:ash_binance_api_core/src/http/circuit_breaker.dart';
+import 'package:ash_binance_api_core/src/http/interceptor.dart';
+import 'package:ash_binance_api_core/src/http/rate_limit.dart';
+import 'package:ash_binance_api_core/src/http/request.dart';
+import 'package:ash_binance_api_core/src/http/retry.dart';
+import 'package:ash_binance_api_core/src/http/security.dart';
+import 'package:ash_binance_api_core/src/observability.dart';
+import 'package:ash_binance_api_core/src/result.dart';
 import 'package:http/http.dart' as http;
 
 /// Abstract client for interacting with the Binance HTTP API.

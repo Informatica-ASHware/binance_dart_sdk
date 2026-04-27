@@ -1,4 +1,4 @@
-import 'package:binance_core/src/ws/base.dart';
+import 'package:ash_binance_api_core/src/ws/base.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
 /// Default implementation of [BinanceWebSocketProvider] using

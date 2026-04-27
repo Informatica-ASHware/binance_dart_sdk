@@ -1,5 +1,5 @@
-import 'package:binance_core/binance_core.dart';
-import 'package:binance_futures/src/models/market.dart';
+import 'package:ash_binance_api_core/binance_core.dart';
+import 'package:ash_binance_api_futures/src/models/market.dart';
 
 /// REST Market Data API for Binance Futures.
 class BinanceFuturesMarketDataRest {

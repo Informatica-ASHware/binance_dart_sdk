@@ -1,5 +1,5 @@
-import 'package:binance_core/src/error.dart';
-import 'package:binance_core/src/http/retry.dart';
+import 'package:ash_binance_api_core/src/error.dart';
+import 'package:ash_binance_api_core/src/http/retry.dart';
 import 'package:http/http.dart' as http;
 import 'package:test/test.dart';
 

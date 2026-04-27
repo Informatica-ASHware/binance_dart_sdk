@@ -1,5 +1,5 @@
 import 'dart:async';
-import 'package:binance_core/binance_core.dart';
+import 'package:ash_binance_api_core/binance_core.dart';
 
 /// WebSocket API client for Binance Futures.
 class BinanceFuturesWsApi {

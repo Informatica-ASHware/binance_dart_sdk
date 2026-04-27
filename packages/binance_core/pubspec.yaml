@@ -1,7 +1,7 @@
 # PROTECTED: No cambiar versiones ni flujos de CI sin justificacion en PR_JUSTIFICATION.md
 # path: binance_dart_sdk/packages/binance_core/pubspec.yaml
 
-name: binance_core
+name: ash_binance_api_core
 description: Primitivas y transporte base para binance_dart_sdk.
 version: 0.1.0
 resolution: workspace

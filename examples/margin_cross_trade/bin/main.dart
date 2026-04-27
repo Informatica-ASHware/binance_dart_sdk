@@ -1,8 +1,8 @@
 import 'dart:async';
 import 'dart:io';
-import 'package:binance_core/binance_core.dart';
-import 'package:binance_margin/binance_margin.dart';
-import 'package:binance_spot/binance_spot.dart';
+import 'package:ash_binance_api_core/binance_core.dart';
+import 'package:ash_binance_api_margin/binance_margin.dart';
+import 'package:ash_binance_api_spot/binance_spot.dart';
 
 void main(List<String> args) async {
   if (args.length < 2) {

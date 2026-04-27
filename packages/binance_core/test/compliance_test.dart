@@ -2,9 +2,9 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
-import 'package:binance_core/src/auth.dart';
-import 'package:binance_core/src/security.dart';
-import 'package:binance_core/src/utils.dart';
+import 'package:ash_binance_api_core/src/auth.dart';
+import 'package:ash_binance_api_core/src/security.dart';
+import 'package:ash_binance_api_core/src/utils.dart';
 import 'package:test/test.dart';
 
 void main() {

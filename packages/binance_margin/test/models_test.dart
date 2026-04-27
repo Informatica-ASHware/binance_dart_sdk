@@ -1,5 +1,5 @@
-import 'package:binance_core/binance_core.dart';
-import 'package:binance_margin/binance_margin.dart';
+import 'package:ash_binance_api_core/binance_core.dart';
+import 'package:ash_binance_api_margin/binance_margin.dart';
 import 'package:test/test.dart';
 
 void main() {

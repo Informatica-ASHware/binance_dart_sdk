@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
-import 'package:binance_core/src/security.dart';
+import 'package:ash_binance_api_core/src/security.dart';
 import 'package:cryptography/cryptography.dart' as crypto;
 import 'package:meta/meta.dart';
 import 'package:pointycastle/asn1.dart' as pc_asn1;

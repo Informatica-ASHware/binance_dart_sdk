@@ -1,11 +1,11 @@
 import 'dart:async';
-import 'package:binance_core/src/auth.dart';
-import 'package:binance_core/src/http/client.dart';
-import 'package:binance_core/src/http/request.dart';
-import 'package:binance_core/src/http/security.dart';
-import 'package:binance_core/src/models.dart';
-import 'package:binance_core/src/ws/api_client.dart';
-import 'package:binance_core/src/ws/stream_client.dart';
+import 'package:ash_binance_api_core/src/auth.dart';
+import 'package:ash_binance_api_core/src/http/client.dart';
+import 'package:ash_binance_api_core/src/http/request.dart';
+import 'package:ash_binance_api_core/src/http/security.dart';
+import 'package:ash_binance_api_core/src/models.dart';
+import 'package:ash_binance_api_core/src/ws/api_client.dart';
+import 'package:ash_binance_api_core/src/ws/stream_client.dart';
 import 'package:meta/meta.dart';
 
 /// Status of the [UserDataFeed].

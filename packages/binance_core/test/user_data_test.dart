@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:typed_data';
 
-import 'package:binance_core/binance_core.dart';
+import 'package:ash_binance_api_core/binance_core.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:test/test.dart';
 

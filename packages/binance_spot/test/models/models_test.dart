@@ -1,4 +1,4 @@
-import 'package:binance_spot/binance_spot.dart';
+import 'package:ash_binance_api_spot/binance_spot.dart';
 import 'package:test/test.dart';
 
 void main() {

@@ -1,8 +1,8 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:binance_core/src/models.dart';
-import 'package:binance_core/src/observability.dart';
+import 'package:ash_binance_api_core/src/models.dart';
+import 'package:ash_binance_api_core/src/observability.dart';
 import 'package:http/http.dart' as http;
 
 /// Synchronizes local time with Binance server time.

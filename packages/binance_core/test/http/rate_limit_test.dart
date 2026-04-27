@@ -1,4 +1,4 @@
-import 'package:binance_core/src/http/rate_limit.dart';
+import 'package:ash_binance_api_core/src/http/rate_limit.dart';
 import 'package:test/test.dart';
 
 void main() {

@@ -1,7 +1,7 @@
 # PROTECTED: No cambiar versiones ni flujos de CI sin justificacion en PR_JUSTIFICATION.md
 # path: binance_dart_sdk/packages/binance_futures/pubspec.yaml
 
-name: binance_futures
+name: ash_binance_api_futures
 description: Cobertura completa del API de Binance USD-M Futures (REST y WebSockets).
 version: 0.1.0
 resolution: workspace
@@ -12,7 +12,7 @@ environment:
   sdk: ">=3.11.5 <4.0.0"
 
 dependencies:
-  binance_core: any
+  ash_binance_api_core: any
   http: ^1.2.0
   meta: ^1.16.0
 

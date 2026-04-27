@@ -1,4 +1,4 @@
-import 'package:binance_core/src/http/circuit_breaker.dart';
+import 'package:ash_binance_api_core/src/http/circuit_breaker.dart';
 import 'package:test/test.dart';
 
 void main() {

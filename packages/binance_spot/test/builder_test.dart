@@ -1,7 +1,7 @@
-import 'package:binance_core/binance_core.dart';
-import 'package:binance_spot/src/builders.dart';
-import 'package:binance_spot/src/enums.dart';
-import 'package:binance_spot/src/models/market_data.dart';
+import 'package:ash_binance_api_core/binance_core.dart';
+import 'package:ash_binance_api_spot/src/builders.dart';
+import 'package:ash_binance_api_spot/src/enums.dart';
+import 'package:ash_binance_api_spot/src/models/market_data.dart';
 import 'package:test/test.dart';
 
 void main() {

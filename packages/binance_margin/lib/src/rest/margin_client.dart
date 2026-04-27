@@ -1,8 +1,8 @@
-import 'package:binance_core/binance_core.dart';
-import 'package:binance_margin/src/enums.dart';
-import 'package:binance_margin/src/models/account.dart';
-import 'package:binance_spot/binance_spot.dart';
-import 'package:binance_margin/src/models/history.dart';
+import 'package:ash_binance_api_core/binance_core.dart';
+import 'package:ash_binance_api_margin/src/enums.dart';
+import 'package:ash_binance_api_margin/src/models/account.dart';
+import 'package:ash_binance_api_spot/binance_spot.dart';
+import 'package:ash_binance_api_margin/src/models/history.dart';
 
 /// Client for Binance Margin REST API.
 class BinanceMarginClient {

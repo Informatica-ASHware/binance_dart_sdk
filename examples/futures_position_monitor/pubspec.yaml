@@ -9,7 +9,7 @@ environment:
   sdk: ">=3.11.5 <4.0.0"
 
 dependencies:
-  binance_core:
+  ash_binance_api_core:
     path: ../../packages/binance_core
-  binance_futures:
+  ash_binance_api_futures:
     path: ../../packages/binance_futures
