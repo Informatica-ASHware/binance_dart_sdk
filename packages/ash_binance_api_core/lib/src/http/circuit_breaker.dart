@@ -62,6 +62,9 @@ class CircuitBreaker {
 
 /// Manages circuit breakers for different endpoints.
 class CircuitBreakerRegistry {
+  /// Creates a [CircuitBreakerRegistry].
+  CircuitBreakerRegistry();
+
   final Map<String, CircuitBreaker> _breakers = {};
 
   /// Gets the circuit breaker for a specific [endpoint].

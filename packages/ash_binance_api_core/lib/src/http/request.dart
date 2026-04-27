@@ -61,6 +61,9 @@ final class BinanceRequest {
 
 /// Builder for [BinanceRequest].
 class BinanceRequestBuilder {
+  /// Creates a [BinanceRequestBuilder].
+  BinanceRequestBuilder();
+
   HttpMethod _method = HttpMethod.get;
   String _path = '';
   final Map<String, String> _queryParams = {};
