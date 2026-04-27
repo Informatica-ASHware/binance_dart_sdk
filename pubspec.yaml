@@ -13,10 +13,10 @@ environment:
 # Lista los miembros del workspace. Se enlazan automáticamente
 # sin necesidad de dependency_overrides.
 workspace:
-  - packages/binance_core
-  - packages/binance_spot
-  - packages/binance_margin
-  - packages/binance_futures
+  - packages/ash_binance_api_core
+  - packages/ash_binance_api_spot
+  - packages/ash_binance_api_margin
+  - packages/ash_binance_api_futures
   - examples/futures_position_monitor
   - examples/margin_cross_trade
   - examples/spot_market_watch

@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'dart:io';
-import 'package:ash_binance_api_core/binance_core.dart';
+import 'package:ash_binance_api_core/ash_binance_api_core.dart';
 
 void main(List<String> args) async {
   if (args.length < 2) {

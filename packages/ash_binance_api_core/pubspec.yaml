@@ -1,0 +1,25 @@
+# PROTECTED: No cambiar versiones ni flujos de CI sin justificacion en PR_JUSTIFICATION.md
+# path: binance_dart_sdk/packages/ash_binance_api_core/pubspec.yaml
+
+name: ash_binance_api_core
+description: Primitivas y transporte base para binance_dart_sdk.
+version: 0.1.0
+resolution: workspace
+repository: https://github.com/Informatica-ASHware/binance_dart_sdk
+issue_tracker: https://github.com/Informatica-ASHware/binance_dart_sdk/issues
+
+environment:
+  sdk: ">=3.11.5 <4.0.0"
+
+dependencies:
+  cryptography: ^2.7.0 # versión inyectada desde el root
+  http: ^1.2.0
+  meta: ^1.16.0
+  pointycastle: ^3.9.1
+  web_socket_channel: ^3.0.0
+
+dev_dependencies:
+  glados: ^1.1.7
+  mocktail: ^1.0.5
+  test: ^1.25.15
+  very_good_analysis: ^7.0.0

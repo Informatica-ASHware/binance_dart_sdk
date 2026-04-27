@@ -10,6 +10,6 @@ environment:
 
 dependencies:
   ash_binance_api_core:
-    path: ../../packages/binance_core
+    path: ../../packages/ash_binance_api_core
   ash_binance_api_futures:
-    path: ../../packages/binance_futures
+    path: ../../packages/ash_binance_api_futures
