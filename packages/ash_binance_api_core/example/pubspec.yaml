@@ -1,0 +1,11 @@
+name: ash_binance_api_core_example
+description: Example for ash_binance_api_core.
+publish_to: none
+
+environment:
+  sdk: ">=3.11.5 <4.0.0"
+
+dependencies:
+  ash_binance_api_core:
+    path: ../
+  http: ^1.2.0
