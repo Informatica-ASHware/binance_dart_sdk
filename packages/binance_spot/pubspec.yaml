@@ -1,3 +1,4 @@
+# PROTECTED: No cambiar versiones ni flujos de CI sin justificacion en PR_JUSTIFICATION.md
 # path: binance_dart_sdk/packages/binance_spot/pubspec.yaml
 
 name: binance_spot
@@ -9,7 +10,7 @@ issue_tracker: https://github.com/Informatica-ASHware/binance_dart_sdk/issues
 publish_to: none
 
 environment:
-  sdk: ">=3.6.0 <4.0.0"
+  sdk: ">=3.6.1 <4.0.0"
 
 dependencies:
   binance_core:

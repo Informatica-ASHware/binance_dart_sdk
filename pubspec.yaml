@@ -1,3 +1,4 @@
+# PROTECTED: No cambiar versiones ni flujos de CI sin justificacion en PR_JUSTIFICATION.md
 # path: binance_dart_sdk/pubspec.yaml
 # Workspace ROOT. Pub Workspaces (Dart 3.6+) + Melos 7.x.
 
@@ -6,7 +7,7 @@ description: Workspace root for the Binance Dart SDK packages.
 publish_to: none
 
 environment:
-  sdk: ">=3.6.0 <4.0.0"
+  sdk: ">=3.6.1 <4.0.0"
 
 # === Pub Workspaces (Dart 3.6+) ===
 # Lista los miembros del workspace. Se enlazan automáticamente
@@ -16,6 +17,10 @@ workspace:
   - packages/binance_spot
   - packages/binance_margin
   - packages/binance_futures
+  - examples/futures_position_monitor
+  - examples/margin_cross_trade
+  - examples/spot_market_watch
+  - tools/mock_server
 
 dev_dependencies:
   melos: ^7.0.0
@@ -29,7 +34,7 @@ melos:
   command:
     bootstrap:
       environment:
-        sdk: ">=3.6.0 <4.0.0"
+        sdk: ">=3.6.1 <4.0.0"
       # Versiones COMPARTIDAS (single source of truth).
       # Cada paquete hijo declara estas deps con `any` y melos
       # inyecta la versión definida aquí.

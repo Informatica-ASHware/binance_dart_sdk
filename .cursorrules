@@ -1,0 +1,13 @@
+# AI Rules for this Repository
+
+## Critical Restrictions
+- **Dependency Versions:** NEVER change versions in any `pubspec.yaml` unless explicitly instructed. If a change is required, you MUST create a `PR_JUSTIFICATION.md` file in the repository root explaining the reason and impact.
+- **CI/CD Flows:** NEVER modify files in `.github/workflows/` without a corresponding `PR_JUSTIFICATION.md`.
+
+## Workflow
+1. Before modifying dependencies or CI flows, notify the user about the requirement of `PR_JUSTIFICATION.md`.
+2. Ensure all `pubspec.yaml` and CI files maintain their header warnings.
+
+## Code Style
+- Follow the directives in `directivas/`.
+- Use the 3-component system for new tools.

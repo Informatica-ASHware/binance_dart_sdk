@@ -1,18 +1,20 @@
+# PROTECTED: No cambiar versiones ni flujos de CI sin justificacion en PR_JUSTIFICATION.md
 name: binance_mock_server
+resolution: workspace
 description: Mock server for Binance API testing.
 version: 0.1.0
 publish_to: none
 
 environment:
-  sdk: ">=3.6.0 <4.0.0"
+  sdk: ">=3.6.1 <4.0.0"
 
 dependencies:
   shelf: ^1.4.1
   shelf_router: ^1.1.4
   shelf_web_socket: ^2.0.0
-  web_socket_channel: ^3.0.1
+  web_socket_channel: ^3.0.0
 
 dev_dependencies:
   http: ^1.2.0
-  test: ^1.24.0
-  very_good_analysis: ^6.0.0
+  test: ^1.25.15
+  very_good_analysis: ^7.0.0

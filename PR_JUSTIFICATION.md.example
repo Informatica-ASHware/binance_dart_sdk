@@ -1,0 +1,10 @@
+# Justificación de Cambio en Dependencias / CI
+
+## Motivo del Cambio
+(Explica por qué es necesario actualizar o cambiar la dependencia/workflow)
+
+## Impacto
+(¿Afecta a otros paquetes? ¿Rompe compatibilidad con versiones anteriores del SDK?)
+
+## Pruebas Realizadas
+(Ej: `dart analyze`, `flutter test`, etc.)
