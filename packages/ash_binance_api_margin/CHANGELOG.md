@@ -1,6 +1,8 @@
 # Changelog
 
-## 0.1.0
-- Initial support for Cross and Isolated Margin REST API.
-- Integration with unified `OrderTradeUpdate` events.
-- Support for loans, repayments, and transfers.
+## 0.1.0 - 2026-04-27
+- Initial release of `ash_binance_api_margin`.
+- Support for Cross Margin and Isolated Margin trading.
+- Support for loans (borrow/repay) and transfers.
+- Full coverage of Margin Account and Trade REST endpoints.
+- Integration with `ash_binance_api_spot` models for consistency.
