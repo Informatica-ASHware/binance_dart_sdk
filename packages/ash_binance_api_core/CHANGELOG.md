@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.1.1
+- Improved documentation coverage (100% API elements).
+- Added formal example with dedicated pubspec.
+- Updated dependencies to latest stable versions (including `pointycastle` 4.0.0).
+- Renamed entry point to match package name.
+
 ## 0.1.0
 - Initial release with core HTTP and WebSocket components.
 - Added support for Ed25519 signing.
