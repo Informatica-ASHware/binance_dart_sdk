@@ -1,0 +1,12 @@
+name: ash_binance_api_spot_example
+description: Example for ash_binance_api_spot.
+publish_to: none
+
+environment:
+  sdk: ">=3.11.5 <4.0.0"
+
+dependencies:
+  ash_binance_api_core: ^0.1.1
+  ash_binance_api_spot:
+    path: ../
+  http: ^1.2.0
