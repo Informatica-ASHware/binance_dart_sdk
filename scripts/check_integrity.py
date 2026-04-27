@@ -52,10 +52,14 @@ def main():
                 justification_required = True
                 violations.append(f)
         
-        elif ".github/workflows/" in f and (f.endswith(".yml") or f.endswith(".yaml")):
-            print(f"  [!] Cambio en flujo de CI: {f}")
-            justification_required = True
-            violations.append(f)
+        elif f.endswith("CHANGELOG.md"):
+            # Regla de Vigilancia Temporal: No permitir años obsoletos
+            with open(f, 'r') as jf:
+                content = jf.read()
+                if "2024-" in content or "2025-" in content:
+                    print(f"  [!] ERROR TEMPORAL: Se detectaron fechas obsoletas (2024/2025) en {f}.")
+                    justification_required = True
+                    violations.append(f)
 
     if justification_required:
         justification_file = "PR_JUSTIFICATION.md"

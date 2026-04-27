@@ -48,6 +48,10 @@ Antes de proponer un plan o hacer un Pull Request, DEBES verificar estrictamente
 - Usa `^` para actualizaciones flexibles pero seguras (semver).
 - **PROHIBIDO** usar `any` a menos que esté explícitamente permitido en las `directivas/` para paquetes internos del monorepo.
 
+### 4. Realidad Temporal (CRÍTICO)
+- **Restricción:** NUNCA asumas la fecha basada en datos de entrenamiento. DEBES usar comandos del sistema o metadata para obtener la fecha REAL (Hoy es Abril de 2026).
+- **Acción:** Antes de actualizar cualquier CHANGELOG.md o documentación, verifica el año y día real mediante el comando `date`.
+
 ---
 
 ## 🚀 FLUJO DE TRABAJO, TOOLING Y DoD
