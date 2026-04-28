@@ -90,17 +90,25 @@ melos:
       description: "Full release cycle: version bump + publish."
       run: melos run pkg:version && melos run pkg:publish
 
-    pkg:release:patch:
-      description: "Force a patch version bump on core and publish."
+    pkg:release:core:patch:
+      description: "Force patch on CORE (cascades to ALL)."
       run: melos version ash_binance_api_core patch --yes && melos run pkg:publish
+
+    pkg:release:spot:patch:
+      description: "Force patch on SPOT (cascades to MARGIN)."
+      run: melos version ash_binance_api_spot patch --yes && melos run pkg:publish
+
+    pkg:release:margin:patch:
+      description: "Force patch on MARGIN (only margin)."
+      run: melos version ash_binance_api_margin patch --yes && melos run pkg:publish
+
+    pkg:release:futures:patch:
+      description: "Force patch on FUTURES (only futures)."
+      run: melos version ash_binance_api_futures patch --yes && melos run pkg:publish
 
     pkg:release:dev:
       description: "Pre-release cycle: version bump (dev) + publish."
       run: melos version --prerelease=dev --yes && melos run pkg:publish
-
-    pkg:release:patch:dev:
-      description: "Force a patch dev version bump on core and publish."
-      run: melos version ash_binance_api_core patch --preid=dev --yes && melos run pkg:publish
 
     format:
       description: "Format all Dart files."
