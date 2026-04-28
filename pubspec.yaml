@@ -83,7 +83,7 @@ melos:
       description: Bump versions and generate changelogs using Conventional Commits.
 
     pkg:publish:
-      run: melos publish --yes --no-dry-run
+      run: melos publish --yes --no-dry-run --no-published
       description: Publish all packages to pub.dev.
 
     pkg:release:
