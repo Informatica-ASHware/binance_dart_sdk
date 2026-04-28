@@ -6,7 +6,7 @@ Este archivo proporciona el contexto crítico y las restricciones obligatorias p
 Este repositorio (`binance_dart_sdk`) es un SDK de nivel Enterprise para conectar con el API de Binance (Spot, Margin, Futures). Se gestiona como un monorepo utilizando `melos`.
 
 > [!IMPORTANT]
-> **Contexto del Ecosistema:** Este repositorio es un componente crítico del ecosistema **CryptBot System** (junto con *Iron Widgets, KChart2 y CryptBot*). Las reglas de integridad existen porque compartimos dependencias núcleo y patrones de CI; cualquier desalineación aquí puede propagar inestabilidad a todo el sistema Dart/Flutter.
+> **Contexto del Ecosistema:** Este repositorio es un componente crítico del ecosistema **CryptBot System** (junto con *Iron Widgets, AshCandleChart y CryptBot*). Las reglas de integridad existen porque compartimos dependencias núcleo y patrones de CI; cualquier desalineación aquí puede propagar inestabilidad a todo el sistema Dart/Flutter.
 
 ---
 

@@ -50,7 +50,7 @@ def process_all_packages(start_dir):
 def main():
     base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     
-    projects_melos = ['binance_dart_sdk', 'KChart2', 'CryptBot']
+    projects_melos = ['binance_dart_sdk', 'AshCandleChart', 'CryptBot']
     project_flutter = 'Iron Widgets'
 
     # Iron Widgets

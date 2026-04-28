@@ -6,7 +6,7 @@ Este archivo proporciona el contexto crítico y las restricciones obligatorias p
 Este repositorio (`binance_dart_sdk`) es un SDK de nivel Enterprise para conectar con el API de Binance (Spot, Margin, Futures). Se gestiona como un monorepo utilizando `melos`.
 
 > [!IMPORTANT]
-> **Contexto del Ecosistema:** Este repositorio es un componente crítico del ecosistema **CryptBot System** (junto con *Iron Widgets, KChart2 y CryptBot*). Las reglas de integridad existen porque compartimos dependencias núcleo y patrones de CI; cualquier desalineación aquí puede propagar inestabilidad a todo el sistema Dart/Flutter.
+> **Contexto del Ecosistema:** Este repositorio es un componente crítico del ecosistema **CryptBot System** (junto con *Iron Widgets, AshCandleChart y CryptBot*). Las reglas de integridad existen porque compartimos dependencias núcleo y patrones de CI; cualquier desalineación aquí puede propagar inestabilidad a todo el sistema Dart/Flutter.
 
 ---
 
@@ -51,6 +51,13 @@ Antes de proponer un plan o hacer un Pull Request, DEBES verificar estrictamente
 ### 4. Realidad Temporal (CRÍTICO)
 - **Restricción:** NUNCA asumas la fecha basada en datos de entrenamiento. DEBES usar comandos del sistema o metadata para obtener la fecha REAL (Hoy es Abril de 2026).
 - **Acción:** Antes de actualizar cualquier CHANGELOG.md o documentación, verifica el año y día real mediante el comando `date`.
+
+
+### 4. Análisis Estático (lints_core)
+- TODOS los proyectos deben usar `package:lints/core.yaml` como base de análisis.
+- DEBES ejecutar `flutter analyze` o `dart analyze` antes de proponer cualquier cambio de código.
+- Si el análisis falla, DEBES corregir los problemas siguiendo la `directivas/correccion_lints_SOP.md`.
+- NUNCA omitas lints con `// ignore` a menos que exista una razón arquitectónica documentada.
 
 ---
 

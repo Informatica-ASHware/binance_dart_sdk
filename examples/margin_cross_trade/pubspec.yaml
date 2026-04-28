@@ -15,3 +15,6 @@ dependencies:
     path: ../../packages/ash_binance_api_spot
   ash_binance_api_margin:
     path: ../../packages/ash_binance_api_margin
+
+dev_dependencies:
+  lints: ^5.0.0

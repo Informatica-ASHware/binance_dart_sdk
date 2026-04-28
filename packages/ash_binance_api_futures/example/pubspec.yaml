@@ -10,3 +10,6 @@ dependencies:
   ash_binance_api_futures:
     path: ../
   http: ^1.2.0
+
+dev_dependencies:
+  lints: ^5.0.0
