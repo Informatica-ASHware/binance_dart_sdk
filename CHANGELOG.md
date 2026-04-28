@@ -15,6 +15,25 @@ Packages with breaking changes:
 
 Packages with other changes:
 
+ - [`ash_binance_api_spot` - `v0.1.0+1`](#ash_binance_api_spot---v0101)
+
+---
+
+#### `ash_binance_api_spot` - `v0.1.0+1`
+
+
+## 2026-04-28
+
+### Changes
+
+---
+
+Packages with breaking changes:
+
+ - There are no breaking changes in this release.
+
+Packages with other changes:
+
  - [`ash_binance_api_core` - `v0.1.1+3`](#ash_binance_api_core---v0113)
 
 ---
