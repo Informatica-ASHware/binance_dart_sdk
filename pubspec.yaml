@@ -92,23 +92,35 @@ melos:
 
     pkg:release:core:patch:
       description: "Force patch on CORE (cascades to ALL)."
-      run: melos version ash_binance_api_core patch --yes && melos run pkg:publish
+      run: melos version ash_binance_api_core patch --yes && melos publish --yes --no-dry-run --no-published
 
     pkg:release:spot:patch:
       description: "Force patch on SPOT (cascades to MARGIN)."
-      run: melos version ash_binance_api_spot patch --yes && melos run pkg:publish
+      run: melos version ash_binance_api_spot patch --yes && melos publish --yes --no-dry-run --no-published --scope="*spot*" --scope="*margin*"
 
     pkg:release:margin:patch:
       description: "Force patch on MARGIN (only margin)."
-      run: melos version ash_binance_api_margin patch --yes && melos run pkg:publish
+      run: melos version ash_binance_api_margin patch --yes && melos publish --yes --no-dry-run --no-published --scope="*margin*"
 
     pkg:release:futures:patch:
       description: "Force patch on FUTURES (only futures)."
-      run: melos version ash_binance_api_futures patch --yes && melos run pkg:publish
+      run: melos version ash_binance_api_futures patch --yes && melos publish --yes --no-dry-run --no-published --scope="*futures*"
 
-    pkg:release:dev:
-      description: "Pre-release cycle: version bump (dev) + publish."
-      run: melos version --prerelease=dev --yes && melos run pkg:publish
+    pkg:release:core:dev:
+      description: "Force dev patch on CORE (cascades to ALL)."
+      run: melos version ash_binance_api_core patch --preid=dev --yes && melos publish --yes --no-dry-run --no-published
+
+    pkg:release:spot:dev:
+      description: "Force dev patch on SPOT (cascades to MARGIN)."
+      run: melos version ash_binance_api_spot patch --preid=dev --yes && melos publish --yes --no-dry-run --no-published --scope="*spot*" --scope="*margin*"
+
+    pkg:release:margin:dev:
+      description: "Force dev patch on MARGIN (only margin)."
+      run: melos version ash_binance_api_margin patch --preid=dev --yes && melos publish --yes --no-dry-run --no-published --scope="*margin*"
+
+    pkg:release:futures:dev:
+      description: "Force dev patch on FUTURES (only futures)."
+      run: melos version ash_binance_api_futures patch --preid=dev --yes && melos publish --yes --no-dry-run --no-published --scope="*futures*"
 
     format:
       description: "Format all Dart files."
