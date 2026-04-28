@@ -14,9 +14,13 @@ environment:
 # sin necesidad de dependency_overrides.
 workspace:
   - packages/ash_binance_api_core
+  - packages/ash_binance_api_core/example
   - packages/ash_binance_api_spot
+  - packages/ash_binance_api_spot/example
   - packages/ash_binance_api_margin
+  - packages/ash_binance_api_margin/example
   - packages/ash_binance_api_futures
+  - packages/ash_binance_api_futures/example
   - examples/futures_position_monitor
   - examples/margin_cross_trade
   - examples/spot_market_watch
