@@ -1,3 +1,28 @@
+# Change Log
+
+All notable changes to this project will be documented in this file.
+See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+
+## 2026-04-28
+
+### Changes
+
+---
+
+Packages with breaking changes:
+
+ - There are no breaking changes in this release.
+
+Packages with other changes:
+
+ - [`ash_binance_api_core` - `v0.1.1+1`](#ash_binance_api_core---v0111)
+
+---
+
+#### `ash_binance_api_core` - `v0.1.1+1`
+
+ - Bump "ash_binance_api_core" to `0.1.1+1`.
+
 # Changelog
 
 All notable changes to this project will be documented in this file.
