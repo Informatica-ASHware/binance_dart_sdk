@@ -74,13 +74,29 @@ melos:
       packageFilters:
         dirExists: test
 
-    version:
+    pkg:version:
       run: melos version --yes
       description: Bump versions and generate changelogs using Conventional Commits.
 
-    publish:
-      run: melos publish --yes
+    pkg:publish:
+      run: melos publish --yes --no-dry-run
       description: Publish all packages to pub.dev.
+
+    pkg:release:
+      description: "Full release cycle: version bump + publish."
+      run: melos run pkg:version && melos run pkg:publish
+
+    pkg:release:patch:
+      description: "Force a patch version bump on core and publish."
+      run: melos version ash_binance_api_core patch --yes && melos run pkg:publish
+
+    pkg:release:dev:
+      description: "Pre-release cycle: version bump (dev) + publish."
+      run: melos version --prerelease=dev --yes && melos run pkg:publish
+
+    pkg:release:patch:dev:
+      description: "Force a patch dev version bump on core and publish."
+      run: melos version ash_binance_api_core patch --preid=dev --yes && melos run pkg:publish
 
     format:
       description: "Format all Dart files."
