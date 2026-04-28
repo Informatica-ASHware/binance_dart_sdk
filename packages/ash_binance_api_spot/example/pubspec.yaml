@@ -5,11 +5,11 @@ publish_to: none
 environment:
   sdk: ">=3.11.5 <4.0.0"
 
-dependencies:
-  ash_binance_api_core: ^0.1.1
-  ash_binance_api_spot:
-    path: ../
-  http: ^1.2.0
+resolution: workspace
 
+dependencies:
+  ash_binance_api_core: ^0.1.1+2
+  ash_binance_api_spot: any
+  http: ^1.2.0
 dev_dependencies:
   lints: ^5.0.0

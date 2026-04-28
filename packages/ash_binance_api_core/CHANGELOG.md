@@ -1,3 +1,7 @@
+## 0.1.1+2
+
+ - Bump "ash_binance_api_core" to `0.1.1+2`.
+
 ## 0.1.1+1
 
  - Bump "ash_binance_api_core" to `0.1.1+1`.

@@ -9,10 +9,7 @@ environment:
   sdk: ">=3.11.5 <4.0.0"
 
 dependencies:
-  ash_binance_api_core:
-    path: ../../packages/ash_binance_api_core
-  ash_binance_api_spot:
-    path: ../../packages/ash_binance_api_spot
-
+  ash_binance_api_core: ^0.1.1+2
+  ash_binance_api_spot: any
 dev_dependencies:
   lints: ^5.0.0
