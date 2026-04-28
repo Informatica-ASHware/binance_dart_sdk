@@ -3,7 +3,7 @@
 
 name: ash_binance_api_margin
 description: Cobertura de Binance Margin Trading (Cross e Isolated).
-version: 0.1.0+1
+version: 0.1.0+2
 resolution: workspace
 homepage: https://github.com/Informatica-ASHware/binance_dart_sdk
 repository: https://github.com/Informatica-ASHware/binance_dart_sdk

@@ -1,3 +1,7 @@
+## 0.1.0+2
+
+ - Bump "ash_binance_api_margin" to `0.1.0+2`.
+
 ## 0.1.0+1
 
 # Changelog
